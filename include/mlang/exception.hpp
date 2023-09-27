@@ -3,7 +3,7 @@
 #include <string>
 #include <exception>
 
-namespace lang {
+namespace mlang {
 
 class bad_value_type : public std::exception {
 public:
@@ -69,4 +69,4 @@ public:
     unexpected_error (const std::string& message) : m_message(message) {}
 };
 
-} /* namespace lang */
+} /* namespace mlang */

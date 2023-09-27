@@ -9,7 +9,7 @@
 #include <iostream>
 #endif
 
-namespace lang {
+namespace mlang {
 
 enum class token_types {
     none,
@@ -175,4 +175,4 @@ struct Token {
     }
 };
 
-} /* namespace lang */
+} /* namespace mlang */

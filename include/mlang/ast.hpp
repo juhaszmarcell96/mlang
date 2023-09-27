@@ -5,7 +5,7 @@
 
 #include "value.hpp"
 
-namespace lang {
+namespace mlang {
 
 struct Node {
     virtual ~Node() = default;
@@ -113,4 +113,4 @@ struct DeclarationOperationNode : Node {
     }
 };
 
-} /* namespace lang */
+} /* namespace mlang */

@@ -6,7 +6,7 @@
 #include "code.hpp"
 #include "exception.hpp"
 
-namespace lang {
+namespace mlang {
 namespace tokenizer {
 
 enum class token_types {
@@ -85,6 +85,7 @@ private:
     char m_current_char { 0 };
     Token m_current_token {};
     bool m_escape { false };
+    bool m_has_dot { false }; /* indicates whether a number already has a dot */
 
     void process_number () {
         if (m_current_state == tokenizer_states::none) {
@@ -124,6 +125,7 @@ private:
         else if (m_current_state == tokenizer_states::parsing_number) {
             /* parsing a number -> finalize this token */
             m_current_token.set_type(token_types::number);
+            m_has_dot = false;
             m_tokens.push_back(m_current_token);
             m_current_token.clear();
             m_current_state = tokenizer_states::none;
@@ -190,6 +192,7 @@ private:
         else if (m_current_state == tokenizer_states::parsing_number) {
             /* end the number, start a string */
             m_current_token.set_type(token_types::number);
+            m_has_dot = false;
             m_tokens.push_back(m_current_token);
             m_current_state = tokenizer_states::parsing_string;
             m_current_token.clear();
@@ -227,6 +230,7 @@ private:
         else if (m_current_state == tokenizer_states::parsing_number) {
             /* end the number, start an identifier */
             m_current_token.set_type(token_types::number);
+            m_has_dot = false;
             m_tokens.push_back(m_current_token);
             m_current_state = tokenizer_states::parsing_identifier;
             m_current_token.clear();
@@ -245,6 +249,7 @@ private:
             m_current_token.append(m_current_char);
             m_current_token.set_line(m_code.get_line_num());
             m_current_token.set_pos(m_code.get_column());
+            m_has_dot = true;
         }
         else if (m_current_state == tokenizer_states::parsing_identifier) {
             /* end identifier and start a new one -> . -> end and clear */
@@ -272,7 +277,23 @@ private:
         }
         else if (m_current_state == tokenizer_states::parsing_number) {
             /* append to number -> float */
-            m_current_token.append(m_current_char);
+            if (!m_has_dot) {
+                m_has_dot = true;
+                m_current_token.append(m_current_char);
+            }
+            else {
+                m_current_token.set_type(token_types::number);
+                m_tokens.push_back(m_current_token);
+                m_current_token.clear();
+                /* start a number with 0.xxx */
+                m_current_state = tokenizer_states::parsing_number;
+                m_current_token.clear();
+                m_current_token.append('0');
+                m_current_token.append(m_current_char);
+                m_current_token.set_line(m_code.get_line_num());
+                m_current_token.set_pos(m_code.get_column());
+                m_has_dot = true;
+            }
         }
     }
 
@@ -316,6 +337,7 @@ private:
         else if (m_current_state == tokenizer_states::parsing_number) {
             /* end number and start a new one -> end and clear */
             m_current_token.set_type(token_types::number);
+            m_has_dot = false;
             m_tokens.push_back(m_current_token);
             m_current_token.clear();
             m_current_token.set_line(m_code.get_line_num());
@@ -553,6 +575,7 @@ public:
         else if (m_current_state == tokenizer_states::parsing_number) {
             /* end number */
             m_current_token.set_type(token_types::number);
+            m_has_dot = false;
             m_tokens.push_back(m_current_token);
             m_current_token.clear();
         }
@@ -563,4 +586,4 @@ public:
 };
 
 } /* namespace tokenizer */
-} /* namespace lang */
+} /* namespace mlang */

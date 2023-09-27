@@ -6,7 +6,7 @@
 
 #include "exception.hpp"
 
-namespace lang {
+namespace mlang {
 
 enum class value_types {
     none,
@@ -224,4 +224,4 @@ public:
     }
 };
 
-} /* namespace lang */
+} /* namespace mlang */

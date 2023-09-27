@@ -7,8 +7,8 @@
 #include "mlang/script.hpp"
 
 int main(int argc, char* argv) {
-    lang::Value v1 { "asd" };
-    lang::Value v2 { 2 };
+    mlang::Value v1 { "asd" };
+    mlang::Value v2 { 2 };
 
     std::cout << v1 << std::endl;
     std::cout << v2 << std::endl;
@@ -16,7 +16,7 @@ int main(int argc, char* argv) {
     std::cout << v2++ << std::endl;
     std::cout << ++v2 << std::endl;
 
-    lang::Value arr { lang::value_types::vector };
+    mlang::Value arr { mlang::value_types::vector };
     arr.append(v1);
     arr.append(v2);
     std::cout << arr << std::endl;
@@ -27,7 +27,7 @@ int main(int argc, char* argv) {
     buffer << file.rdbuf();
     file.close();
 
-    lang::Script script { buffer.str() };
+    mlang::Script script { buffer.str() };
     script.execute();
 
     return 0;

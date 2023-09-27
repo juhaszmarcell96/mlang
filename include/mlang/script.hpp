@@ -11,7 +11,7 @@
 #include "token.hpp"
 #include "parser.hpp"
 
-namespace lang {
+namespace mlang {
 
 class Script {
 private:
@@ -462,4 +462,4 @@ public:
     }
 };
 
-} /* namespace lang */
+} /* namespace mlang */

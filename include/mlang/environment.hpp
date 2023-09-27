@@ -7,7 +7,7 @@
 #include <memory>
 #include <string>
 
-namespace lang {
+namespace mlang {
 
 class Environment {
 private:
@@ -22,4 +22,4 @@ public:
     }
 };
 
-} /* namespace lang */
+} /* namespace mlang */

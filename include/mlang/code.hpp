@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace lang {
+namespace mlang {
 
 class Code {
 private:
@@ -42,4 +42,4 @@ public:
     void clear () { m_code.clear(); }
 };
 
-} /* namespace lang */
+} /* namespace mlang */

@@ -7,7 +7,7 @@
 #include "value.hpp"
 #include "ast.hpp"
 
-namespace lang {
+namespace mlang {
 
 typedef std::vector<Token*> tokens_vec;
 
@@ -157,4 +157,4 @@ public:
     }
 };
 
-} /* namespace lang */
+} /* namespace mlang */
