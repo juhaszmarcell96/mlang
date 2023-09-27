@@ -30,5 +30,5 @@ int main(int argc, char* argv) {
     lang::Script script { buffer.str() };
     script.execute();
 
-	return 0;
+    return 0;
 }
