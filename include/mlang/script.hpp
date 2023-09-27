@@ -101,9 +101,9 @@ public:
                         debug("token with type 'variable'");
                         m_tokens.push_back(Token{token_types::kw_string, token.get_line(), token.get_pos()});
                     }
-                    else if (token.get_value().compare("vector") == 0) {
+                    else if (token.get_value().compare("array") == 0) {
                         debug("token with type 'variable'");
-                        m_tokens.push_back(Token{token_types::kw_vector, token.get_line(), token.get_pos()});
+                        m_tokens.push_back(Token{token_types::kw_array, token.get_line(), token.get_pos()});
                     }
                     else if (token.get_value().compare("return") == 0) {
                         debug("token with type 'return'");
@@ -375,8 +375,8 @@ public:
                             break;
                         }
                         if (tokens[index + 1].get_type() == tokenizer::token_types::ampersand) {
-                            debug("token with type 'double_ampresend'");
-                            m_tokens.push_back(Token{token_types::double_ampresend, token.get_line(), token.get_pos()});
+                            debug("token with type 'double_ampersand'");
+                            m_tokens.push_back(Token{token_types::double_ampersand, token.get_line(), token.get_pos()});
                             ++index;
                             break;
                         }
@@ -448,11 +448,17 @@ public:
         Environment env;
         std::vector<Token*> tokens;
         for (std::size_t index = 0; index < m_tokens.size(); ++index) {
-            tokens.push_back(&(m_tokens[index]));
+            if (m_tokens[index].type != token_types::semicolon) {
+                tokens.push_back(&(m_tokens[index]));
+            }
+            else {
+                Parser parser { tokens };
+                node_ptr root = parser.parse();
+                root->print();
+                std::cout << std::endl;
+                tokens.clear();
+            }
         }
-        Parser parser { tokens };
-        node_ptr root = parser.parse();
-        root->print();
     }
 };
 

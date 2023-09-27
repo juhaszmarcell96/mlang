@@ -1,8 +1,9 @@
-4 = 2 + 3 - 4 * ( 8 + 9 ) / 2;
-number i = 5;
-number e = 3;
+2 + 3 - 4 * ( 8 + 9 ) / 2;
+number i;
+number e;
+i = 1;
 ++i;
+e = i * 3;
 i -= e * 2;
-string str = "";
-str += "asd";
-str = String::Reverse(str);
+string str;
+str = "asd";

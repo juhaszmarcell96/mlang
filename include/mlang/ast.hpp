@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <iostream>
 
 #include "value.hpp"
 
@@ -20,7 +21,10 @@ struct ValueNode : Node {
         if (value.get_type() == value_types::number) {
             std::cout << value.get_number();
         }
-        /* TODO */
+        if (value.get_type() == value_types::string) {
+            std::cout << value.get_string();
+        }
+        /* TODO : array */
     }
 };
 
@@ -77,13 +81,35 @@ struct BinaryDivOperationNode : Node {
 };
 
 struct AssignmentOperationNode : Node {
-    node_ptr left;
+    std::string name;
     node_ptr right;
-    AssignmentOperationNode(node_ptr left, node_ptr right) : left(std::move(left)), right(std::move(right)) {}
+    AssignmentOperationNode(const std::string& var_name, node_ptr right) : name(var_name), right(std::move(right)) {}
     void print() const override {
-        if (left != nullptr) left->print();
-        std::cout << " = ";
+        std::cout << name << " = ";
         if (right != nullptr) right->print();
+    }
+};
+
+struct DeclarationOperationNode : Node {
+    token_types type;
+    std::string name;
+    DeclarationOperationNode(token_types var_type, const std::string& var_name) : type(var_type), name(var_name) {}
+    void print() const override {
+        switch (type) {
+            case token_types::kw_number : {
+                std::cout << "number ";
+                break;
+            }
+            case token_types::kw_string : {
+                std::cout << "string ";
+                break;
+            }
+            case token_types::kw_array : {
+                std::cout << "array ";
+                break;
+            }
+        }
+        std::cout << name << std::endl;
     }
 };
 

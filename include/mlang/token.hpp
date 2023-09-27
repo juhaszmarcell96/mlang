@@ -61,7 +61,7 @@ enum class token_types {
     greater_equal,         /* >= */
     double_equal,          /* == */
     exclamation_equal,     /* != */
-    double_ampresend,      /* && */
+    double_ampersand,      /* && */
     double_pipe,           /* || */
     /* keywords */
     kw_none,               /* none */
@@ -80,7 +80,7 @@ enum class token_types {
     kw_function,           /* function */
     kw_number,             /* number */
     kw_string,             /* string */
-    kw_vector,             /* vector */
+    kw_array,              /* array */
     kw_return,             /* return */
     kw_exit,               /* exit */
     kw_print               /* print */
@@ -148,7 +148,7 @@ struct Token {
             case token_types::greater_equal : { return ">="; }
             case token_types::double_equal : { return "=="; }
             case token_types::exclamation_equal : { return "!="; }
-            case token_types::double_ampresend : { return "&&"; }
+            case token_types::double_ampersand : { return "&&"; }
             case token_types::double_pipe : { return "||"; }
             case token_types::kw_none : { return "none"; }
             case token_types::kw_true : { return "true"; }
@@ -166,7 +166,7 @@ struct Token {
             case token_types::kw_function : { return "function"; }
             case token_types::kw_number : { return "number"; }
             case token_types::kw_string : { return "string"; }
-            case token_types::kw_vector : { return "vector"; }
+            case token_types::kw_array : { return "array"; }
             case token_types::kw_return : { return "return"; }
             case token_types::kw_exit : { return "exit"; }
             case token_types::kw_print : { return "print"; }

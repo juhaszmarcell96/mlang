@@ -31,21 +31,28 @@ private:
         /* the highest level parsing function calls the function for the lowest precedence operation */
         token_types current_type = curr()->type;
         switch (current_type) {
-            case token_types::number : {
+            case token_types::kw_string:
+            case token_types::kw_number: {
+                return declaration();
+            }
+            case token_types::identifier: {
                 token_types next_type = peek()->type;
                 switch (next_type) {
-                    //case token_types::kw_string:
-                    //case token_types::kw_number: {
-                    //	return declaration();
-                    //}
                     case token_types::equal_sign: {
                         return assignment();
                     }
+                    //case token_types::round_bracket_open: {
+                    //    return function_call();
+                    //}
                     default: {
-                        return add_sub();
+                        /* TODO : error */ std::cout << "ERROR" << std::endl; exit(1);
+                        break;
                     }
                 }
                 break;
+            }
+            case token_types::number : {
+                return add_sub();
             }
             default : {
                 return nullptr;
@@ -53,16 +60,25 @@ private:
         }
     }
 
+    node_ptr declaration() {
+        token_types variable_type = curr()->type;
+        next();
+        if (done()) { /* TODO : error */ std::cout << "ERROR" << std::endl; exit(1); }
+        if (curr()->type != token_types::identifier) { /* TODO : error */ std::cout << "ERROR" << std::endl; exit(1); }
+        std::string variable_name = curr()->value_str;
+        next();
+        if (!done()) { /* TODO : error */ std::cout << "ERROR" << std::endl; exit(1); }
+        return std::make_unique<DeclarationOperationNode>(variable_type, variable_name);
+    }
+
     node_ptr assignment() {
-        node_ptr expr = primary();
-        if (done()) return expr;
-        while (curr()->type == token_types::equal_sign) {
-            next();
-            node_ptr rhs = add_sub();
-            expr = std::make_unique<AssignmentOperationNode>(std::move(expr), std::move(rhs));
-            if (done()) return expr;
-        }
-        return expr;
+        std::string variable_name = curr()->value_str;
+        next();
+        if (done()) { /* TODO : error */ std::cout << "ERROR" << std::endl; exit(1); }
+        if (curr()->type != token_types::equal_sign) { /* TODO : error */ std::cout << "ERROR" << std::endl; exit(1); }
+        next();
+        node_ptr rhs = expression();
+        return std::make_unique<AssignmentOperationNode>(variable_name, std::move(rhs));
     }
 
     node_ptr add_sub() {
@@ -123,7 +139,9 @@ private:
             next();
             return expr;
         }
+        /* TODO : error */ std::cout << "ERROR" << std::endl; exit(1);
         // error: unexpected token
+        return nullptr;
     }
 public:
     Parser() = delete;
@@ -131,6 +149,10 @@ public:
 
     node_ptr parse() {
         m_index = 0;
+        std::cout << "parsing : " << std::endl;
+        for (const Token* token : m_tokens) {
+            std::cout << token->get_for_print() << std::endl;
+        }
         return expression();
     }
 };
