@@ -444,6 +444,9 @@ public:
         }
     }
 
+    
+    const std::vector<Token>& get_tokens () const { return m_tokens; }
+
     void execute(/* TODO : environment env */) {
         Environment env;
         std::vector<Token*> tokens;

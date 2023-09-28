@@ -3,7 +3,7 @@
 
 #include <string>
 
-#define DEBUG_SCRIPT 1
+#define DEBUG_SCRIPT 0
 
 #if DEBUG_SCRIPT == 1
 #include <iostream>

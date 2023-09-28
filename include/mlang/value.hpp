@@ -92,7 +92,13 @@ public:
     /* copy assignment */
     Value& operator=(const Value& rhs) {
         if (this == &rhs) return *this;
-        if (m_value) delete m_value;
+        switch (m_type) {
+            case value_types::none:   { break; }
+            case value_types::number: { delete as_number(); break; }
+            case value_types::string: { delete as_string(); break; }
+            case value_types::vector: { delete as_array();  break; }
+            default: { throw bad_value_type{}; }
+        }
         m_type = rhs.m_type;
         switch (m_type) {
             case value_types::none:   { break; }
@@ -115,7 +121,13 @@ public:
     /* move assignment */
     Value& operator=(Value&& rhs) noexcept {
         if (this == &rhs) return *this;
-        if (m_value) delete m_value;
+        switch (m_type) {
+            case value_types::none:   { break; }
+            case value_types::number: { delete as_number(); break; }
+            case value_types::string: { delete as_string(); break; }
+            case value_types::vector: { delete as_array();  break; }
+            default: { break; }
+        }
         m_type = rhs.m_type;
         rhs.m_type = value_types::none;
         m_value = rhs.m_value;
@@ -124,7 +136,15 @@ public:
     }
 
     /* destructor */
-    ~Value() { delete m_value; }
+    ~Value() {
+        switch (m_type) {
+            case value_types::none:   { break; }
+            case value_types::number: { delete as_number(); break; }
+            case value_types::string: { delete as_string(); break; }
+            case value_types::vector: { delete as_array();  break; }
+            default: { break; }
+        }
+     }
 
 
     value_types get_type () const { return m_type; }

@@ -7,5 +7,6 @@ add_executable (
     tests
     main.cpp
     tokenizer_test.cpp
+    script_test.cpp
 )
 target_link_libraries (tests ${GTEST_LIBRARIES} pthread)

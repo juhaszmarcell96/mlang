@@ -6,7 +6,7 @@
 #include "mlang/value.hpp"
 #include "mlang/script.hpp"
 
-int main(int argc, char* argv) {
+int main(int argc, char* argv[]) {
     mlang::Value v1 { "asd" };
     mlang::Value v2 { 2 };
 
