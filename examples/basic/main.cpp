@@ -16,7 +16,7 @@ int main(int argc, char* argv[]) {
     std::cout << v2++ << std::endl;
     std::cout << ++v2 << std::endl;
 
-    mlang::Value arr { mlang::value_types::vector };
+    mlang::Value arr { mlang::value_types::array };
     arr.append(v1);
     arr.append(v2);
     std::cout << arr << std::endl;

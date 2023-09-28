@@ -153,3 +153,30 @@ TEST(TokenizerTest, Test5) {
     ASSERT_EQ(tokens[6].get_type(), mlang::tokenizer::token_types::dollar);
     ASSERT_EQ(tokens[6].get_value(), "$");
 }
+
+TEST(TokenizerTest, Test6) {
+    std::string script = "bool get_val () { return true; }";
+    mlang::tokenizer::Tokenizer tokenizer { script };
+    tokenizer.tokenize();
+    auto tokens = tokenizer.get_tokens();
+
+    ASSERT_EQ(tokens.size(), 9);
+    ASSERT_EQ(tokens[0].get_type(), mlang::tokenizer::token_types::identifier);
+    ASSERT_EQ(tokens[0].get_value(), "bool");
+    ASSERT_EQ(tokens[1].get_type(), mlang::tokenizer::token_types::identifier);
+    ASSERT_EQ(tokens[1].get_value(), "get_val");
+    ASSERT_EQ(tokens[2].get_type(), mlang::tokenizer::token_types::round_bracket_open);
+    ASSERT_EQ(tokens[2].get_value(), "(");
+    ASSERT_EQ(tokens[3].get_type(), mlang::tokenizer::token_types::round_bracket_close);
+    ASSERT_EQ(tokens[3].get_value(), ")");
+    ASSERT_EQ(tokens[4].get_type(), mlang::tokenizer::token_types::curly_bracket_open);
+    ASSERT_EQ(tokens[4].get_value(), "{");
+    ASSERT_EQ(tokens[5].get_type(), mlang::tokenizer::token_types::identifier);
+    ASSERT_EQ(tokens[5].get_value(), "return");
+    ASSERT_EQ(tokens[6].get_type(), mlang::tokenizer::token_types::identifier);
+    ASSERT_EQ(tokens[6].get_value(), "true");
+    ASSERT_EQ(tokens[7].get_type(), mlang::tokenizer::token_types::semicolon);
+    ASSERT_EQ(tokens[7].get_value(), ";");
+    ASSERT_EQ(tokens[8].get_type(), mlang::tokenizer::token_types::curly_bracket_close);
+    ASSERT_EQ(tokens[8].get_value(), "}");
+}

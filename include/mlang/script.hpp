@@ -105,6 +105,10 @@ public:
                         debug("token with type 'variable'");
                         m_tokens.push_back(Token{token_types::kw_array, token.get_line(), token.get_pos()});
                     }
+                    else if (token.get_value().compare("bool") == 0) {
+                        debug("token with type 'variable'");
+                        m_tokens.push_back(Token{token_types::kw_bool, token.get_line(), token.get_pos()});
+                    }
                     else if (token.get_value().compare("return") == 0) {
                         debug("token with type 'return'");
                         m_tokens.push_back(Token{token_types::kw_return, token.get_line(), token.get_pos()});

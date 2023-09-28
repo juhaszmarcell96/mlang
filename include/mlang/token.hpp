@@ -81,6 +81,7 @@ enum class token_types {
     kw_number,             /* number */
     kw_string,             /* string */
     kw_array,              /* array */
+    kw_bool,               /* bool */
     kw_return,             /* return */
     kw_exit,               /* exit */
     kw_print               /* print */
@@ -167,6 +168,7 @@ struct Token {
             case token_types::kw_number : { return "number"; }
             case token_types::kw_string : { return "string"; }
             case token_types::kw_array : { return "array"; }
+            case token_types::kw_bool : { return "bool"; }
             case token_types::kw_return : { return "return"; }
             case token_types::kw_exit : { return "exit"; }
             case token_types::kw_print : { return "print"; }

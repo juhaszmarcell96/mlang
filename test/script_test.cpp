@@ -76,3 +76,17 @@ TEST(ScriptTest, Test3) {
     ASSERT_EQ(tokens[6].type, mlang::token_types::less);
     ASSERT_EQ(tokens[7].type, mlang::token_types::greater_equal);
 }
+
+TEST(ScriptTest, Test4) {
+    std::string script_text = "bool m_state = false;";
+    mlang::Script script { script_text };
+    auto tokens = script.get_tokens();
+
+    ASSERT_EQ(tokens.size(), 5);
+    ASSERT_EQ(tokens[0].type, mlang::token_types::kw_bool);
+    ASSERT_EQ(tokens[1].type, mlang::token_types::identifier);
+    ASSERT_EQ(tokens[1].value_str, "m_state");
+    ASSERT_EQ(tokens[2].type, mlang::token_types::equal_sign);
+    ASSERT_EQ(tokens[3].type, mlang::token_types::kw_false);
+    ASSERT_EQ(tokens[4].type, mlang::token_types::semicolon);
+}
