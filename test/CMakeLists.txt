@@ -6,6 +6,7 @@ include_directories (${GTEST_INCLUDE_DIRS})
 add_executable (
     tests
     main.cpp
+    value_test.cpp
     tokenizer_test.cpp
     script_test.cpp
 )
