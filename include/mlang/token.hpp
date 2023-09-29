@@ -70,14 +70,16 @@ enum class token_types {
     kw_if,                 /* if */
     kw_elif,               /* elif */
     kw_else,               /* else */
-    kw_while,              /* while */
-    kw_for,                /* for */
+    kw_endif,              /* else */
+    kw_loop,               /* loop */
+    kw_endloop,            /* endloop */
     kw_break,              /* break */
     kw_continue,           /* continue */
     kw_switch,             /* switch */
     kw_case,               /* case */
     kw_default,            /* default */
     kw_function,           /* function */
+    kw_endfunction,        /* endfunction */
     kw_number,             /* number */
     kw_string,             /* string */
     kw_array,              /* array */
@@ -157,14 +159,16 @@ struct Token {
             case token_types::kw_if : { return "if"; }
             case token_types::kw_elif : { return "elif"; }
             case token_types::kw_else : { return "else"; }
-            case token_types::kw_while : { return "while"; }
-            case token_types::kw_for : { return "for"; }
+            case token_types::kw_endif : { return "endif"; }
+            case token_types::kw_loop : { return "loop"; }
+            case token_types::kw_endloop : { return "endloop"; }
             case token_types::kw_break : { return "break"; }
             case token_types::kw_continue : { return "continue"; }
             case token_types::kw_switch : { return "switch"; }
             case token_types::kw_case : { return "case"; }
             case token_types::kw_default : { return "default"; }
             case token_types::kw_function : { return "function"; }
+            case token_types::kw_endfunction : { return "endfunction"; }
             case token_types::kw_number : { return "number"; }
             case token_types::kw_string : { return "string"; }
             case token_types::kw_array : { return "array"; }

@@ -10,6 +10,26 @@ str = "asd";
 
 
 
+number num;
+num = 2 + 3 - 4 * ( 8 + 9 ) / 2;
+print(num);
+num = 0;
+loop;
+    ++num;
+    if (num == 12);
+        print("number is 12");
+    else;
+        print(num);
+    endif;
+endloop;
+
+function sum takes (number, number) returns number;
+
+endfunction;
+
+
+
+
 string filename;
 filename = "/lib/systemd/network/10-eth0.network";
 
