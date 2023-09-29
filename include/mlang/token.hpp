@@ -95,9 +95,13 @@ struct Token {
     token_types type;
     std::string value_str;         /* for strings and identifiers */
     double value_num { 0.0 };      /* for numbers */
+    bool value_bool { false };     /* for booleans */
 
     Token (token_types token_type, const std::string& value, std::size_t line_num, std::size_t position) : type(token_type), value_str(value), line(line_num), pos(position)  {}
+    Token (token_types token_type, const char* value, std::size_t line_num, std::size_t position) : type(token_type), value_str(value), line(line_num), pos(position)  {}
     Token (token_types token_type, double value, std::size_t line_num, std::size_t position) : type(token_type), value_num(value), line(line_num), pos(position)  {}
+    Token (token_types token_type, int value, std::size_t line_num, std::size_t position) : type(token_type), value_num(value), line(line_num), pos(position)  {}
+    Token (token_types token_type, bool value, std::size_t line_num, std::size_t position) : type(token_type), value_bool(value), line(line_num), pos(position)  {}
     Token (token_types token_type, std::size_t line_num, std::size_t position) : type(token_type), line(line_num), pos(position) {}
 
     std::string get_for_print() const {
