@@ -39,6 +39,24 @@ public:
     }
 };
 
+class VariableNode : public Node {
+private:
+    std::string m_var_name;
+public:
+    explicit VariableNode(const std::string& var_name) : m_var_name(var_name) {}
+    ~VariableNode () = default;
+    void print() const override {
+        std::cout << m_var_name;
+    }
+    void execute (Environment& env, Value& return_val) override {
+        if (!env.has_variable(m_var_name)) {
+            throw undefined_var_error{m_var_name};
+        }
+        Value* m_val = env.get_variable(m_var_name);
+        return_val = *m_val;
+    }
+};
+
 class BinaryAddOperationNode : public Node {
 private:
     node_ptr m_left;
@@ -53,7 +71,13 @@ public:
         if (m_right != nullptr) m_right->print();
         std::cout << " )";
     }
-    void execute (Environment& env, Value& return_val) override { /* TODO */ }
+    void execute (Environment& env, Value& return_val) override {
+        Value lhs {};
+        Value rhs {};
+        m_left->execute(env, lhs);
+        m_right->execute(env, rhs);
+        return_val = lhs + rhs;
+    }
 };
 
 class BinarySubOperationNode : public Node {
@@ -70,7 +94,13 @@ public:
         if (m_right != nullptr) m_right->print();
         std::cout << " )";
     }
-    void execute (Environment& env, Value& return_val) override { /* TODO */ }
+    void execute (Environment& env, Value& return_val) override {
+        Value lhs {};
+        Value rhs {};
+        m_left->execute(env, lhs);
+        m_right->execute(env, rhs);
+        return_val = lhs - rhs;
+    }
 };
 
 class BinaryMulOperationNode : public Node {
@@ -87,7 +117,13 @@ public:
         if (m_right != nullptr) m_right->print();
         std::cout << " )";
     }
-    void execute (Environment& env, Value& return_val) override { /* TODO */ }
+    void execute (Environment& env, Value& return_val) override {
+        Value lhs {};
+        Value rhs {};
+        m_left->execute(env, lhs);
+        m_right->execute(env, rhs);
+        return_val = lhs * rhs;
+    }
 };
 
 class BinaryDivOperationNode : public Node {
@@ -104,7 +140,13 @@ public:
         if (m_right != nullptr) m_right->print();
         std::cout << " )";
     }
-    void execute (Environment& env, Value& return_val) override { /* TODO */ }
+    void execute (Environment& env, Value& return_val) override {
+        Value lhs {};
+        Value rhs {};
+        m_left->execute(env, lhs);
+        m_right->execute(env, rhs);
+        return_val = lhs / rhs;
+    }
 };
 
 class AssignmentOperationNode : public Node {

@@ -192,8 +192,105 @@ public:
         }
     }
 
-    /* TODO : prefix decrement */
-    /* TODO : postfix decrement */
+    /* prefix decrement */
+    Value& operator--() {
+        switch (m_type) {
+            case value_types::none:    { throw bad_operation ("value of type 'none' cannot be incremented"); }
+            case value_types::number:  { *as_number() -= 1; return *this; }
+            case value_types::string:  { throw bad_operation ("value of type 'string' cannot be incremented"); }
+            case value_types::array:   { throw bad_operation ("value of type 'array' cannot be incremented"); }
+            case value_types::boolean: { throw bad_operation ("value of type 'boolean' cannot be incremented"); }
+            default: { throw bad_value_type{}; }
+        }
+    }
+
+    /* postfix decrement */
+    Value operator--(int) {
+        switch (m_type) {
+            case value_types::none:    { throw bad_operation ("value of type 'none' cannot be incremented"); }
+            case value_types::number:  { Value old = *this; *as_number() -= 1; return old; }
+            case value_types::string:  { throw bad_operation ("value of type 'string' cannot be incremented"); }
+            case value_types::array:   { throw bad_operation ("value of type 'array' cannot be incremented"); }
+            case value_types::boolean: { throw bad_operation ("value of type 'boolean' cannot be incremented"); }
+            default: { throw bad_value_type{}; }
+        }
+    }
+
+    Value operator+(const Value& val) const {
+        Value ret_val { *this };
+        switch (m_type) {
+            case value_types::none:   { throw bad_operation ("value of type 'none' has no '+' operation defined"); }
+            case value_types::number: {
+                if (val.m_type != value_types::number) { throw incompatible_type_error {}; }
+                *(ret_val.as_number()) += val.get_number();
+                break;
+            }
+            case value_types::string: {
+                if (val.m_type == value_types::string) {
+                    *(ret_val.as_string()) += val.get_string();
+                }
+                else {
+                    throw incompatible_type_error {};
+                }
+                break;
+            }
+            case value_types::array:   { (*(ret_val.as_array())).push_back(val); break; }
+            case value_types::boolean: { throw bad_operation ("value of type 'boolean' has no '+' operation defined"); break; }
+            default: { throw bad_value_type{}; break; }
+        }
+        return ret_val;
+    }
+
+    Value operator-(const Value& val) const {
+        Value ret_val { *this };
+        switch (m_type) {
+            case value_types::none:   { throw bad_operation ("value of type 'none' has no '-' operation defined"); }
+            case value_types::number: {
+                if (val.m_type != value_types::number) { throw incompatible_type_error {}; }
+                *(ret_val.as_number()) -= val.get_number();
+                break;
+            }
+            case value_types::string:  { throw bad_operation ("value of type 'string' has no '-' operation defined"); break; }
+            case value_types::array:   { throw bad_operation ("value of type 'array' has no '-' operation defined"); break; }
+            case value_types::boolean: { throw bad_operation ("value of type 'boolean' has no '-' operation defined"); break; }
+            default: { throw bad_value_type{}; break; }
+        }
+        return ret_val;
+    }
+
+    Value operator*(const Value& val) const {
+        Value ret_val { *this };
+        switch (m_type) {
+            case value_types::none:   { throw bad_operation ("value of type 'none' has no '*' operation defined"); }
+            case value_types::number: {
+                if (val.m_type != value_types::number) { throw incompatible_type_error {}; }
+                *(ret_val.as_number()) *= val.get_number();
+                break;
+            }
+            case value_types::string:  { throw bad_operation ("value of type 'string' has no '*' operation defined"); break; }
+            case value_types::array:   { throw bad_operation ("value of type 'array' has no '*' operation defined"); break; }
+            case value_types::boolean: { throw bad_operation ("value of type 'boolean' has no '*' operation defined"); break; }
+            default: { throw bad_value_type{}; break; }
+        }
+        return ret_val;
+    }
+
+    Value operator/(const Value& val) const {
+        Value ret_val { *this };
+        switch (m_type) {
+            case value_types::none:   { throw bad_operation ("value of type 'none' has no '/' operation defined"); }
+            case value_types::number: {
+                if (val.m_type != value_types::number) { throw incompatible_type_error {}; }
+                *(ret_val.as_number()) /= val.get_number();
+                break;
+            }
+            case value_types::string:  { throw bad_operation ("value of type 'string' has no '/' operation defined"); break; }
+            case value_types::array:   { throw bad_operation ("value of type 'array' has no '/' operation defined"); break; }
+            case value_types::boolean: { throw bad_operation ("value of type 'boolean' has no '/' operation defined"); break; }
+            default: { throw bad_value_type{}; break; }
+        }
+        return ret_val;
+    }
 
     /* array subscript operator */
     Value& operator[](std::size_t index) {
@@ -221,8 +318,8 @@ public:
     /* append */
     void append(const Value& var) {
         switch (m_type) {
-            case value_types::none:   { throw bad_operation ("value of type 'none' has not append operation defined"); }
-            case value_types::number: { throw bad_operation ("value of type 'number' has not append operation defined"); }
+            case value_types::none:   { throw bad_operation ("value of type 'none' has no append operation defined"); }
+            case value_types::number: { throw bad_operation ("value of type 'number' has no append operation defined"); }
             case value_types::string: {
                 if (var.m_type == value_types::number) {
                     *as_string() += std::to_string(*(var.as_number()));
@@ -236,7 +333,7 @@ public:
                 break;
             }
             case value_types::array:   { return (*as_array()).push_back(var); }
-            case value_types::boolean: { throw bad_operation ("value of type 'boolean' has not append operation defined"); }
+            case value_types::boolean: { throw bad_operation ("value of type 'boolean' has no append operation defined"); }
             default: { throw bad_value_type{}; }
         }
     }
@@ -264,6 +361,48 @@ public:
             default: { throw bad_value_type{}; }
         }
         return os;
+    }
+
+    friend bool operator== (const Value& val_1, const Value& val_2) {
+        if (val_1.m_type != val_2.m_type) return false;
+        switch (val_1.m_type) {
+            case value_types::none:    { return true; }
+            case value_types::number:  { return val_1.get_number() == val_2.get_number(); }
+            case value_types::string:  { return val_1.get_string() == val_2.get_string(); }
+            case value_types::array:   {
+                if (val_1.as_array()->size() != val_2.as_array()->size()) { return false; }
+                for (std::size_t i = 0; i < val_1.as_array()->size(); ++i) {
+                    const Value& v1 = val_1.as_array()->at(i);
+                    const Value& v2 = val_2.as_array()->at(i);
+                    if (v1 != v2) { return false; }
+                }
+                return true;
+            }
+            case value_types::boolean: { return val_1.get_boolean() == val_2.get_boolean(); }
+            default: { throw bad_value_type{}; }
+        }
+        return true;
+    }
+
+    friend bool operator!= (const Value& val_1, const Value& val_2) {
+        if (val_1.m_type != val_2.m_type) return true;
+        switch (val_1.m_type) {
+            case value_types::none:    { return false; }
+            case value_types::number:  { return val_1.get_number() != val_2.get_number(); }
+            case value_types::string:  { return val_1.get_string() != val_2.get_string(); }
+            case value_types::array:   {
+                if (val_1.as_array()->size() != val_2.as_array()->size()) { return false; }
+                for (std::size_t i = 0; i < val_1.as_array()->size(); ++i) {
+                    const Value& v1 = val_1.as_array()->at(i);
+                    const Value& v2 = val_2.as_array()->at(i);
+                    if (v1 != v2) { return true; }
+                }
+                return false;
+            }
+            case value_types::boolean: { return val_1.get_boolean() != val_2.get_boolean(); }
+            default: { throw bad_value_type{}; }
+        }
+        return true;
     }
 };
 
