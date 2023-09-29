@@ -69,7 +69,7 @@ private:
     inline Boolean* as_boolean () const { return static_cast<Boolean*>(m_value);  }
 public:
     /* constructor */
-    Value() = delete;
+    Value() = default;
     Value(value_types type) : m_type(type) {
         switch (m_type) {
             case value_types::none:    { break; }

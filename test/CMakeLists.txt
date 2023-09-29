@@ -9,5 +9,6 @@ add_executable (
     value_test.cpp
     tokenizer_test.cpp
     script_test.cpp
+    ast_test.cpp
 )
 target_link_libraries (tests ${GTEST_LIBRARIES} pthread)

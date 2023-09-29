@@ -61,7 +61,14 @@ private:
     }
 
     node_ptr declaration() {
-        token_types variable_type = curr()->type;
+        value_types variable_type;
+        switch (curr()->type) {
+            case token_types::kw_array : { value_types::array; break; }
+            case token_types::kw_number : { value_types::number; break; }
+            case token_types::kw_string : { value_types::string; break; }
+            case token_types::kw_bool : { value_types::boolean; break; }
+            default : { throw bad_type_error {}; break; }
+        }
         next();
         if (done()) { /* TODO : error */ std::cout << "ERROR" << std::endl; exit(1); }
         if (curr()->type != token_types::identifier) { /* TODO : error */ std::cout << "ERROR" << std::endl; exit(1); }

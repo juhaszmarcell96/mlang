@@ -69,4 +69,57 @@ public:
     unexpected_error (const std::string& message) : m_message(message) {}
 };
 
+class redeclaration_error : public std::exception {
+private:
+    std::string m_message;
+public:
+    const char* what () const noexcept override {
+        return m_message.c_str();
+    }
+
+    redeclaration_error () : m_message("variable already exists") {}
+    redeclaration_error (const std::string& var_name) {
+        m_message = "variable '" + var_name + "' already exists -> redeclaration";
+    }
+};
+
+class bad_type_error : public std::exception {
+private:
+    std::string m_message;
+public:
+    const char* what () const noexcept override {
+        return m_message.c_str();
+    }
+
+    bad_type_error () : m_message("invalid type") {}
+    bad_type_error (const std::string& type_name) {
+        m_message = "type name '" + type_name + "' is invalid";
+    }
+};
+
+class undefined_var_error : public std::exception {
+private:
+    std::string m_message;
+public:
+    const char* what () const noexcept override {
+        return m_message.c_str();
+    }
+
+    undefined_var_error () : m_message("variable undefined") {}
+    undefined_var_error (const std::string& var_name) {
+        m_message = "variable '" + var_name + "' is undefined";
+    }
+};
+
+class incompatible_type_error : public std::exception {
+private:
+    std::string m_message;
+public:
+    const char* what () const noexcept override {
+        return m_message.c_str();
+    }
+
+    incompatible_type_error () : m_message("types are not compatible") {}
+};
+
 } /* namespace mlang */

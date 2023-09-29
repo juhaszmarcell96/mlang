@@ -4,112 +4,172 @@
 #include <iostream>
 
 #include "value.hpp"
+#include "environment.hpp"
+#include "token.hpp"
+#include "exception.hpp"
 
 namespace mlang {
 
-struct Node {
-    virtual ~Node() = default;
-    virtual void print() const = 0;
+class Node {
+public:
+    virtual ~Node () = default;
+    virtual void print () const = 0;
+    virtual void execute (Environment& env, Value& return_val) = 0;
 };
 
 typedef std::unique_ptr<Node> node_ptr;
 
-struct ValueNode : Node {
-    Value value;
-    explicit ValueNode(Value value) : value(value) {}
+class ValueNode : public Node {
+private:
+    Value m_value;
+public:
+    explicit ValueNode(Value value) : m_value(value) {}
+    ~ValueNode () = default;
     void print() const override {
-        if (value.get_type() == value_types::number) {
-            std::cout << value.get_number();
+        if (m_value.get_type() == value_types::number) {
+            std::cout << m_value.get_number();
         }
-        if (value.get_type() == value_types::string) {
-            std::cout << value.get_string();
+        if (m_value.get_type() == value_types::string) {
+            std::cout << m_value.get_string();
         }
         /* TODO : array */
     }
+    void execute (Environment& env, Value& return_val) override {
+        return_val = m_value;
+    }
 };
 
-struct BinaryAddOperationNode : Node {
-    node_ptr left;
-    node_ptr right;
-    BinaryAddOperationNode(node_ptr left, node_ptr right) : left(std::move(left)), right(std::move(right)) {}
+class BinaryAddOperationNode : public Node {
+private:
+    node_ptr m_left;
+    node_ptr m_right;
+public:
+    BinaryAddOperationNode(node_ptr left, node_ptr right) : m_left(std::move(left)), m_right(std::move(right)) {}
+    ~BinaryAddOperationNode () = default;
     void print() const override {
         std::cout << "( ";
-        if (left != nullptr) left->print();
+        if (m_left != nullptr) m_left->print();
         std::cout << " + ";
-        if (right != nullptr) right->print();
+        if (m_right != nullptr) m_right->print();
         std::cout << " )";
     }
+    void execute (Environment& env, Value& return_val) override { /* TODO */ }
 };
 
-struct BinarySubOperationNode : Node {
-    node_ptr left;
-    node_ptr right;
-    BinarySubOperationNode(node_ptr left, node_ptr right) : left(std::move(left)), right(std::move(right)) {}
+class BinarySubOperationNode : public Node {
+private:
+    node_ptr m_left;
+    node_ptr m_right;
+public:
+    BinarySubOperationNode(node_ptr left, node_ptr right) : m_left(std::move(left)), m_right(std::move(right)) {}
+    ~BinarySubOperationNode () = default;
     void print() const override {
         std::cout << "( ";
-        if (left != nullptr) left->print();
+        if (m_left != nullptr) m_left->print();
         std::cout << " - ";
-        if (right != nullptr) right->print();
+        if (m_right != nullptr) m_right->print();
         std::cout << " )";
     }
+    void execute (Environment& env, Value& return_val) override { /* TODO */ }
 };
 
-struct BinaryMulOperationNode : Node {
-    node_ptr left;
-    node_ptr right;
-    BinaryMulOperationNode(node_ptr left, node_ptr right) : left(std::move(left)), right(std::move(right)) {}
+class BinaryMulOperationNode : public Node {
+private:
+    node_ptr m_left;
+    node_ptr m_right;
+public:
+    BinaryMulOperationNode(node_ptr left, node_ptr right) : m_left(std::move(left)), m_right(std::move(right)) {}
+    ~BinaryMulOperationNode () = default;
     void print() const override {
         std::cout << "( ";
-        if (left != nullptr) left->print();
+        if (m_left != nullptr) m_left->print();
         std::cout << " * ";
-        if (right != nullptr) right->print();
+        if (m_right != nullptr) m_right->print();
         std::cout << " )";
     }
+    void execute (Environment& env, Value& return_val) override { /* TODO */ }
 };
 
-struct BinaryDivOperationNode : Node {
-    node_ptr left;
-    node_ptr right;
-    BinaryDivOperationNode(node_ptr left, node_ptr right) : left(std::move(left)), right(std::move(right)) {}
+class BinaryDivOperationNode : public Node {
+private:
+    node_ptr m_left;
+    node_ptr m_right;
+public:
+    BinaryDivOperationNode(node_ptr left, node_ptr right) : m_left(std::move(left)), m_right(std::move(right)) {}
+    ~BinaryDivOperationNode () = default;
     void print() const override {
         std::cout << "( ";
-        if (left != nullptr) left->print();
+        if (m_left != nullptr) m_left->print();
         std::cout << " / ";
-        if (right != nullptr) right->print();
+        if (m_right != nullptr) m_right->print();
         std::cout << " )";
     }
+    void execute (Environment& env, Value& return_val) override { /* TODO */ }
 };
 
-struct AssignmentOperationNode : Node {
-    std::string name;
-    node_ptr right;
-    AssignmentOperationNode(const std::string& var_name, node_ptr right) : name(var_name), right(std::move(right)) {}
+class AssignmentOperationNode : public Node {
+private:
+    std::string m_var_name;
+    node_ptr m_right;
+public:
+    AssignmentOperationNode(const std::string& var_name, node_ptr right) : m_var_name(var_name), m_right(std::move(right)) {}
+    ~AssignmentOperationNode () = default;
     void print() const override {
-        std::cout << name << " = ";
-        if (right != nullptr) right->print();
+        std::cout << m_var_name << " = ";
+        if (m_right != nullptr) m_right->print();
+    }
+    void execute (Environment& env, Value& return_val) override {
+        if (!env.has_variable(m_var_name)) {
+            throw undefined_var_error{m_var_name};
+        }
+        Value ret_val {};
+        m_right->execute(env, ret_val);
+        Value* m_val = env.get_variable(m_var_name);
+        if (m_val->get_type() != ret_val.get_type()) {
+            throw incompatible_type_error {};
+        }
+        *m_val = ret_val;
+        return_val = *m_val;
     }
 };
 
-struct DeclarationOperationNode : Node {
-    token_types type;
-    std::string name;
-    DeclarationOperationNode(token_types var_type, const std::string& var_name) : type(var_type), name(var_name) {}
+class DeclarationOperationNode : public Node {
+private:
+    value_types m_var_type;
+    std::string m_var_name;
+public:
+    DeclarationOperationNode(value_types var_type, const std::string& var_name) : m_var_type(var_type), m_var_name(var_name) {}
+    ~DeclarationOperationNode () = default;
     void print() const override {
-        switch (type) {
-            case token_types::kw_number : {
+        switch (m_var_type) {
+            case value_types::number : {
                 std::cout << "number ";
                 break;
             }
-            case token_types::kw_string : {
+            case value_types::string : {
                 std::cout << "string ";
                 break;
             }
-            case token_types::kw_array : {
+            case value_types::array : {
                 std::cout << "array ";
                 break;
             }
+            case value_types::boolean : {
+                std::cout << "boolean ";
+                break;
+            }
+            default : {
+                std::cout << "ERROR ";
+                break;
+            }
         }
-        std::cout << name << std::endl;
+        std::cout << m_var_name << std::endl;
+    }
+    void execute (Environment& env, Value& return_val) override {
+        if (env.has_variable(m_var_name)) {
+            throw redeclaration_error{m_var_name};
+        }
+        env.declare_variable(m_var_name, m_var_type);
     }
 };
 

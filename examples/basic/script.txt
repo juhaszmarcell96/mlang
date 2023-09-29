@@ -7,3 +7,25 @@ e = i * 3;
 i -= e * 2;
 string str;
 str = "asd";
+
+
+
+string filename;
+filename = "/lib/systemd/network/10-eth0.network";
+
+if (!File::exists(filename))
+    exit 2;
+endif
+
+string file_text;
+file_text = File::read();
+
+number i;
+i = 0;
+loop ()
+
+    ++i;
+    if (i > String::length(file_text))
+        break;
+    endif
+endloop
