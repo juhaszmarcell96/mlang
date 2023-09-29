@@ -9,11 +9,11 @@
 namespace mlang {
 
 enum class value_types {
-    none,
-    string,
-    number,
-    array,
-    boolean
+    none = 0,
+    string = 1,
+    number = 2,
+    array = 3,
+    boolean = 4
 };
 
 static inline std::string to_string (value_types type) {

@@ -10,6 +10,7 @@
 #include "value.hpp"
 #include "token.hpp"
 #include "parser.hpp"
+#include "environment.hpp"
 
 namespace mlang {
 
@@ -459,8 +460,7 @@ public:
     
     const std::vector<Token>& get_tokens () const { return m_tokens; }
 
-    void execute(/* TODO : environment env */) {
-        Environment env;
+    void execute(Environment env) {
         std::vector<Token*> tokens;
         for (std::size_t index = 0; index < m_tokens.size(); ++index) {
             if (m_tokens[index].type != token_types::semicolon) {
@@ -469,8 +469,8 @@ public:
             else {
                 Parser parser { tokens };
                 node_ptr root = parser.parse();
-                root->print();
-                std::cout << std::endl;
+                Value ret_val {};
+                root->execute(env, ret_val);
                 tokens.clear();
             }
         }

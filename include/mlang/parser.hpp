@@ -32,7 +32,9 @@ private:
         token_types current_type = curr()->type;
         switch (current_type) {
             case token_types::kw_string:
-            case token_types::kw_number: {
+            case token_types::kw_number:
+            case token_types::kw_array:
+            case token_types::kw_bool: {
                 return declaration();
             }
             case token_types::identifier: {
@@ -63,10 +65,10 @@ private:
     node_ptr declaration() {
         value_types variable_type;
         switch (curr()->type) {
-            case token_types::kw_array : { value_types::array; break; }
-            case token_types::kw_number : { value_types::number; break; }
-            case token_types::kw_string : { value_types::string; break; }
-            case token_types::kw_bool : { value_types::boolean; break; }
+            case token_types::kw_array  : { variable_type = value_types::array; break; }
+            case token_types::kw_number : { variable_type = value_types::number; break; }
+            case token_types::kw_string : { variable_type = value_types::string; break; }
+            case token_types::kw_bool   : { variable_type = value_types::boolean; break; }
             default : { throw bad_type_error {}; break; }
         }
         next();
@@ -156,10 +158,10 @@ public:
 
     node_ptr parse() {
         m_index = 0;
-        std::cout << "parsing : " << std::endl;
-        for (const Token* token : m_tokens) {
-            std::cout << token->get_for_print() << std::endl;
-        }
+        //std::cout << "parsing : " << std::endl;
+        //for (const Token* token : m_tokens) {
+        //    std::cout << token->get_for_print() << std::endl;
+        //}
         return expression();
     }
 };

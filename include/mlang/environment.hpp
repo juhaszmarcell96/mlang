@@ -14,6 +14,13 @@ private:
     std::map<std::string, std::shared_ptr<Value>> m_variables;
     //std::map<std::string, std::shared_ptr<Function>> m_functions;
 public:
+    Environment () = default;
+    ~Environment () = default;
+
+    void reset () {
+        m_variables.clear();
+    }
+
     bool has_variable (const std::string& variable_name) const {
         return m_variables.count(variable_name) > 0;
     }

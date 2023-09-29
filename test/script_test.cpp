@@ -4,6 +4,7 @@
 
 #include "mlang/tokenizer.hpp"
 #include "mlang/script.hpp"
+#include "mlang/environment.hpp"
 
 TEST(ScriptTest, Test0) {
     std::string script_text = "number a = 5;";
@@ -90,3 +91,12 @@ TEST(ScriptTest, Test4) {
     ASSERT_EQ(tokens[3].type, mlang::token_types::kw_false);
     ASSERT_EQ(tokens[4].type, mlang::token_types::semicolon);
 }
+
+//TEST(ScriptTest, Test5) {
+//    std::string script_text = "number num;";
+//    mlang::Script script { script_text };
+//    mlang::Environment env {};
+//    script.execute(env);
+//
+//    ASSERT_EQ(env.has_variable("num"), true);
+//}
