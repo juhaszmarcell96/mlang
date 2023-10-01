@@ -155,4 +155,21 @@ TEST(ScriptTest, Test8) {
     ASSERT_EQ(env.has_variable("c"), true);
     ASSERT_EQ(env.get_variable("c")->get_type(), mlang::value_types::number);
     ASSERT_EQ(env.get_variable("c")->get_number(), 16);
+
+    script_text.clear();
+    script_text += "a -= 3; \n";
+    script_text += "b *= a; \n";
+    script_text += "c /= b * 2 - 10 * a; \n";
+    mlang::Script script2 { script_text };
+    script2.execute(env);
+
+    ASSERT_EQ(env.has_variable("a"), true);
+    ASSERT_EQ(env.get_variable("a")->get_type(), mlang::value_types::number);
+    ASSERT_EQ(env.get_variable("a")->get_number(), 2);
+    ASSERT_EQ(env.has_variable("b"), true);
+    ASSERT_EQ(env.get_variable("b")->get_type(), mlang::value_types::number);
+    ASSERT_EQ(env.get_variable("b")->get_number(), 14);
+    ASSERT_EQ(env.has_variable("c"), true);
+    ASSERT_EQ(env.get_variable("c")->get_type(), mlang::value_types::number);
+    ASSERT_EQ(env.get_variable("c")->get_number(), 2);
 }

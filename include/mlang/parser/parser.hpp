@@ -34,6 +34,11 @@ private:
         }
         return nullptr;
     }
+    bool peekable (int num = 1) {
+        if ((m_index + num) < 0) return false;
+        if ((m_index + num) >= m_tokens.size()) return false;
+        return true;
+    }
     const Token* curr() const { return m_tokens[m_index]; }
 
     void trace (const std::string& str) const {
@@ -53,10 +58,23 @@ private:
                 return declaration();
             }
             case token_types::identifier: {
+                if (!peekable()) return primary();
                 token_types next_type = peek()->type;
                 switch (next_type) {
                     case token_types::equal_sign: {
                         return assignment();
+                    }
+                    case token_types::plus_equal: {
+                        return add_equal();
+                    }
+                    case token_types::dash_equal: {
+                        return sub_equal();
+                    }
+                    case token_types::slash_equal: {
+                        return div_equal();
+                    }
+                    case token_types::asterisk_equal: {
+                        return mul_equal();
                     }
                     //case token_types::round_bracket_open: {
                     //    return function_call();
@@ -76,7 +94,51 @@ private:
         }
     }
 
-    node_ptr declaration() {
+    node_ptr add_equal () {
+        trace("add_equal");
+        std::string variable_name = curr()->value_str;
+        next();
+        if (done()) { throw syntax_error{ "assignment too shot", curr()->line, curr()->pos}; }
+        if (curr()->type != token_types::plus_equal) { throw syntax_error{ "this is not '+='", curr()->line, curr()->pos}; }
+        next();
+        node_ptr rhs = expression();
+        return std::make_unique<AddEqualOperationNode>(variable_name, std::move(rhs));
+    }
+
+    node_ptr sub_equal () {
+        trace("sub_equal");
+        std::string variable_name = curr()->value_str;
+        next();
+        if (done()) { throw syntax_error{ "assignment too shot", curr()->line, curr()->pos}; }
+        if (curr()->type != token_types::dash_equal) { throw syntax_error{ "this is not '-='", curr()->line, curr()->pos}; }
+        next();
+        node_ptr rhs = expression();
+        return std::make_unique<SubEqualOperationNode>(variable_name, std::move(rhs));
+    }
+
+    node_ptr mul_equal () {
+        trace("mul_equal");
+        std::string variable_name = curr()->value_str;
+        next();
+        if (done()) { throw syntax_error{ "assignment too shot", curr()->line, curr()->pos}; }
+        if (curr()->type != token_types::asterisk_equal) { throw syntax_error{ "this is not '*='", curr()->line, curr()->pos}; }
+        next();
+        node_ptr rhs = expression();
+        return std::make_unique<MulEqualOperationNode>(variable_name, std::move(rhs));
+    }
+
+    node_ptr div_equal () {
+        trace("div_equal");
+        std::string variable_name = curr()->value_str;
+        next();
+        if (done()) { throw syntax_error{ "assignment too shot", curr()->line, curr()->pos}; }
+        if (curr()->type != token_types::slash_equal) { throw syntax_error{ "this is not '/='", curr()->line, curr()->pos}; }
+        next();
+        node_ptr rhs = expression();
+        return std::make_unique<DivEqualOperationNode>(variable_name, std::move(rhs));
+    }
+
+    node_ptr declaration () {
         trace("declaration");
         value_types variable_type;
         switch (curr()->type) {
@@ -95,18 +157,18 @@ private:
         return std::make_unique<DeclarationOperationNode>(variable_type, variable_name);
     }
 
-    node_ptr assignment() {
+    node_ptr assignment () {
         trace("assignment");
         std::string variable_name = curr()->value_str;
         next();
         if (done()) { throw syntax_error{ "assignment too shot", curr()->line, curr()->pos}; }
-        if (curr()->type != token_types::equal_sign) { throw syntax_error{ "did not find variable name", curr()->line, curr()->pos}; }
+        if (curr()->type != token_types::equal_sign) { throw syntax_error{ "this is not an assignment", curr()->line, curr()->pos}; }
         next();
         node_ptr rhs = expression();
         return std::make_unique<AssignmentOperationNode>(variable_name, std::move(rhs));
     }
 
-    node_ptr add_sub() {
+    node_ptr add_sub () {
         trace("add_sub");
         /* withing an addition, we can have a multiplication */
         node_ptr expr = mul_div();
@@ -126,7 +188,7 @@ private:
         return expr;
     }
 
-    node_ptr mul_div() {
+    node_ptr mul_div () {
         trace("mul_div");
         node_ptr expr = unary();
         if (done()) return expr;
@@ -145,14 +207,14 @@ private:
         return expr;
     }
 
-    node_ptr unary() {
+    node_ptr unary () {
         trace("unary");
         // for now, let's just return a primary.
         /* TODO : implement ++ and -- */
         return primary();
     }
 
-    node_ptr primary() {
+    node_ptr primary () {
         trace("primary");
         if (curr()->type == token_types::number) {
             double current_value = curr()->value_num;

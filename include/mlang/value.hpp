@@ -405,6 +405,74 @@ public:
         }
         return true;
     }
+
+    void operator+=(const Value& val) const {
+        switch (m_type) {
+            case value_types::none:   { throw bad_operation ("value of type 'none' has no '+=' operation defined"); }
+            case value_types::number: {
+                if (val.m_type != value_types::number) { throw incompatible_type_error {}; }
+                *(as_number()) += val.get_number();
+                break;
+            }
+            case value_types::string: {
+                if (val.m_type == value_types::string) {
+                    *(as_string()) += val.get_string();
+                }
+                else {
+                    throw incompatible_type_error {};
+                }
+                break;
+            }
+            case value_types::array:   { (*(as_array())).push_back(val); break; }
+            case value_types::boolean: { throw bad_operation ("value of type 'boolean' has no '+' operation defined"); break; }
+            default: { throw bad_value_type{}; break; }
+        }
+    }
+
+    void operator-=(const Value& val) const {
+        switch (m_type) {
+            case value_types::none:   { throw bad_operation ("value of type 'none' has no '-=' operation defined"); }
+            case value_types::number: {
+                if (val.m_type != value_types::number) { throw incompatible_type_error {}; }
+                *(as_number()) -= val.get_number();
+                break;
+            }
+            case value_types::string:  { throw bad_operation ("value of type 'string' has no '-=' operation defined"); break; }
+            case value_types::array:   { throw bad_operation ("value of type 'array' has no '-=' operation defined"); break; }
+            case value_types::boolean: { throw bad_operation ("value of type 'boolean' has no '-=' operation defined"); break; }
+            default: { throw bad_value_type{}; break; }
+        }
+    }
+
+    void operator*=(const Value& val) const {
+        switch (m_type) {
+            case value_types::none:   { throw bad_operation ("value of type 'none' has no '*=' operation defined"); }
+            case value_types::number: {
+                if (val.m_type != value_types::number) { throw incompatible_type_error {}; }
+                *(as_number()) *= val.get_number();
+                break;
+            }
+            case value_types::string:  { throw bad_operation ("value of type 'string' has no '*=' operation defined"); break; }
+            case value_types::array:   { throw bad_operation ("value of type 'array' has no '*=' operation defined"); break; }
+            case value_types::boolean: { throw bad_operation ("value of type 'boolean' has no '*=' operation defined"); break; }
+            default: { throw bad_value_type{}; break; }
+        }
+    }
+
+    void operator/=(const Value& val) const {
+        switch (m_type) {
+            case value_types::none:   { throw bad_operation ("value of type 'none' has no '/=' operation defined"); }
+            case value_types::number: {
+                if (val.m_type != value_types::number) { throw incompatible_type_error {}; }
+                *(as_number()) /= val.get_number();
+                break;
+            }
+            case value_types::string:  { throw bad_operation ("value of type 'string' has no '/=' operation defined"); break; }
+            case value_types::array:   { throw bad_operation ("value of type 'array' has no '/=' operation defined"); break; }
+            case value_types::boolean: { throw bad_operation ("value of type 'boolean' has no '/=' operation defined"); break; }
+            default: { throw bad_value_type{}; break; }
+        }
+    }
 };
 
 } /* namespace mlang */
