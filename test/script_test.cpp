@@ -141,7 +141,7 @@ TEST(ScriptTest, Test8) {
     script_text += "number c; \n";
     script_text += "a = 5; \n";
     script_text += "b = a + 2; \n";
-    script_text += "c = 3 * ( a + 2 ) - ( b - 2 ); \n";
+    script_text += "c = 3 * ( a + 2 ) - ( b - 2 );";
     mlang::Script script { script_text };
     mlang::Environment env {};
     script.execute(env);
@@ -159,8 +159,9 @@ TEST(ScriptTest, Test8) {
     script_text.clear();
     script_text += "a -= 3; \n";
     script_text += "b *= a; \n";
-    script_text += "c /= b * 2 - 10 * a; \n";
+    script_text += "c /= b * 2 - 10 * a;";
     mlang::Script script2 { script_text };
+    env.jump(0);
     script2.execute(env);
 
     ASSERT_EQ(env.has_variable("a"), true);

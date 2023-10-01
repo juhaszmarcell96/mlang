@@ -461,18 +461,25 @@ public:
     const std::vector<Token>& get_tokens () const { return m_tokens; }
 
     void execute(Environment& env) {
-        std::vector<Token*> tokens;
+        std::vector<std::vector<Token*>> lines;
+        std::vector<Token*> current_line;
+        std::size_t line_index { 0 };
         for (std::size_t index = 0; index < m_tokens.size(); ++index) {
             if (m_tokens[index].type != token_types::semicolon) {
-                tokens.push_back(&(m_tokens[index]));
+                current_line.push_back(&(m_tokens[index]));
             }
             else {
-                Parser parser { tokens };
-                node_ptr root = parser.parse();
-                Value ret_val {};
-                root->execute(env, ret_val);
-                tokens.clear();
+                lines.push_back(current_line);
+                current_line.clear();
             }
+        }
+        while (true) {
+            Parser parser { lines[env.get_pc()] };
+            node_ptr root = parser.parse();
+            Value ret_val {};
+            root->execute(env, ret_val);
+            env.step();
+            if (env.get_pc() >= lines.size()) break;
         }
     }
 };

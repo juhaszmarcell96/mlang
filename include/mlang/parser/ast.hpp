@@ -23,7 +23,8 @@ enum class ast_node_types {
     add_equal,
     sub_equal,
     div_equal,
-    mul_equal
+    mul_equal,
+    if_statement
 };
 
 class Node {
@@ -263,5 +264,28 @@ public:
         return_val = *m_val;
     }
 };
+
+/*
+class IfNode : public Node {
+private:
+    node_ptr m_condition;
+    std::size_t m_pc;
+public:
+    IfNode(node_ptr right, std::size_t program_counter) : Node(ast_node_types::if_statement), m_var_name(var_name), m_right(std::move(right)) {}
+    ~IfNode () = default;
+    const std::string& get_var_name () const { return m_var_name; }
+    const Node* const get_right () const { return m_right.get(); }
+    void execute (Environment& env, Value& return_val) override {
+        if (!env.has_variable(m_var_name)) {
+            throw undefined_var_error{m_var_name};
+        }
+        Value rhs {};
+        m_right->execute(env, rhs);
+        Value* m_val = env.get_variable(m_var_name);
+        *m_val /= rhs;
+        return_val = *m_val;
+    }
+};
+*/
 
 } /* namespace mlang */

@@ -13,12 +13,14 @@ class Environment {
 private:
     std::map<std::string, std::shared_ptr<Value>> m_variables;
     //std::map<std::string, std::shared_ptr<Function>> m_functions;
+    std::size_t m_program_counter { 0 };
 public:
     Environment () = default;
     ~Environment () = default;
 
     void reset () {
         m_variables.clear();
+        m_program_counter = 0;
     }
 
     bool has_variable (const std::string& variable_name) const {
@@ -38,6 +40,10 @@ public:
         }
         return m_variables[variable_name].get();
     }
+
+    void step () { ++m_program_counter; }
+    void jump (std::size_t pc) { m_program_counter = pc; }
+    std::size_t get_pc () const { return m_program_counter; }
 };
 
 } /* namespace mlang */
