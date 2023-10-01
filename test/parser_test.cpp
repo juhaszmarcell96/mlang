@@ -3,9 +3,9 @@
 #include <string>
 #include <vector>
 
-#include "mlang/tokenizer.hpp"
+#include "mlang/tokenizer/tokenizer.hpp"
 #include "mlang/token.hpp"
-#include "mlang/parser.hpp"
+#include "mlang/parser/parser.hpp"
 #include "mlang/value.hpp"
 #include "mlang/environment.hpp"
 

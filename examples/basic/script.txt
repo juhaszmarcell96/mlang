@@ -1,15 +1,3 @@
-2 + 3 - 4 * ( 8 + 9 ) / 2;
-number i;
-number e;
-i = 1;
-++i;
-e = i * 3;
-i -= e * 2;
-string str;
-str = "asd";
-
-
-
 number num;
 num = 2 + 3 - 4 * ( 8 + 9 ) / 2;
 print(num);
@@ -27,7 +15,8 @@ function sum takes (number, number) returns number;
 
 endfunction;
 
-
+string str;
+str = "asd";
 
 
 string filename;

@@ -5,12 +5,12 @@
 #include <map>
 #include <memory>
 
-#include "tokenizer.hpp"
-#include "exception.hpp"
-#include "value.hpp"
-#include "token.hpp"
-#include "parser.hpp"
-#include "environment.hpp"
+#include "tokenizer/tokenizer.hpp"
+#include "mlang/exception.hpp"
+#include "mlang/value.hpp"
+#include "mlang/token.hpp"
+#include "mlang/parser/parser.hpp"
+#include "mlang/environment.hpp"
 
 namespace mlang {
 
@@ -460,7 +460,7 @@ public:
     
     const std::vector<Token>& get_tokens () const { return m_tokens; }
 
-    void execute(Environment env) {
+    void execute(Environment& env) {
         std::vector<Token*> tokens;
         for (std::size_t index = 0; index < m_tokens.size(); ++index) {
             if (m_tokens[index].type != token_types::semicolon) {

@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "mlang/ast.hpp"
+#include "mlang/parser/ast.hpp"
 
 TEST(ASTTest, Test0) {
     mlang::Environment env {};

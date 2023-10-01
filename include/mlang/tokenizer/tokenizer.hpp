@@ -3,8 +3,8 @@
 #include <string>
 #include <vector>
 
-#include "code.hpp"
-#include "exception.hpp"
+#include "mlang/code.hpp"
+#include "mlang/exception.hpp"
 
 namespace mlang {
 namespace tokenizer {

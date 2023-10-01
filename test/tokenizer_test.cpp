@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "mlang/tokenizer.hpp"
+#include "mlang/tokenizer/tokenizer.hpp"
 
 TEST(TokenizerTest, Test0) {
     std::string script = "number a = 5;";

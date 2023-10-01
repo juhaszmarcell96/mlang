@@ -3,10 +3,10 @@
 #include <vector>
 #include <iostream>
 
-#include "value.hpp"
-#include "environment.hpp"
-#include "token.hpp"
-#include "exception.hpp"
+#include "mlang/value.hpp"
+#include "mlang/environment.hpp"
+#include "mlang/token.hpp"
+#include "mlang/exception.hpp"
 
 namespace mlang {
 

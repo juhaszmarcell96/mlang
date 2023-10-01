@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#include "exception.hpp"
+#include "mlang/exception.hpp"
 
 namespace mlang {
 
@@ -46,6 +46,7 @@ typedef bool Boolean;
 typedef std::string String;
 typedef std::vector<Value> Array;
 
+/* TODO : use std::variant */
 class Value {
 private:
     value_types m_type = value_types::none;

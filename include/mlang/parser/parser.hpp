@@ -2,10 +2,11 @@
 
 #include <vector>
 
-#include "token.hpp"
-#include "environment.hpp"
-#include "value.hpp"
-#include "ast.hpp"
+#include "mlang/token.hpp"
+#include "mlang/environment.hpp"
+#include "mlang/value.hpp"
+#include "mlang/exception.hpp"
+#include "mlang/parser/ast.hpp"
 
 namespace mlang {
 
@@ -47,7 +48,7 @@ private:
                     //    return function_call();
                     //}
                     default: {
-                        /* TODO : error */ std::cout << "ERROR" << std::endl; exit(1);
+                        throw syntax_error{ "unexpected token", curr()->line, curr()->pos};
                         break;
                     }
                 }
@@ -72,19 +73,19 @@ private:
             default : { throw bad_type_error {}; break; }
         }
         next();
-        if (done()) { /* TODO : error */ std::cout << "ERROR" << std::endl; exit(1); }
-        if (curr()->type != token_types::identifier) { /* TODO : error */ std::cout << "ERROR" << std::endl; exit(1); }
+        if (done()) { throw syntax_error{ "did not find variable name", curr()->line, curr()->pos}; }
+        if (curr()->type != token_types::identifier) { throw syntax_error{ "variable name must be an identifier", curr()->line, curr()->pos}; }
         std::string variable_name = curr()->value_str;
         next();
-        if (!done()) { /* TODO : error */ std::cout << "ERROR" << std::endl; exit(1); }
+        if (!done()) { throw syntax_error{ "declaration must be closed with ';'", curr()->line, curr()->pos}; }
         return std::make_unique<DeclarationOperationNode>(variable_type, variable_name);
     }
 
     node_ptr assignment() {
         std::string variable_name = curr()->value_str;
         next();
-        if (done()) { /* TODO : error */ std::cout << "ERROR" << std::endl; exit(1); }
-        if (curr()->type != token_types::equal_sign) { /* TODO : error */ std::cout << "ERROR" << std::endl; exit(1); }
+        if (done()) { throw syntax_error{ "assignment too shot", curr()->line, curr()->pos}; }
+        if (curr()->type != token_types::equal_sign) { throw syntax_error{ "did not find variable name", curr()->line, curr()->pos}; }
         next();
         node_ptr rhs = expression();
         return std::make_unique<AssignmentOperationNode>(variable_name, std::move(rhs));
@@ -148,8 +149,7 @@ private:
             next();
             return expr;
         }
-        /* TODO : error */ std::cout << "ERROR" << std::endl; exit(1);
-        // error: unexpected token
+        throw syntax_error{ "unexpected primary token", curr()->line, curr()->pos};
         return nullptr;
     }
 public:

@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "mlang/tokenizer.hpp"
+#include "mlang/tokenizer/tokenizer.hpp"
 #include "mlang/script.hpp"
 #include "mlang/environment.hpp"
 
@@ -92,11 +92,45 @@ TEST(ScriptTest, Test4) {
     ASSERT_EQ(tokens[4].type, mlang::token_types::semicolon);
 }
 
-//TEST(ScriptTest, Test5) {
-//    std::string script_text = "number num;";
-//    mlang::Script script { script_text };
-//    mlang::Environment env {};
-//    script.execute(env);
-//
-//    ASSERT_EQ(env.has_variable("num"), true);
-//}
+TEST(ScriptTest, Test5) {
+    std::string script_text = "number num;";
+    mlang::Script script { script_text };
+    mlang::Environment env {};
+    script.execute(env);
+
+    ASSERT_EQ(env.has_variable("num"), true);
+    ASSERT_EQ(env.get_variable("num")->get_type(), mlang::value_types::number);
+    ASSERT_EQ(env.get_variable("num")->get_number(), 0);
+}
+
+TEST(ScriptTest, Test6) {
+    std::string script_text = "number n; string s; bool b; array a;";
+    mlang::Script script { script_text };
+    mlang::Environment env {};
+    script.execute(env);
+
+    ASSERT_EQ(env.has_variable("n"), true);
+    ASSERT_EQ(env.get_variable("n")->get_type(), mlang::value_types::number);
+    ASSERT_EQ(env.get_variable("n")->get_number(), 0);
+    ASSERT_EQ(env.has_variable("s"), true);
+    ASSERT_EQ(env.get_variable("s")->get_type(), mlang::value_types::string);
+    ASSERT_EQ(env.get_variable("s")->get_string(), "");
+    ASSERT_EQ(env.has_variable("b"), true);
+    ASSERT_EQ(env.get_variable("b")->get_type(), mlang::value_types::boolean);
+    ASSERT_EQ(env.get_variable("b")->get_boolean(), false);
+    ASSERT_EQ(env.has_variable("a"), true);
+    ASSERT_EQ(env.get_variable("a")->get_type(), mlang::value_types::array);
+}
+/*
+TEST(ScriptTest, Test7) {
+    std::string script_text = "number n; \n";
+    script_text += "number = 5;";
+    mlang::Script script { script_text };
+    mlang::Environment env {};
+    script.execute(env);
+
+    ASSERT_EQ(env.has_variable("n"), true);
+    ASSERT_EQ(env.get_variable("n")->get_type(), mlang::value_types::number);
+    ASSERT_EQ(env.get_variable("n")->get_number(), 5);
+}
+*/
