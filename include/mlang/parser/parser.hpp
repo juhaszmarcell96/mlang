@@ -8,6 +8,14 @@
 #include "mlang/exception.hpp"
 #include "mlang/parser/ast.hpp"
 
+#define TRACE_PARSER 0
+
+#if TRACE_PARSER == 1
+#include <iostream>
+#endif
+
+
+
 namespace mlang {
 
 typedef std::vector<Token*> tokens_vec;
@@ -27,6 +35,12 @@ private:
         return nullptr;
     }
     const Token* curr() const { return m_tokens[m_index]; }
+
+    void trace (const std::string& str) const {
+        #if TRACE_PARSER == 1
+        std::cout << str << std::endl;
+        #endif
+    }
 
     node_ptr expression() {
         /* the highest level parsing function calls the function for the lowest precedence operation */
@@ -48,8 +62,7 @@ private:
                     //    return function_call();
                     //}
                     default: {
-                        throw syntax_error{ "unexpected token", curr()->line, curr()->pos};
-                        break;
+                        return add_sub();
                     }
                 }
                 break;
@@ -64,6 +77,7 @@ private:
     }
 
     node_ptr declaration() {
+        trace("declaration");
         value_types variable_type;
         switch (curr()->type) {
             case token_types::kw_array  : { variable_type = value_types::array; break; }
@@ -82,6 +96,7 @@ private:
     }
 
     node_ptr assignment() {
+        trace("assignment");
         std::string variable_name = curr()->value_str;
         next();
         if (done()) { throw syntax_error{ "assignment too shot", curr()->line, curr()->pos}; }
@@ -92,6 +107,7 @@ private:
     }
 
     node_ptr add_sub() {
+        trace("add_sub");
         /* withing an addition, we can have a multiplication */
         node_ptr expr = mul_div();
         if (done()) return expr;
@@ -111,6 +127,7 @@ private:
     }
 
     node_ptr mul_div() {
+        trace("mul_div");
         node_ptr expr = unary();
         if (done()) return expr;
         while (curr()->type == token_types::asterisk || curr()->type == token_types::slash) {
@@ -129,12 +146,14 @@ private:
     }
 
     node_ptr unary() {
+        trace("unary");
         // for now, let's just return a primary.
         /* TODO : implement ++ and -- */
         return primary();
     }
 
     node_ptr primary() {
+        trace("primary");
         if (curr()->type == token_types::number) {
             double current_value = curr()->value_num;
             next();
@@ -148,6 +167,11 @@ private:
             }
             next();
             return expr;
+        }
+        if (curr()->type == token_types::identifier) {
+            std::string current_str = curr()->value_str;
+            next();
+            return std::make_unique<VariableNode>(current_str);
         }
         throw syntax_error{ "unexpected primary token", curr()->line, curr()->pos};
         return nullptr;
