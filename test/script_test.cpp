@@ -174,3 +174,30 @@ TEST(ScriptTest, Test8) {
     ASSERT_EQ(env.get_variable("c")->get_type(), mlang::value_types::number);
     ASSERT_EQ(env.get_variable("c")->get_number(), 2);
 }
+
+TEST(ScriptTest, Test9) {
+    std::string script_text;
+    script_text += "number a; \n";
+    script_text += "number b; \n";
+    script_text += "number c; \n";
+    script_text += "a = 5; \n";
+    script_text += "if a == 5; \n";
+    script_text += "    b = 10; \n";
+    script_text += "endif; \n";
+    script_text += "if a == 4; \n";
+    script_text += "    c = 3; \n";
+    script_text += "endif; \n";
+    mlang::Script script { script_text };
+    mlang::Environment env {};
+    script.execute(env);
+
+    ASSERT_EQ(env.has_variable("a"), true);
+    ASSERT_EQ(env.get_variable("a")->get_type(), mlang::value_types::number);
+    ASSERT_EQ(env.get_variable("a")->get_number(), 5);
+    ASSERT_EQ(env.has_variable("b"), true);
+    ASSERT_EQ(env.get_variable("b")->get_type(), mlang::value_types::number);
+    ASSERT_EQ(env.get_variable("b")->get_number(), 10);
+    ASSERT_EQ(env.has_variable("c"), true);
+    ASSERT_EQ(env.get_variable("c")->get_type(), mlang::value_types::number);
+    ASSERT_EQ(env.get_variable("c")->get_number(), 0);
+}

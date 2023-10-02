@@ -12,6 +12,12 @@
 #include "mlang/parser/parser.hpp"
 #include "mlang/environment.hpp"
 
+#define DEBUG_SCRIPT 0
+
+#if DEBUG_SCRIPT == 1
+#include <iostream>
+#endif
+
 namespace mlang {
 
 class Script {
@@ -460,27 +466,13 @@ public:
     
     const std::vector<Token>& get_tokens () const { return m_tokens; }
 
-    void execute(Environment& env) {
-        std::vector<std::vector<Token*>> lines;
-        std::vector<Token*> current_line;
-        std::size_t line_index { 0 };
-        for (std::size_t index = 0; index < m_tokens.size(); ++index) {
-            if (m_tokens[index].type != token_types::semicolon) {
-                current_line.push_back(&(m_tokens[index]));
-            }
-            else {
-                lines.push_back(current_line);
-                current_line.clear();
-            }
-        }
-        while (true) {
-            Parser parser { lines[env.get_pc()] };
-            node_ptr root = parser.parse();
-            Value ret_val {};
-            root->execute(env, ret_val);
-            env.step();
-            if (env.get_pc() >= lines.size()) break;
-        }
+    void execute (Environment& env) {
+        Parser parser {};
+        node_ptr root = parser.parse( m_tokens );
+        Value ret_val {};
+        root->execute(env, ret_val);
+        //env.step();
+        //if (env.get_pc() >= lines.size()) break;
     }
 };
 

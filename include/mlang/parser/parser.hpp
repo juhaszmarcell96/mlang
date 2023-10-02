@@ -18,11 +18,12 @@
 
 namespace mlang {
 
-typedef std::vector<Token*> tokens_vec;
+typedef std::vector<const Token*> tokens_vec;
 
 class Parser {
 private:
-    const tokens_vec& m_tokens;
+    tokens_vec m_tokens;
+    Node* m_current_scope { nullptr };
 
     std::size_t m_index { 0 };
 
@@ -48,6 +49,8 @@ private:
     }
 
     node_ptr expression() {
+        trace("expression");
+        trace("index = " + std::to_string(m_index));
         /* the highest level parsing function calls the function for the lowest precedence operation */
         token_types current_type = curr()->type;
         switch (current_type) {
@@ -56,6 +59,15 @@ private:
             case token_types::kw_array:
             case token_types::kw_bool: {
                 return declaration();
+            }
+            case token_types::kw_if: {
+                return if_statement();
+            }
+            case token_types::kw_endif: {
+                return endif_statement();
+            }
+            case token_types::round_bracket_open: {
+                return primary();
             }
             case token_types::identifier: {
                 if (!peekable()) return primary();
@@ -76,6 +88,9 @@ private:
                     case token_types::asterisk_equal: {
                         return mul_equal();
                     }
+                    case token_types::double_equal: {
+                        return equality_check();
+                    }
                     //case token_types::round_bracket_open: {
                     //    return function_call();
                     //}
@@ -92,6 +107,31 @@ private:
                 return nullptr;
             }
         }
+    }
+
+    node_ptr equality_check () {
+        trace("equality_check");
+        node_ptr lhs = add_sub(); // left-hand side of the equality
+        if (done() || curr()->type != token_types::double_equal) return lhs; // not an equality check
+        next();
+        node_ptr rhs = add_sub(); // right-hand side of the equality
+        return std::make_unique<BinaryEqualityOperationNode>(std::move(lhs), std::move(rhs));
+    }
+
+    node_ptr if_statement () {
+        trace("if_statement");
+        next();
+        if (done()) { throw syntax_error{ "condition not found for 'if'", curr()->line, curr()->pos}; }
+        node_ptr condition = expression();
+        std::unique_ptr<IfStatementNode> node_ptr = std::make_unique<IfStatementNode>(std::move(condition), m_current_scope);
+        m_current_scope = node_ptr.get();
+        return node_ptr;
+    }
+
+    node_ptr endif_statement () {
+        trace("endif_statement");
+        m_current_scope = m_current_scope->get_parent();
+        return std::make_unique<EndifStatementNode>();
     }
 
     node_ptr add_equal () {
@@ -224,8 +264,8 @@ private:
         if (curr()->type == token_types::round_bracket_open) {
             next();
             node_ptr expr = expression();
-            if (curr()->type != token_types::round_bracket_open) {
-                // error: unmatched parentheses
+            if (curr()->type != token_types::round_bracket_close) {
+                throw syntax_error{ "unmatched parentheses", curr()->line, curr()->pos};
             }
             next();
             return expr;
@@ -239,16 +279,23 @@ private:
         return nullptr;
     }
 public:
-    Parser() = delete;
-    explicit Parser (const tokens_vec& tokens) : m_tokens(tokens) {}
+    Parser () = default;
+    ~Parser () = default;
 
-    node_ptr parse() {
-        m_index = 0;
-        //std::cout << "parsing : " << std::endl;
-        //for (const Token* token : m_tokens) {
-        //    std::cout << token->get_for_print() << std::endl;
-        //}
-        return expression();
+    node_ptr parse (const std::vector<Token>& tokens) {
+        node_ptr main_node = std::make_unique<MainNode>();
+        m_current_scope = main_node.get();
+        for (std::size_t i = 0; i < tokens.size(); ++i) {
+            if (tokens[i].type != token_types::semicolon) {
+                m_tokens.push_back(&(tokens[i]));
+            }
+            else {
+                m_current_scope->add_node(expression());
+                m_tokens.clear();
+                m_index = 0;
+            }
+        }
+        return main_node;
     }
 };
 

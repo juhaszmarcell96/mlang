@@ -473,6 +473,17 @@ public:
             default: { throw bad_value_type{}; break; }
         }
     }
+
+    explicit operator bool() {
+        switch (m_type) {
+            case value_types::none:    { throw bad_operation ("value of type 'none' has no 'bool' operation defined"); }
+            case value_types::number:  { return get_number() != 0; }
+            case value_types::string:  { throw bad_operation ("value of type 'string' has no '/=' operation defined"); break; }
+            case value_types::array:   { throw bad_operation ("value of type 'array' has no '/=' operation defined"); break; }
+            case value_types::boolean: { return get_boolean(); }
+            default: { throw bad_value_type{}; break; }
+        }
+    }
 };
 
 } /* namespace mlang */
