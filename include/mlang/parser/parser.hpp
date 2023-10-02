@@ -91,6 +91,9 @@ private:
                     case token_types::double_equal: {
                         return equality_check();
                     }
+                    case token_types::exclamation_equal: {
+                        return inequality_check();
+                    }
                     //case token_types::round_bracket_open: {
                     //    return function_call();
                     //}
@@ -116,6 +119,15 @@ private:
         next();
         node_ptr rhs = add_sub(); // right-hand side of the equality
         return std::make_unique<BinaryEqualityOperationNode>(std::move(lhs), std::move(rhs));
+    }
+
+    node_ptr inequality_check () {
+        trace("inequality_check");
+        node_ptr lhs = add_sub(); // left-hand side of the equality
+        if (done() || curr()->type != token_types::exclamation_equal) return lhs; // not an inequality check
+        next();
+        node_ptr rhs = add_sub(); // right-hand side of the equality
+        return std::make_unique<BinaryInequalityOperationNode>(std::move(lhs), std::move(rhs));
     }
 
     node_ptr if_statement () {

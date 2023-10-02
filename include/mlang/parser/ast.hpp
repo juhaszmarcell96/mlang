@@ -26,7 +26,9 @@ enum class ast_node_types {
     div_equal,
     mul_equal,
     if_statement,
-    endif_statement
+    endif_statement,
+    equality,
+    inequality
 };
 
 class Node {
@@ -420,7 +422,7 @@ private:
     node_ptr m_left;
     node_ptr m_right;
 public:
-    BinaryEqualityOperationNode(node_ptr left, node_ptr right) : Node(ast_node_types::binary_add), m_left(std::move(left)), m_right(std::move(right)) {}
+    BinaryEqualityOperationNode(node_ptr left, node_ptr right) : Node(ast_node_types::equality), m_left(std::move(left)), m_right(std::move(right)) {}
     ~BinaryEqualityOperationNode () = default;
     const Node* const get_left () const { return m_left.get(); }
     const Node* const get_right () const { return m_right.get(); }
@@ -436,6 +438,31 @@ public:
     }
     Node* get_parent () override {
         throw unexpected_error{"a node of type 'BinaryEqualityOperationNode' has no parent"};
+        return nullptr;
+    }
+};
+
+class BinaryInequalityOperationNode : public Node {
+private:
+    node_ptr m_left;
+    node_ptr m_right;
+public:
+    BinaryInequalityOperationNode(node_ptr left, node_ptr right) : Node(ast_node_types::inequality), m_left(std::move(left)), m_right(std::move(right)) {}
+    ~BinaryInequalityOperationNode () = default;
+    const Node* const get_left () const { return m_left.get(); }
+    const Node* const get_right () const { return m_right.get(); }
+    void execute (Environment& env, Value& return_val) override {
+        Value lhs {};
+        Value rhs {};
+        m_left->execute(env, lhs);
+        m_right->execute(env, rhs);
+        return_val = Value{ lhs == rhs };
+    }
+    void add_node (node_ptr node) override {
+        throw unexpected_error{"cannot add nodes to a node of type 'BinaryInequalityOperationNode'"};
+    }
+    Node* get_parent () override {
+        throw unexpected_error{"a node of type 'BinaryInequalityOperationNode' has no parent"};
         return nullptr;
     }
 };
