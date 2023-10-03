@@ -44,8 +44,13 @@ public:
     Node (ast_node_types type) : m_type(type) {}
     virtual ~Node () = default;
     virtual void execute (Environment& env, Value& return_val) = 0;
-    virtual void add_node (std::unique_ptr<Node> node) = 0;
-    virtual Node* get_parent () = 0;
+    virtual void add_node (std::unique_ptr<Node> node) {
+        throw unexpected_error{"cannot add nodes this node"};
+    }
+    virtual Node* get_parent () {
+        throw unexpected_error{"this node has no parent"};
+        return nullptr;
+    }
 
     ast_node_types get_type () const { return m_type; }
 };
@@ -61,13 +66,6 @@ public:
     const Value& get_value () const { return m_value; }
     void execute (Environment& env, Value& return_val) override {
         return_val = m_value;
-    }
-    void add_node (node_ptr node) override {
-        throw unexpected_error{"cannot add nodes to a node of type 'ValueNode'"};
-    }
-    Node* get_parent () override {
-        throw unexpected_error{"a node of type 'ValueNode' has no parent"};
-        return nullptr;
     }
 };
 
@@ -85,24 +83,23 @@ public:
         Value* m_val = env.get_variable(m_var_name);
         return_val = *m_val;
     }
-    void add_node (node_ptr node) override {
-        throw unexpected_error{"cannot add nodes to a node of type 'VariableNode'"};
-    }
-    Node* get_parent () override {
-        throw unexpected_error{"a node of type 'VariableNode' has no parent"};
-        return nullptr;
-    }
 };
 
-class BinaryAddOperationNode : public Node {
-private:
+class BinaryOperationNodeBase : public Node {
+protected:
     node_ptr m_left;
     node_ptr m_right;
 public:
-    BinaryAddOperationNode(node_ptr left, node_ptr right) : Node(ast_node_types::binary_add), m_left(std::move(left)), m_right(std::move(right)) {}
-    ~BinaryAddOperationNode () = default;
+    BinaryOperationNodeBase(ast_node_types type, node_ptr left, node_ptr right) : Node(type), m_left(std::move(left)), m_right(std::move(right)) {}
+    virtual ~BinaryOperationNodeBase () = default;
     const Node* const get_left () const { return m_left.get(); }
     const Node* const get_right () const { return m_right.get(); }
+};
+
+class BinaryAddOperationNode : public BinaryOperationNodeBase {
+public:
+    BinaryAddOperationNode(node_ptr left, node_ptr right) : BinaryOperationNodeBase(ast_node_types::binary_add, std::move(left), std::move(right)) {}
+    ~BinaryAddOperationNode () = default;
     void execute (Environment& env, Value& return_val) override {
         Value lhs {};
         Value rhs {};
@@ -110,24 +107,12 @@ public:
         m_right->execute(env, rhs);
         return_val = lhs + rhs;
     }
-    void add_node (node_ptr node) override {
-        throw unexpected_error{"cannot add nodes to a node of type 'BinaryAddOperationNode'"};
-    }
-    Node* get_parent () override {
-        throw unexpected_error{"a node of type 'BinaryAddOperationNode' has no parent"};
-        return nullptr;
-    }
 };
 
-class BinarySubOperationNode : public Node {
-private:
-    node_ptr m_left;
-    node_ptr m_right;
+class BinarySubOperationNode : public BinaryOperationNodeBase {
 public:
-    BinarySubOperationNode(node_ptr left, node_ptr right) : Node(ast_node_types::binary_sub), m_left(std::move(left)), m_right(std::move(right)) {}
+    BinarySubOperationNode(node_ptr left, node_ptr right) : BinaryOperationNodeBase(ast_node_types::binary_sub, std::move(left), std::move(right)) {}
     ~BinarySubOperationNode () = default;
-    const Node* const get_left () const { return m_left.get(); }
-    const Node* const get_right () const { return m_right.get(); }
     void execute (Environment& env, Value& return_val) override {
         Value lhs {};
         Value rhs {};
@@ -135,24 +120,12 @@ public:
         m_right->execute(env, rhs);
         return_val = lhs - rhs;
     }
-    void add_node (node_ptr node) override {
-        throw unexpected_error{"cannot add nodes to a node of type 'BinarySubOperationNode'"};
-    }
-    Node* get_parent () override {
-        throw unexpected_error{"a node of type 'BinarySubOperationNode' has no parent"};
-        return nullptr;
-    }
 };
 
-class BinaryMulOperationNode : public Node {
-private:
-    node_ptr m_left;
-    node_ptr m_right;
+class BinaryMulOperationNode : public BinaryOperationNodeBase {
 public:
-    BinaryMulOperationNode(node_ptr left, node_ptr right) : Node(ast_node_types::binary_mul), m_left(std::move(left)), m_right(std::move(right)) {}
+    BinaryMulOperationNode(node_ptr left, node_ptr right) : BinaryOperationNodeBase(ast_node_types::binary_mul, std::move(left), std::move(right)) {}
     ~BinaryMulOperationNode () = default;
-    const Node* const get_left () const { return m_left.get(); }
-    const Node* const get_right () const { return m_right.get(); }
     void execute (Environment& env, Value& return_val) override {
         Value lhs {};
         Value rhs {};
@@ -160,37 +133,18 @@ public:
         m_right->execute(env, rhs);
         return_val = lhs * rhs;
     }
-    void add_node (node_ptr node) override {
-        throw unexpected_error{"cannot add nodes to a node of type 'BinaryMulOperationNode'"};
-    }
-    Node* get_parent () override {
-        throw unexpected_error{"a node of type 'BinaryMulOperationNode' has no parent"};
-        return nullptr;
-    }
 };
 
-class BinaryDivOperationNode : public Node {
-private:
-    node_ptr m_left;
-    node_ptr m_right;
+class BinaryDivOperationNode : public BinaryOperationNodeBase {
 public:
-    BinaryDivOperationNode(node_ptr left, node_ptr right) : Node(ast_node_types::binary_div), m_left(std::move(left)), m_right(std::move(right)) {}
+    BinaryDivOperationNode(node_ptr left, node_ptr right) : BinaryOperationNodeBase(ast_node_types::binary_div, std::move(left), std::move(right)) {}
     ~BinaryDivOperationNode () = default;
-    const Node* const get_left () const { return m_left.get(); }
-    const Node* const get_right () const { return m_right.get(); }
     void execute (Environment& env, Value& return_val) override {
         Value lhs {};
         Value rhs {};
         m_left->execute(env, lhs);
         m_right->execute(env, rhs);
         return_val = lhs / rhs;
-    }
-    void add_node (node_ptr node) override {
-        throw unexpected_error{"cannot add nodes to a node of type 'BinaryDivOperationNode'"};
-    }
-    Node* get_parent () override {
-        throw unexpected_error{"a node of type 'BinaryDivOperationNode' has no parent"};
-        return nullptr;
     }
 };
 
@@ -216,13 +170,6 @@ public:
         *m_val = ret_val;
         return_val = *m_val;
     }
-    void add_node (node_ptr node) override {
-        throw unexpected_error{"cannot add nodes to a node of type 'AssignmentOperationNode'"};
-    }
-    Node* get_parent () override {
-        throw unexpected_error{"a node of type 'AssignmentOperationNode' has no parent"};
-        return nullptr;
-    }
 };
 
 class DeclarationOperationNode : public Node {
@@ -239,13 +186,6 @@ public:
             throw redeclaration_error{m_var_name};
         }
         env.declare_variable(m_var_name, m_var_type);
-    }
-    void add_node (node_ptr node) override {
-        throw unexpected_error{"cannot add nodes to a node of type 'DeclarationOperationNode'"};
-    }
-    Node* get_parent () override {
-        throw unexpected_error{"a node of type 'DeclarationOperationNode' has no parent"};
-        return nullptr;
     }
 };
 
@@ -268,13 +208,6 @@ public:
         *m_val += rhs;
         return_val = *m_val;
     }
-    void add_node (node_ptr node) override {
-        throw unexpected_error{"cannot add nodes to a node of type 'AddEqualOperationNode'"};
-    }
-    Node* get_parent () override {
-        throw unexpected_error{"a node of type 'AddEqualOperationNode' has no parent"};
-        return nullptr;
-    }
 };
 
 class SubEqualOperationNode : public Node {
@@ -295,13 +228,6 @@ public:
         Value* m_val = env.get_variable(m_var_name);
         *m_val -= rhs;
         return_val = *m_val;
-    }
-    void add_node (node_ptr node) override {
-        throw unexpected_error{"cannot add nodes to a node of type 'SubEqualOperationNode'"};
-    }
-    Node* get_parent () override {
-        throw unexpected_error{"a node of type 'SubEqualOperationNode' has no parent"};
-        return nullptr;
     }
 };
 
@@ -324,13 +250,6 @@ public:
         *m_val *= rhs;
         return_val = *m_val;
     }
-    void add_node (node_ptr node) override {
-        throw unexpected_error{"cannot add nodes to a node of type 'MulEqualOperationNode'"};
-    }
-    Node* get_parent () override {
-        throw unexpected_error{"a node of type 'MulEqualOperationNode' has no parent"};
-        return nullptr;
-    }
 };
 
 class DivEqualOperationNode : public Node {
@@ -351,13 +270,6 @@ public:
         Value* m_val = env.get_variable(m_var_name);
         *m_val /= rhs;
         return_val = *m_val;
-    }
-    void add_node (node_ptr node) override {
-        throw unexpected_error{"cannot add nodes to a node of type 'DivEqualOperationNode'"};
-    }
-    Node* get_parent () override {
-        throw unexpected_error{"a node of type 'DivEqualOperationNode' has no parent"};
-        return nullptr;
     }
 };
 
@@ -409,18 +321,11 @@ public:
     }
 };
 
-class EndifStatementNode : public Node {
+class EndStatementNode : public Node {
 public:
-    EndifStatementNode() : Node(ast_node_types::endif_statement) {}
-    ~EndifStatementNode () = default;
+    EndStatementNode() : Node(ast_node_types::endif_statement) {}
+    ~EndStatementNode () = default;
     void execute (Environment& env, Value& return_val) override { }
-    void add_node (node_ptr node) override {
-        throw unexpected_error{"cannot add nodes to a node of type 'EndifStatementNode'"};
-    }
-    Node* get_parent () override {
-        throw unexpected_error{"a node of type 'EndifStatementNode' has no parent"};
-        return nullptr;
-    }
 };
 
 class BinaryEqualityOperationNode : public Node {
@@ -438,13 +343,6 @@ public:
         m_left->execute(env, lhs);
         m_right->execute(env, rhs);
         return_val = Value{ lhs == rhs };
-    }
-    void add_node (node_ptr node) override {
-        throw unexpected_error{"cannot add nodes to a node of type 'BinaryEqualityOperationNode'"};
-    }
-    Node* get_parent () override {
-        throw unexpected_error{"a node of type 'BinaryEqualityOperationNode' has no parent"};
-        return nullptr;
     }
 };
 
@@ -464,13 +362,6 @@ public:
         m_right->execute(env, rhs);
         return_val = Value{ lhs == rhs };
     }
-    void add_node (node_ptr node) override {
-        throw unexpected_error{"cannot add nodes to a node of type 'BinaryInequalityOperationNode'"};
-    }
-    Node* get_parent () override {
-        throw unexpected_error{"a node of type 'BinaryInequalityOperationNode' has no parent"};
-        return nullptr;
-    }
 };
 
 class ComparisonGreaterNode : public Node {
@@ -488,13 +379,6 @@ public:
         m_left->execute(env, lhs);
         m_right->execute(env, rhs);
         return_val = Value{ lhs > rhs };
-    }
-    void add_node (node_ptr node) override {
-        throw unexpected_error{"cannot add nodes to a node of type 'ComparisonGreaterNode'"};
-    }
-    Node* get_parent () override {
-        throw unexpected_error{"a node of type 'ComparisonGreaterNode' has no parent"};
-        return nullptr;
     }
 };
 
@@ -514,13 +398,6 @@ public:
         m_right->execute(env, rhs);
         return_val = Value{ lhs < rhs };
     }
-    void add_node (node_ptr node) override {
-        throw unexpected_error{"cannot add nodes to a node of type 'ComparisonLessNode'"};
-    }
-    Node* get_parent () override {
-        throw unexpected_error{"a node of type 'ComparisonLessNode' has no parent"};
-        return nullptr;
-    }
 };
 
 class ComparisonGreaterEqualNode : public Node {
@@ -538,13 +415,6 @@ public:
         m_left->execute(env, lhs);
         m_right->execute(env, rhs);
         return_val = Value{ lhs >= rhs };
-    }
-    void add_node (node_ptr node) override {
-        throw unexpected_error{"cannot add nodes to a node of type 'ComparisonGreaterEqualNode'"};
-    }
-    Node* get_parent () override {
-        throw unexpected_error{"a node of type 'ComparisonGreaterEqualNode' has no parent"};
-        return nullptr;
     }
 };
 
@@ -564,13 +434,6 @@ public:
         m_right->execute(env, rhs);
         return_val = Value{ lhs <= rhs };
     }
-    void add_node (node_ptr node) override {
-        throw unexpected_error{"cannot add nodes to a node of type 'ComparisonLessEqualNode'"};
-    }
-    Node* get_parent () override {
-        throw unexpected_error{"a node of type 'ComparisonLessEqualNode' has no parent"};
-        return nullptr;
-    }
 };
 
 class UnaryNotOperationNode : public Node {
@@ -585,13 +448,6 @@ public:
         m_right->execute(env, rhs);
         return_val = Value{ !rhs };
     }
-    void add_node (node_ptr node) override {
-        throw unexpected_error{"cannot add nodes to a node of type 'UnaryNotOperationNode'"};
-    }
-    Node* get_parent () override {
-        throw unexpected_error{"a node of type 'UnaryNotOperationNode' has no parent"};
-        return nullptr;
-    }
 };
 
 class UnaryMinusOperationNode : public Node {
@@ -605,13 +461,6 @@ public:
         Value rhs {};
         m_right->execute(env, rhs);
         return_val = Value{ -rhs };
-    }
-    void add_node (node_ptr node) override {
-        throw unexpected_error{"cannot add nodes to a node of type 'UnaryMinusOperationNode'"};
-    }
-    Node* get_parent () override {
-        throw unexpected_error{"a node of type 'UnaryMinusOperationNode' has no parent"};
-        return nullptr;
     }
 };
 

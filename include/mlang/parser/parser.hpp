@@ -185,7 +185,7 @@ private:
             throw unexpected_error{"statement not an if statement"};
         }
         m_current_scope = m_current_scope->get_parent();
-        return std::make_unique<EndifStatementNode>();
+        return std::make_unique<EndStatementNode>();
     }
 
     node_ptr expression () {
