@@ -1,40 +1,6 @@
 number num;
 num = 2 + 3 - 4 * ( 8 + 9 ) / 2;
-print(num);
-num = 0;
-loop;
-    ++num;
-    if (num == 12);
-        print("number is 12");
-    else;
-        print(num);
-    endif;
-endloop;
-
-function sum takes (number, number) returns number;
-
-endfunction;
-
-string str;
-str = "asd";
-
-
-string filename;
-filename = "/lib/systemd/network/10-eth0.network";
-
-if (!File::exists(filename))
-    exit 2;
-endif
-
-string file_text;
-file_text = File::read();
-
-number i;
-i = 0;
-loop ()
-
-    ++i;
-    if (i > String::length(file_text))
-        break;
-    endif
-endloop
+print("%d", num);
+string s;
+s = "the number is : ";
+print("%s%d", s, num);

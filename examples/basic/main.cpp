@@ -7,7 +7,6 @@
 #include "mlang/environment.hpp"
 
 int main(int argc, char* argv[]) {
-    /*
     std::ifstream file { "script.txt" };
     if (!file.is_open()) return 1;
     std::stringstream buffer;
@@ -15,12 +14,6 @@ int main(int argc, char* argv[]) {
     file.close();
 
     mlang::Script script { buffer.str() };
-    mlang::Environment env {};
-    script.execute(env);
-    */
-
-    std::string script_text = "number num;";
-    mlang::Script script { script_text };
     mlang::Environment env {};
     script.execute(env);
 

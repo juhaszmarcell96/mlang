@@ -38,7 +38,8 @@ enum class ast_node_types {
     greater,
     less,
     greater_equal,
-    less_equal
+    less_equal,
+    print
 };
 
 class Node;
@@ -653,6 +654,25 @@ public:
     void print () const override {
         std::cout << "-";
         m_right->print();
+    }
+};
+
+class PrintNode : public Node {
+private:
+    node_ptr m_expr;
+public:
+    PrintNode(node_ptr expr) : Node(ast_node_types::print), m_expr(std::move(expr)) {}
+    ~PrintNode () = default;
+    const Node* const get_expr () const { return m_expr.get(); }
+    void execute (Environment& env, Value& return_val) override {
+        Value result {};
+        m_expr->execute(env, result);
+        std::cout << result.to_string() << std::endl;
+    }
+    void print () const override {
+        std::cout << "print(";
+        m_expr->print();
+        std::cout << ")";
     }
 };
 

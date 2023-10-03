@@ -41,7 +41,8 @@ primary     -> NUMBER | STRING | "true" | "false" | "(" expression ")" | IDENTIF
 
 
 
-statement   -> declaration | expression | assignment | if | for | while | end | elif | else ";"
+statement   -> declaration | expression | assignment | if | for | while | end | elif | else | print ";"
+print       -> "print" "(" expression ")"
 if          -> "if" "(" expression ")"
 elif        -> "elif" "(" expression ")"
 else        -> "else"

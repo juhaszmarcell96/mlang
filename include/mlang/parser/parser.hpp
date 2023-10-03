@@ -93,6 +93,9 @@ private:
                 }
                 break;
             }
+            case token_types::kw_print: {
+                return print_expr();
+            }
             default : {
                 return expression();
             }
@@ -163,6 +166,26 @@ private:
         std::string variable_name = curr()->value_str;
         /* TODO : assignment -> overload declaration constructor */
         return std::make_unique<DeclarationOperationNode>(variable_type, variable_name);
+    }
+
+    node_ptr print_expr () {
+        // print       -> "print" "(" expression ")"
+        trace("print_expr");
+        if (curr()->type != token_types::kw_print) {
+            throw unexpected_error{"statement not a print statement"};
+        }
+        next();
+        if (done()) { throw syntax_error{ "invalid print statement", curr()->line, curr()->pos}; }
+        if (curr()->type != token_types::round_bracket_open) {
+            throw syntax_error{ "missing '(' after 'print'", curr()->line, curr()->pos};
+        }
+        next();
+        if (done()) { throw syntax_error{ "expression not found for 'print'", curr()->line, curr()->pos}; }
+        node_ptr expr = expression();
+        if (curr()->type != token_types::round_bracket_close) {
+            throw syntax_error{ "unmatched parentheses", curr()->line, curr()->pos};
+        }
+        return std::make_unique<PrintNode>(std::move(expr));
     }
 
     node_ptr if_statement () {
