@@ -470,6 +470,7 @@ public:
         Parser parser {};
         node_ptr root = parser.parse( m_tokens );
         Value ret_val {};
+        //root->print();
         root->execute(env, ret_val);
         //env.step();
         //if (env.get_pc() >= lines.size()) break;

@@ -10,6 +10,10 @@
 
 namespace mlang {
 
+namespace ast {
+
+} /* namespace ast */
+
 enum class ast_node_types {
     none,
     main,
@@ -37,6 +41,10 @@ enum class ast_node_types {
     less_equal
 };
 
+class Node;
+
+typedef std::unique_ptr<Node> node_ptr;
+
 class Node {
 private:
     ast_node_types m_type { ast_node_types::none };
@@ -44,18 +52,23 @@ public:
     Node (ast_node_types type) : m_type(type) {}
     virtual ~Node () = default;
     virtual void execute (Environment& env, Value& return_val) = 0;
-    virtual void add_node (std::unique_ptr<Node> node) {
+    virtual void add_node (node_ptr node) {
         throw unexpected_error{"cannot add nodes this node"};
     }
     virtual Node* get_parent () {
         throw unexpected_error{"this node has no parent"};
         return nullptr;
     }
+    virtual void add_elif (node_ptr condition) {
+        throw unexpected_error{"unexpected elif"};
+    }
+    virtual void add_else () {
+        throw unexpected_error{"unexpected else"};
+    }
+    virtual void print () const = 0;
 
     ast_node_types get_type () const { return m_type; }
 };
-
-typedef std::unique_ptr<Node> node_ptr;
 
 class ValueNode : public Node {
 private:
@@ -67,6 +80,7 @@ public:
     void execute (Environment& env, Value& return_val) override {
         return_val = m_value;
     }
+    void print () const override { std::cout << m_value.to_string(); }
 };
 
 class VariableNode : public Node {
@@ -83,6 +97,7 @@ public:
         Value* m_val = env.get_variable(m_var_name);
         return_val = *m_val;
     }
+    void print () const override { std::cout << "var:" << m_var_name; }
 };
 
 class BinaryOperationNodeBase : public Node {
@@ -107,6 +122,13 @@ public:
         m_right->execute(env, rhs);
         return_val = lhs + rhs;
     }
+    void print () const override {
+        std::cout << "( ";
+        m_left->print();
+        std::cout << " + ";
+        m_right->print();
+        std::cout << " )";
+    }
 };
 
 class BinarySubOperationNode : public BinaryOperationNodeBase {
@@ -119,6 +141,13 @@ public:
         m_left->execute(env, lhs);
         m_right->execute(env, rhs);
         return_val = lhs - rhs;
+    }
+    void print () const override {
+        std::cout << "( ";
+        m_left->print();
+        std::cout << " - ";
+        m_right->print();
+        std::cout << " )";
     }
 };
 
@@ -133,6 +162,13 @@ public:
         m_right->execute(env, rhs);
         return_val = lhs * rhs;
     }
+    void print () const override {
+        std::cout << "( ";
+        m_left->print();
+        std::cout << " * ";
+        m_right->print();
+        std::cout << " )";
+    }
 };
 
 class BinaryDivOperationNode : public BinaryOperationNodeBase {
@@ -145,6 +181,13 @@ public:
         m_left->execute(env, lhs);
         m_right->execute(env, rhs);
         return_val = lhs / rhs;
+    }
+    void print () const override {
+        std::cout << "( ";
+        m_left->print();
+        std::cout << " / ";
+        m_right->print();
+        std::cout << " )";
     }
 };
 
@@ -170,6 +213,10 @@ public:
         *m_val = ret_val;
         return_val = *m_val;
     }
+    void print () const override {
+        std::cout << m_var_name << "=";
+        m_right->print();
+    }
 };
 
 class DeclarationOperationNode : public Node {
@@ -186,6 +233,9 @@ public:
             throw redeclaration_error{m_var_name};
         }
         env.declare_variable(m_var_name, m_var_type);
+    }
+    void print () const override {
+        std::cout << "declare:" << m_var_name;
     }
 };
 
@@ -208,6 +258,10 @@ public:
         *m_val += rhs;
         return_val = *m_val;
     }
+    void print () const override {
+        std::cout << m_var_name << "+=";
+        m_right->print();
+    }
 };
 
 class SubEqualOperationNode : public Node {
@@ -228,6 +282,10 @@ public:
         Value* m_val = env.get_variable(m_var_name);
         *m_val -= rhs;
         return_val = *m_val;
+    }
+    void print () const override {
+        std::cout << m_var_name << "-=";
+        m_right->print();
     }
 };
 
@@ -250,6 +308,10 @@ public:
         *m_val *= rhs;
         return_val = *m_val;
     }
+    void print () const override {
+        std::cout << m_var_name << "*=";
+        m_right->print();
+    }
 };
 
 class DivEqualOperationNode : public Node {
@@ -270,6 +332,10 @@ public:
         Value* m_val = env.get_variable(m_var_name);
         *m_val /= rhs;
         return_val = *m_val;
+    }
+    void print () const override {
+        std::cout << m_var_name << "/=";
+        m_right->print();
     }
 };
 
@@ -292,6 +358,12 @@ public:
         throw unexpected_error{"a node of type 'MainNode' has no parent"};
         return nullptr;
     }
+    void print () const override {
+        for (auto& node : m_nodes) {
+            node->print();
+            std::cout << std::endl;
+        }
+    }
 };
 
 class IfStatementNode : public Node {
@@ -299,25 +371,92 @@ private:
     node_ptr m_condition;
     Node* m_parent_scope { nullptr };
     std::vector<node_ptr> m_nodes;
+
+    std::vector<node_ptr> m_elif_conditions;
+    std::vector<std::vector<node_ptr>> m_elif_nodes;
+
+    bool m_else_defined { false };
+    std::vector<node_ptr> m_else_nodes;
+
+    std::vector<node_ptr>* m_active_branch { nullptr };
 public:
-    IfStatementNode(node_ptr condition, Node* parent_scope) : Node(ast_node_types::if_statement), m_condition(std::move(condition)), m_parent_scope(parent_scope) {}
+    IfStatementNode(node_ptr condition, Node* parent_scope) : Node(ast_node_types::if_statement), m_condition(std::move(condition)), m_parent_scope(parent_scope) {
+        m_active_branch = &m_nodes;
+    }
     ~IfStatementNode () = default;
     const std::vector<node_ptr>& get_nodes () const { return m_nodes; }
     const Node* const get_condition () const { return m_condition.get(); }
     void execute (Environment& env, Value& return_val) override {
         Value cond_val {};
+
+        /* if */
         m_condition->execute(env, cond_val);
         if (cond_val) {
             for (auto& node : m_nodes) {
                 node->execute(env, return_val);
             }
+            return;
+        }
+        /* elif */
+        for (std::size_t i = 0; i < m_elif_conditions.size(); ++i) {
+            m_elif_conditions[i]->execute(env, cond_val);
+            if (cond_val) {
+                for (auto& node : m_elif_nodes[i]) {
+                    node->execute(env, return_val);
+                }
+                return;
+            }
+        }
+        /* else */
+        if (m_else_defined) {
+            for (auto& node : m_else_nodes) {
+                node->execute(env, return_val);
+            }
+            return;
         }
     }
     void add_node (node_ptr node) override {
-        m_nodes.push_back(std::move(node));
+        m_active_branch->push_back(std::move(node));
     }
     Node* get_parent () override {
         return m_parent_scope;
+    }
+    void add_elif (node_ptr condition) override {
+        m_elif_conditions.push_back(std::move(condition));
+        m_elif_nodes.push_back(std::vector<node_ptr>{});
+        m_active_branch = &(m_elif_nodes.back());
+    }
+    void add_else () override {
+        m_else_defined = true;
+        m_active_branch = &m_else_nodes;
+    }
+    void print () const override {
+        /* if */
+        std::cout << "if ( ";
+        m_condition->print();
+        std::cout << " )" << std::endl;
+        for (auto& node : m_nodes) {
+            node->print();
+            std::cout << std::endl;
+        }
+        /* elif */
+        for (std::size_t i = 0; i < m_elif_conditions.size(); ++i) {
+            std::cout << "elif ( ";
+            m_elif_conditions[i]->print();
+            std::cout << " )" << std::endl;
+            for (auto& node : m_elif_nodes[i]) {
+                node->print();
+                std::cout << std::endl;
+            }
+        }
+        /* else */
+        if (m_else_defined) {
+            std::cout << "else" << std::endl;
+            for (auto& node : m_else_nodes) {
+                node->print();
+                std::cout << std::endl;
+            }
+        }
     }
 };
 
@@ -326,6 +465,9 @@ public:
     EndStatementNode() : Node(ast_node_types::endif_statement) {}
     ~EndStatementNode () = default;
     void execute (Environment& env, Value& return_val) override { }
+    void print () const override {
+        std::cout << "end";
+    }
 };
 
 class BinaryEqualityOperationNode : public Node {
@@ -344,6 +486,13 @@ public:
         m_right->execute(env, rhs);
         return_val = Value{ lhs == rhs };
     }
+    void print () const override {
+        std::cout << "( ";
+        m_left->print();
+        std::cout << " == ";
+        m_right->print();
+        std::cout << " )";
+    }
 };
 
 class BinaryInequalityOperationNode : public Node {
@@ -360,7 +509,14 @@ public:
         Value rhs {};
         m_left->execute(env, lhs);
         m_right->execute(env, rhs);
-        return_val = Value{ lhs == rhs };
+        return_val = Value{ lhs != rhs };
+    }
+    void print () const override {
+        std::cout << "( ";
+        m_left->print();
+        std::cout << " != ";
+        m_right->print();
+        std::cout << " )";
     }
 };
 
@@ -380,6 +536,13 @@ public:
         m_right->execute(env, rhs);
         return_val = Value{ lhs > rhs };
     }
+    void print () const override {
+        std::cout << "( ";
+        m_left->print();
+        std::cout << " > ";
+        m_right->print();
+        std::cout << " )";
+    }
 };
 
 class ComparisonLessNode : public Node {
@@ -397,6 +560,13 @@ public:
         m_left->execute(env, lhs);
         m_right->execute(env, rhs);
         return_val = Value{ lhs < rhs };
+    }
+    void print () const override {
+        std::cout << "( ";
+        m_left->print();
+        std::cout << " < ";
+        m_right->print();
+        std::cout << " )";
     }
 };
 
@@ -416,6 +586,13 @@ public:
         m_right->execute(env, rhs);
         return_val = Value{ lhs >= rhs };
     }
+    void print () const override {
+        std::cout << "( ";
+        m_left->print();
+        std::cout << " >= ";
+        m_right->print();
+        std::cout << " )";
+    }
 };
 
 class ComparisonLessEqualNode : public Node {
@@ -434,6 +611,13 @@ public:
         m_right->execute(env, rhs);
         return_val = Value{ lhs <= rhs };
     }
+    void print () const override {
+        std::cout << "( ";
+        m_left->print();
+        std::cout << " <= ";
+        m_right->print();
+        std::cout << " )";
+    }
 };
 
 class UnaryNotOperationNode : public Node {
@@ -448,6 +632,10 @@ public:
         m_right->execute(env, rhs);
         return_val = Value{ !rhs };
     }
+    void print () const override {
+        std::cout << "!";
+        m_right->print();
+    }
 };
 
 class UnaryMinusOperationNode : public Node {
@@ -461,6 +649,10 @@ public:
         Value rhs {};
         m_right->execute(env, rhs);
         return_val = Value{ -rhs };
+    }
+    void print () const override {
+        std::cout << "-";
+        m_right->print();
     }
 };
 

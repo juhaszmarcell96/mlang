@@ -24,6 +24,7 @@ class Parser {
 private:
     tokens_vec m_tokens;
     Node* m_current_scope { nullptr };
+    Node* m_next_scope { nullptr };
 
     std::size_t m_index { 0 };
 
@@ -61,8 +62,16 @@ private:
             case token_types::kw_if: {
                 return if_statement();
             }
+            case token_types::kw_elif: {
+                elif_statement();
+                return nullptr;
+            }
+            case token_types::kw_else: {
+                else_statement();
+                return nullptr;
+            }
             case token_types::kw_end: {
-                return end_statement();
+                return end_statement(); /* can return nullptr as well if it does not do anything */
             }
             case token_types::identifier: {
                 if (!peekable()) return primary();
@@ -174,8 +183,37 @@ private:
             throw syntax_error{ "unmatched parentheses", curr()->line, curr()->pos};
         }
         std::unique_ptr<IfStatementNode> node_ptr = std::make_unique<IfStatementNode>(std::move(condition), m_current_scope);
-        m_current_scope = node_ptr.get();
+        m_next_scope = node_ptr.get();
         return node_ptr;
+    }
+
+    void elif_statement () {
+        // elif        -> "elif" "(" expression ")"
+        trace("elif_statement");
+        if (curr()->type != token_types::kw_elif) {
+            throw unexpected_error{"statement not an elif statement"};
+        }
+        next();
+        if (done()) { throw syntax_error{ "condition not found for 'elif'", curr()->line, curr()->pos}; }
+        if (curr()->type != token_types::round_bracket_open) {
+            throw syntax_error{ "missing '(' after 'elif'", curr()->line, curr()->pos};
+        }
+        next();
+        if (done()) { throw syntax_error{ "condition not found for 'elif'", curr()->line, curr()->pos}; }
+        node_ptr condition = expression();
+        if (curr()->type != token_types::round_bracket_close) {
+            throw syntax_error{ "unmatched parentheses", curr()->line, curr()->pos};
+        }
+        m_current_scope->add_elif(std::move(condition));
+    }
+
+    void else_statement () {
+        // else        -> "else"
+        trace("else_statement");
+        if (curr()->type != token_types::kw_else) {
+            throw unexpected_error{"statement not an else statement"};
+        }
+        m_current_scope->add_else();
     }
 
     node_ptr end_statement () {
@@ -184,7 +222,7 @@ private:
         if (curr()->type != token_types::kw_end) {
             throw unexpected_error{"statement not an if statement"};
         }
-        m_current_scope = m_current_scope->get_parent();
+        m_next_scope = m_current_scope->get_parent();
         return std::make_unique<EndStatementNode>();
     }
 
@@ -349,13 +387,18 @@ public:
     node_ptr parse (const std::vector<Token>& tokens) {
         node_ptr main_node = std::make_unique<MainNode>();
         m_current_scope = main_node.get();
+        m_next_scope = main_node.get();
         for (std::size_t i = 0; i < tokens.size(); ++i) {
             if (tokens[i].type != token_types::semicolon) {
                 m_tokens.push_back(&(tokens[i]));
             }
             else {
                 trace("###########################################");
-                m_current_scope->add_node(statement());
+                node_ptr statement_ptr = statement();
+                if (statement_ptr != nullptr) { m_current_scope->add_node(std::move(statement_ptr)); }
+                if (m_current_scope != m_next_scope) {
+                    m_current_scope = m_next_scope;
+                }
                 m_tokens.clear();
                 m_index = 0;
             }

@@ -16,6 +16,8 @@ enum class value_types {
     boolean = 4
 };
 
+namespace value {
+
 static inline std::string to_string (value_types type) {
     switch (type) {
         case value_types::none : {
@@ -38,6 +40,8 @@ static inline std::string to_string (value_types type) {
         }
     }
 }
+
+} /* namespace value */
 
 class Value;
 
@@ -87,6 +91,18 @@ public:
     explicit Value (const char* str)   { m_value = new String;  *as_string()  = str; m_type = value_types::string; }
     explicit Value (const Array& arr)  { m_value = new Array;   *as_array()   = arr; m_type = value_types::array; }
     explicit Value (Boolean boo)       { m_value = new Boolean; *as_boolean() = boo; m_type = value_types::boolean; }
+
+    std::string to_string () const {
+        switch (m_type) {
+            case value_types::none:    { return "none"; }
+            case value_types::number:  { return "number:" + std::to_string(get_number()); }
+            case value_types::string:  { return "string:" + get_string(); }
+            case value_types::array:   { return "array"; /* TODO */ }
+            case value_types::boolean: { if (get_boolean()) return "bool:true"; else return "bool:false"; }
+            default: { throw bad_value_type{}; }
+        }
+        return "ERROR";
+    }
 
     /* copy constructor */
     Value(const Value& other) {
