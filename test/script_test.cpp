@@ -183,10 +183,10 @@ TEST(ScriptTest, Test9) {
     script_text += "a = 5; \n";
     script_text += "if (a == 5); \n";
     script_text += "    b = 10; \n";
-    script_text += "endif; \n";
+    script_text += "end; \n";
     script_text += "if (a == 4); \n";
     script_text += "    c = 3; \n";
-    script_text += "endif; \n";
+    script_text += "end; \n";
     mlang::Script script { script_text };
     mlang::Environment env {};
     script.execute(env);

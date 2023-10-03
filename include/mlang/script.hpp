@@ -68,17 +68,17 @@ public:
                         debug("token with type 'else'");
                         m_tokens.push_back(Token{token_types::kw_else, token.get_line(), token.get_pos()});
                     }
-                    else if (token.get_value().compare("endif") == 0) {
-                        debug("token with type 'endif'");
-                        m_tokens.push_back(Token{token_types::kw_endif, token.get_line(), token.get_pos()});
+                    else if (token.get_value().compare("end") == 0) {
+                        debug("token with type 'end'");
+                        m_tokens.push_back(Token{token_types::kw_end, token.get_line(), token.get_pos()});
                     }
-                    else if (token.get_value().compare("loop") == 0) {
-                        debug("token with type 'loop'");
-                        m_tokens.push_back(Token{token_types::kw_loop, token.get_line(), token.get_pos()});
+                    else if (token.get_value().compare("for") == 0) {
+                        debug("token with type 'for'");
+                        m_tokens.push_back(Token{token_types::kw_for, token.get_line(), token.get_pos()});
                     }
-                    else if (token.get_value().compare("endloop") == 0) {
-                        debug("token with type 'endloop'");
-                        m_tokens.push_back(Token{token_types::kw_endloop, token.get_line(), token.get_pos()});
+                    else if (token.get_value().compare("while") == 0) {
+                        debug("token with type 'while'");
+                        m_tokens.push_back(Token{token_types::kw_while, token.get_line(), token.get_pos()});
                     }
                     else if (token.get_value().compare("break") == 0) {
                         debug("token with type 'break'");

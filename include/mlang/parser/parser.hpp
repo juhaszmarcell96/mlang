@@ -61,8 +61,8 @@ private:
             case token_types::kw_if: {
                 return if_statement();
             }
-            case token_types::kw_endif: {
-                return endif_statement();
+            case token_types::kw_end: {
+                return end_statement();
             }
             case token_types::identifier: {
                 if (!peekable()) return primary();
@@ -178,10 +178,10 @@ private:
         return node_ptr;
     }
 
-    node_ptr endif_statement () {
+    node_ptr end_statement () {
         /* endif       -> "endif" */
-        trace("endif_statement");
-        if (curr()->type != token_types::kw_endif) {
+        trace("end_statement");
+        if (curr()->type != token_types::kw_end) {
             throw unexpected_error{"statement not an if statement"};
         }
         m_current_scope = m_current_scope->get_parent();

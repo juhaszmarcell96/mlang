@@ -38,3 +38,20 @@ term        -> factor ( ( "-" | "+" ) factor )* ;
 factor      -> unary ( ( "/" | "*" ) unary )* ;
 unary       -> ( "-" | "!" ) unary | primary;
 primary     -> NUMBER | STRING | "true" | "false" | "(" expression ")" | IDENTIFIER;
+
+
+
+statement   -> declaration | expression | assignment | if | for | while | end ";"
+if          -> "if" "(" expression ")"
+while       -> "while" "(" expression ")"
+for         -> "for" "(" expression ";" expression ";" expression ")"
+end         -> "end"
+declaration -> "number" | "string" | "array" | "bool" IDENTIFIER ( "=" expression )?
+assignment  -> IDENTIFIER ( ( "=" expression )* | ("+=" | "-=" | "*=" | "/=" expression) )+;
+expression  -> equality
+equality    -> comparison ( ( "!=" | "==" ) comparison )* ;
+comparison  -> term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
+term        -> factor ( ( "-" | "+" ) factor )* ;
+factor      -> unary ( ( "/" | "*" ) unary )* ;
+unary       -> ( "-" | "!" ) unary | primary;
+primary     -> NUMBER | STRING | "true" | "false" | "(" expression ")" | IDENTIFIER | "[" expression "]";
