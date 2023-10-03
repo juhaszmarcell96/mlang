@@ -15,6 +15,8 @@ enum class ast_node_types {
     main,
     value,
     variable,
+    unary_not,
+    unary_minus,
     binary_add,
     binary_sub,
     binary_mul,
@@ -28,7 +30,11 @@ enum class ast_node_types {
     if_statement,
     endif_statement,
     equality,
-    inequality
+    inequality,
+    greater,
+    less,
+    greater_equal,
+    less_equal
 };
 
 class Node {
@@ -463,6 +469,148 @@ public:
     }
     Node* get_parent () override {
         throw unexpected_error{"a node of type 'BinaryInequalityOperationNode' has no parent"};
+        return nullptr;
+    }
+};
+
+class ComparisonGreaterNode : public Node {
+private:
+    node_ptr m_left;
+    node_ptr m_right;
+public:
+    ComparisonGreaterNode(node_ptr left, node_ptr right) : Node(ast_node_types::greater), m_left(std::move(left)), m_right(std::move(right)) {}
+    ~ComparisonGreaterNode () = default;
+    const Node* const get_left () const { return m_left.get(); }
+    const Node* const get_right () const { return m_right.get(); }
+    void execute (Environment& env, Value& return_val) override {
+        Value lhs {};
+        Value rhs {};
+        m_left->execute(env, lhs);
+        m_right->execute(env, rhs);
+        return_val = Value{ lhs > rhs };
+    }
+    void add_node (node_ptr node) override {
+        throw unexpected_error{"cannot add nodes to a node of type 'ComparisonGreaterNode'"};
+    }
+    Node* get_parent () override {
+        throw unexpected_error{"a node of type 'ComparisonGreaterNode' has no parent"};
+        return nullptr;
+    }
+};
+
+class ComparisonLessNode : public Node {
+private:
+    node_ptr m_left;
+    node_ptr m_right;
+public:
+    ComparisonLessNode(node_ptr left, node_ptr right) : Node(ast_node_types::less), m_left(std::move(left)), m_right(std::move(right)) {}
+    ~ComparisonLessNode () = default;
+    const Node* const get_left () const { return m_left.get(); }
+    const Node* const get_right () const { return m_right.get(); }
+    void execute (Environment& env, Value& return_val) override {
+        Value lhs {};
+        Value rhs {};
+        m_left->execute(env, lhs);
+        m_right->execute(env, rhs);
+        return_val = Value{ lhs < rhs };
+    }
+    void add_node (node_ptr node) override {
+        throw unexpected_error{"cannot add nodes to a node of type 'ComparisonLessNode'"};
+    }
+    Node* get_parent () override {
+        throw unexpected_error{"a node of type 'ComparisonLessNode' has no parent"};
+        return nullptr;
+    }
+};
+
+class ComparisonGreaterEqualNode : public Node {
+private:
+    node_ptr m_left;
+    node_ptr m_right;
+public:
+    ComparisonGreaterEqualNode(node_ptr left, node_ptr right) : Node(ast_node_types::greater_equal), m_left(std::move(left)), m_right(std::move(right)) {}
+    ~ComparisonGreaterEqualNode () = default;
+    const Node* const get_left () const { return m_left.get(); }
+    const Node* const get_right () const { return m_right.get(); }
+    void execute (Environment& env, Value& return_val) override {
+        Value lhs {};
+        Value rhs {};
+        m_left->execute(env, lhs);
+        m_right->execute(env, rhs);
+        return_val = Value{ lhs >= rhs };
+    }
+    void add_node (node_ptr node) override {
+        throw unexpected_error{"cannot add nodes to a node of type 'ComparisonGreaterEqualNode'"};
+    }
+    Node* get_parent () override {
+        throw unexpected_error{"a node of type 'ComparisonGreaterEqualNode' has no parent"};
+        return nullptr;
+    }
+};
+
+class ComparisonLessEqualNode : public Node {
+private:
+    node_ptr m_left;
+    node_ptr m_right;
+public:
+    ComparisonLessEqualNode(node_ptr left, node_ptr right) : Node(ast_node_types::less_equal), m_left(std::move(left)), m_right(std::move(right)) {}
+    ~ComparisonLessEqualNode () = default;
+    const Node* const get_left () const { return m_left.get(); }
+    const Node* const get_right () const { return m_right.get(); }
+    void execute (Environment& env, Value& return_val) override {
+        Value lhs {};
+        Value rhs {};
+        m_left->execute(env, lhs);
+        m_right->execute(env, rhs);
+        return_val = Value{ lhs <= rhs };
+    }
+    void add_node (node_ptr node) override {
+        throw unexpected_error{"cannot add nodes to a node of type 'ComparisonLessEqualNode'"};
+    }
+    Node* get_parent () override {
+        throw unexpected_error{"a node of type 'ComparisonLessEqualNode' has no parent"};
+        return nullptr;
+    }
+};
+
+class UnaryNotOperationNode : public Node {
+private:
+    node_ptr m_right;
+public:
+    UnaryNotOperationNode(node_ptr right) : Node(ast_node_types::unary_not), m_right(std::move(right)) {}
+    ~UnaryNotOperationNode () = default;
+    const Node* const get_right () const { return m_right.get(); }
+    void execute (Environment& env, Value& return_val) override {
+        Value rhs {};
+        m_right->execute(env, rhs);
+        return_val = Value{ !rhs };
+    }
+    void add_node (node_ptr node) override {
+        throw unexpected_error{"cannot add nodes to a node of type 'UnaryNotOperationNode'"};
+    }
+    Node* get_parent () override {
+        throw unexpected_error{"a node of type 'UnaryNotOperationNode' has no parent"};
+        return nullptr;
+    }
+};
+
+class UnaryMinusOperationNode : public Node {
+private:
+    node_ptr m_right;
+public:
+    UnaryMinusOperationNode(node_ptr right) : Node(ast_node_types::unary_minus), m_right(std::move(right)) {}
+    ~UnaryMinusOperationNode () = default;
+    const Node* const get_right () const { return m_right.get(); }
+    void execute (Environment& env, Value& return_val) override {
+        Value rhs {};
+        m_right->execute(env, rhs);
+        return_val = Value{ -rhs };
+    }
+    void add_node (node_ptr node) override {
+        throw unexpected_error{"cannot add nodes to a node of type 'UnaryMinusOperationNode'"};
+    }
+    Node* get_parent () override {
+        throw unexpected_error{"a node of type 'UnaryMinusOperationNode' has no parent"};
         return nullptr;
     }
 };

@@ -181,10 +181,10 @@ TEST(ScriptTest, Test9) {
     script_text += "number b; \n";
     script_text += "number c; \n";
     script_text += "a = 5; \n";
-    script_text += "if a == 5; \n";
+    script_text += "if (a == 5); \n";
     script_text += "    b = 10; \n";
     script_text += "endif; \n";
-    script_text += "if a == 4; \n";
+    script_text += "if (a == 4); \n";
     script_text += "    c = 3; \n";
     script_text += "endif; \n";
     mlang::Script script { script_text };

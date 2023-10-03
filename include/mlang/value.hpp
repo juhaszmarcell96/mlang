@@ -364,7 +364,7 @@ public:
         return os;
     }
 
-    friend bool operator== (const Value& val_1, const Value& val_2) {
+    friend bool operator==(const Value& val_1, const Value& val_2) {
         if (val_1.m_type != val_2.m_type) return false;
         switch (val_1.m_type) {
             case value_types::none:    { return true; }
@@ -385,7 +385,7 @@ public:
         return true;
     }
 
-    friend bool operator!= (const Value& val_1, const Value& val_2) {
+    friend bool operator!=(const Value& val_1, const Value& val_2) {
         if (val_1.m_type != val_2.m_type) return true;
         switch (val_1.m_type) {
             case value_types::none:    { return false; }
@@ -483,6 +483,74 @@ public:
             case value_types::boolean: { return get_boolean(); }
             default: { throw bad_value_type{}; break; }
         }
+    }
+
+    Value operator-() const {
+        Value ret_val { *this };
+        switch (m_type) {
+            case value_types::none:   { throw bad_operation ("value of type 'none' has no unary '-' operation defined"); }
+            case value_types::number: {
+                *(ret_val.as_number()) *= -1;
+                break;
+            }
+            case value_types::string:  { throw bad_operation ("value of type 'string' has no unary '-' operation defined"); break; }
+            case value_types::array:   { throw bad_operation ("value of type 'array' has no unary '-' operation defined"); break; }
+            case value_types::boolean: { throw bad_operation ("value of type 'boolean' has no unary '-' operation defined"); break; }
+            default: { throw bad_value_type{}; break; }
+        }
+        return ret_val;
+    }
+
+    friend bool operator<(const Value& val_1, const Value& val_2) {
+        if (val_1.m_type != val_2.m_type) throw incompatible_type_error {};
+        switch (val_1.m_type) {
+            case value_types::none:    { throw bad_operation ("value of type 'none' has no '<' operation defined"); break; }
+            case value_types::number:  { return val_1.get_number() < val_2.get_number(); }
+            case value_types::string:  { throw bad_operation ("value of type 'string' has no '<' operation defined"); break; }
+            case value_types::array:   { throw bad_operation ("value of type 'array' has no '<' operation defined"); break; }
+            case value_types::boolean: { throw bad_operation ("value of type 'boolean' has no '<' operation defined"); break; }
+            default: { throw bad_value_type{}; }
+        }
+        return true;
+    }
+
+    friend bool operator>(const Value& val_1, const Value& val_2) {
+        if (val_1.m_type != val_2.m_type) throw incompatible_type_error {};
+        switch (val_1.m_type) {
+            case value_types::none:    { throw bad_operation ("value of type 'none' has no '>' operation defined"); break; }
+            case value_types::number:  { return val_1.get_number() > val_2.get_number(); }
+            case value_types::string:  { throw bad_operation ("value of type 'string' has no '>' operation defined"); break; }
+            case value_types::array:   { throw bad_operation ("value of type 'array' has no '>' operation defined"); break; }
+            case value_types::boolean: { throw bad_operation ("value of type 'boolean' has no '>' operation defined"); break; }
+            default: { throw bad_value_type{}; }
+        }
+        return true;
+    }
+
+    friend bool operator<=(const Value& val_1, const Value& val_2) {
+        if (val_1.m_type != val_2.m_type) throw incompatible_type_error {};
+        switch (val_1.m_type) {
+            case value_types::none:    { throw bad_operation ("value of type 'none' has no '<=' operation defined"); break; }
+            case value_types::number:  { return val_1.get_number() <= val_2.get_number(); }
+            case value_types::string:  { throw bad_operation ("value of type 'string' has no '<=' operation defined"); break; }
+            case value_types::array:   { throw bad_operation ("value of type 'array' has no '<=' operation defined"); break; }
+            case value_types::boolean: { throw bad_operation ("value of type 'boolean' has no '<=' operation defined"); break; }
+            default: { throw bad_value_type{}; }
+        }
+        return true;
+    }
+
+    friend bool operator>=(const Value& val_1, const Value& val_2) {
+        if (val_1.m_type != val_2.m_type) throw incompatible_type_error {};
+        switch (val_1.m_type) {
+            case value_types::none:    { throw bad_operation ("value of type 'none' has no '>=' operation defined"); break; }
+            case value_types::number:  { return val_1.get_number() >= val_2.get_number(); }
+            case value_types::string:  { throw bad_operation ("value of type 'string' has no '>=' operation defined"); break; }
+            case value_types::array:   { throw bad_operation ("value of type 'array' has no '>=' operation defined"); break; }
+            case value_types::boolean: { throw bad_operation ("value of type 'boolean' has no '>=' operation defined"); break; }
+            default: { throw bad_value_type{}; }
+        }
+        return true;
     }
 };
 
