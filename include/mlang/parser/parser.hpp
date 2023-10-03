@@ -181,11 +181,26 @@ private:
         }
         next();
         if (done()) { throw syntax_error{ "expression not found for 'print'", curr()->line, curr()->pos}; }
-        node_ptr expr = expression();
-        if (curr()->type != token_types::round_bracket_close) {
-            throw syntax_error{ "unmatched parentheses", curr()->line, curr()->pos};
+        if (curr()->type != token_types::string) {
+            throw syntax_error{ "first parameter of 'print' must be a string", curr()->line, curr()->pos};
         }
-        return std::make_unique<PrintNode>(std::move(expr));
+        std::string rule = curr()->value_str;
+        next();
+        std::vector<node_ptr> args;
+        while (true) {
+            if (done()) { throw syntax_error{ "missing ')'", curr()->line, curr()->pos}; }
+            if (curr()->type == token_types::round_bracket_close) {
+                break;
+            }
+            else if (curr()->type == token_types::comma) {
+                next();
+                args.push_back(expression());
+            }
+            else {
+                throw syntax_error{ "unexpected token in 'print'", curr()->line, curr()->pos};
+            }
+        }
+        return std::make_unique<PrintNode>(rule, std::move(args));
     }
 
     node_ptr if_statement () {

@@ -240,6 +240,27 @@ private:
         }
     }
 
+    void process_apostrophe () {
+        if (m_current_state == tokenizer_states::none) {
+            throw syntax_error{"unexpected apostrophe", m_code.get_line_num(), m_code.get_column()};
+        }
+        else if (m_current_state == tokenizer_states::parsing_identifier) {
+            throw syntax_error{"unexpected apostrophe", m_code.get_line_num(), m_code.get_column()};
+        }
+        else if (m_current_state == tokenizer_states::parsing_string) {
+            /* parsing a string -> escape or not */
+            if (m_escape) {
+                throw syntax_error{"invalid escape sequence", m_code.get_line_num(), m_code.get_column()};
+            }
+            else {
+                m_current_token.append(m_current_char);
+            }
+        }
+        else if (m_current_state == tokenizer_states::parsing_number) {
+            throw syntax_error{"unexpected apostrophe", m_code.get_line_num(), m_code.get_column()};
+        }
+    }
+
     void process_dot () {
         if (m_current_state == tokenizer_states::none) {
             /* start a number with 0.xxx */
@@ -389,6 +410,10 @@ public:
                 }
                 case '"': {
                     process_double_quotes();
+                    break;
+                }
+                case '\'': {
+                    process_apostrophe();
                     break;
                 }
                 case 'a' :

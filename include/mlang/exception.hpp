@@ -33,6 +33,7 @@ public:
     }
 
     syntax_error () : m_message("syntax error") {}
+    syntax_error (const std::string& message) : m_message(message) {}
     syntax_error (const std::string& message, std::size_t line, std::size_t col) {
         m_message = "syntax error : ";
         m_message += message;

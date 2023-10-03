@@ -42,7 +42,7 @@ primary     -> NUMBER | STRING | "true" | "false" | "(" expression ")" | IDENTIF
 
 
 statement   -> declaration | expression | assignment | if | for | while | end | elif | else | print ";"
-print       -> "print" "(" expression ")"
+print       -> "print" "(" STRING ( "," expression )* ")"
 if          -> "if" "(" expression ")"
 elif        -> "elif" "(" expression ")"
 else        -> "else"

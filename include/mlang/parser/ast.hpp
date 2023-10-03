@@ -659,19 +659,92 @@ public:
 
 class PrintNode : public Node {
 private:
-    node_ptr m_expr;
+    std::string m_rule;
+    std::vector<node_ptr> m_args;
+    std::size_t m_index { 0 };
+
+    std::string get_integer (Environment& env) {
+        if (m_index >= m_args.size()) { throw syntax_error{"mismatch in print arguments"}; }
+        Value res {};
+        m_args[m_index]->execute(env, res);
+        ++m_index;
+        return std::to_string(static_cast<int>(res.get_number()));
+    }
+
+    std::string get_string (Environment& env) {
+        if (m_index >= m_args.size()) { throw syntax_error{"mismatch in print arguments"}; }
+        Value res {};
+        m_args[m_index]->execute(env, res);
+        ++m_index;
+        return res.get_string();
+    }
+
+    std::string get_float (Environment& env) {
+        if (m_index >= m_args.size()) { throw syntax_error{"mismatch in print arguments"}; }
+        Value res {};
+        m_args[m_index]->execute(env, res);
+        ++m_index;
+        return std::to_string(res.get_number());
+    }
+
+    std::string get_bool (Environment& env) {
+        if (m_index >= m_args.size()) { throw syntax_error{"mismatch in print arguments"}; }
+        Value res {};
+        m_args[m_index]->execute(env, res);
+        ++m_index;
+        return (res.get_boolean() ? "true" : "false");
+    }
 public:
-    PrintNode(node_ptr expr) : Node(ast_node_types::print), m_expr(std::move(expr)) {}
+    PrintNode(const std::string& m_rule, std::vector<node_ptr> args) : Node(ast_node_types::print), m_rule(m_rule), m_args(std::move(args)) {}
     ~PrintNode () = default;
-    const Node* const get_expr () const { return m_expr.get(); }
     void execute (Environment& env, Value& return_val) override {
-        Value result {};
-        m_expr->execute(env, result);
-        std::cout << result.to_string() << std::endl;
+        m_index = 0;
+        std::string result;
+        for  (std::size_t i = 0; i < m_rule.length(); ++i) {
+            if (i == m_rule.length() - 1) {
+                result.push_back(m_rule[i]);
+                break;
+            }
+            if (m_rule[i] == '%') {
+                switch (m_rule[i + 1]) {
+                    case 'd' : {
+                        result += get_integer(env);
+                        ++i;
+                        break;
+                    }
+                    case 'f' : {
+                        result += get_float(env);
+                        ++i;
+                        break;
+                    }
+                    case 'b' : {
+                        result += get_bool(env);
+                        ++i;
+                        break;
+                    }
+                    case 's' : {
+                        result += get_string(env);
+                        ++i;
+                        break;
+                    }
+                    default : {
+                        result.push_back(m_rule[i]);
+                        break;
+                    }
+                }
+            }
+            else {
+                result.push_back(m_rule[i]);
+            }
+        }
+        std::cout << result << std::endl;
     }
     void print () const override {
-        std::cout << "print(";
-        m_expr->print();
+        std::cout << "print(" + m_rule;
+        for (const node_ptr& arg : m_args) {
+            std::cout << ", ";
+            arg->print();
+        }
         std::cout << ")";
     }
 };
