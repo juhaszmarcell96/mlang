@@ -9,7 +9,7 @@ private:
     std::string m_code;
     std::size_t m_index { (std::size_t)-1 };
     std::size_t m_line_num { 1 };
-    std::size_t m_column { 1 };
+    std::size_t m_column { 0 };
 public:
     Code () = delete;
     Code (const std::string& code) : m_code(code) {}
