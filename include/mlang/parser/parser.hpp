@@ -70,6 +70,9 @@ private:
                 else_statement();
                 return nullptr;
             }
+            case token_types::kw_for: {
+                return for_statement();
+            }
             case token_types::kw_end: {
                 return end_statement(); /* can return nullptr as well if it does not do anything */
             }
@@ -229,9 +232,9 @@ private:
         if (curr()->type != token_types::round_bracket_close) {
             throw syntax_error{ "unmatched parentheses", curr()->line, curr()->pos};
         }
-        std::unique_ptr<IfStatementNode> node_ptr = std::make_unique<IfStatementNode>(std::move(condition), m_current_scope);
-        m_next_scope = node_ptr.get();
-        return node_ptr;
+        std::unique_ptr<IfStatementNode> if_node_ptr = std::make_unique<IfStatementNode>(std::move(condition), m_current_scope);
+        m_next_scope = if_node_ptr.get();
+        return if_node_ptr;
     }
 
     void elif_statement () {
@@ -261,6 +264,54 @@ private:
             throw unexpected_error{"statement not an else statement"};
         }
         m_current_scope->add_else();
+    }
+
+    node_ptr for_statement () {
+        // for         -> "for" "(" assignment ( "," assignment )* ";" expression ( "," expression )* ";" expression ( "," expression )* ")"
+        trace("for_statement");
+        if (curr()->type != token_types::kw_for) {
+            throw unexpected_error{"statement not a for statement"};
+        }
+        next();
+        if (done()) { throw syntax_error{ "'for' loop would need some arguments", curr()->line, curr()->pos}; }
+        if (curr()->type != token_types::round_bracket_open) {
+            throw syntax_error{ "missing '(' after 'for'", curr()->line, curr()->pos};
+        }
+        std::unique_ptr<ForStatementNode> for_node_ptr = std::make_unique<ForStatementNode>(m_current_scope);
+        /* processing assignments */
+        next();
+        if (done()) { throw syntax_error{ "assignments not found for 'for'", curr()->line, curr()->pos}; }
+        while (true) {
+            if (curr()->type == token_types::semicolon) { break; }
+            for_node_ptr->add_assignment(std::move(assignment()));
+            if (curr()->type == token_types::semicolon) { break; }
+            else if (curr()->type == token_types::comma) { continue; }
+            throw syntax_error{ "unexpected token in 'for' initialization", curr()->line, curr()->pos};
+        }
+        /* processing tests */
+        next();
+        if (done()) { throw syntax_error{ "tests not found for 'for'", curr()->line, curr()->pos}; }
+        while (true) {
+            if (curr()->type == token_types::semicolon) { break; }
+            for_node_ptr->add_test(std::move(expression()));
+            if (curr()->type == token_types::semicolon) { break; }
+            else if (curr()->type == token_types::comma) { continue; }
+            throw syntax_error{ "unexpected token in 'for' tests", curr()->line, curr()->pos};
+        }
+        /* processing updates */
+        next();
+        if (done()) { throw syntax_error{ "updates not found for 'for'", curr()->line, curr()->pos}; }
+        while (true) {
+            if (curr()->type == token_types::round_bracket_close) { break; }
+            for_node_ptr->add_update(std::move(assignment()));
+            if (curr()->type == token_types::round_bracket_close) { break; }
+            else if (curr()->type == token_types::comma) { continue; }
+            throw syntax_error{ "unexpected token in 'for' updates", curr()->line, curr()->pos};
+        }
+        next();
+        if (!done()) { throw syntax_error{ "'for' statement not terminated properly", curr()->line, curr()->pos}; }
+        m_next_scope = for_node_ptr.get();
+        return for_node_ptr;
     }
 
     node_ptr end_statement () {
@@ -435,9 +486,15 @@ public:
         node_ptr main_node = std::make_unique<MainNode>();
         m_current_scope = main_node.get();
         m_next_scope = main_node.get();
+        int skip_semicolons { 0 };
         for (std::size_t i = 0; i < tokens.size(); ++i) {
             if (tokens[i].type != token_types::semicolon) {
                 m_tokens.push_back(&(tokens[i]));
+                if (tokens[i].type == token_types::kw_for) { skip_semicolons = 2; }
+            }
+            else if ((tokens[i].type == token_types::semicolon) && skip_semicolons != 0) {
+                m_tokens.push_back(&(tokens[i]));
+                --skip_semicolons;
             }
             else {
                 trace("###########################################");

@@ -14,3 +14,11 @@ if (b);
 else;
     print("my bool is false");
 end;
+
+number i;
+for (i = 0; i < 10; i += 1);
+    print("%d", i);
+    if (i == 7);
+        print("yay");
+    end;
+end;

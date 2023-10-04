@@ -17,6 +17,7 @@
 
 #include "mlang/parser/ast/end_node.hpp"
 #include "mlang/parser/ast/if_node.hpp"
+#include "mlang/parser/ast/for_node.hpp"
 
 
 
