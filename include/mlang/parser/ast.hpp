@@ -727,6 +727,11 @@ public:
                         ++i;
                         break;
                     }
+                    case '%' : {
+                        result.push_back(m_rule[i]);
+                        ++i;
+                        break;
+                    }
                     default : {
                         result.push_back(m_rule[i]);
                         break;
