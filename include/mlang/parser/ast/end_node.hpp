@@ -1,0 +1,17 @@
+#pragma once
+
+#include "mlang/parser/ast/node.hpp"
+
+namespace mlang {
+
+class EndStatementNode : public Node {
+public:
+    EndStatementNode() : Node(ast_node_types::endif_statement) {}
+    ~EndStatementNode () = default;
+    void execute (Environment& env, Value& return_val) override { }
+    void print () const override {
+        std::cout << "end";
+    }
+};
+
+} /* namespace mlang */
