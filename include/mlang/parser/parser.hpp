@@ -164,8 +164,17 @@ private:
         if (done()) { throw syntax_error{ "did not find variable name", curr()->line, curr()->pos}; }
         if (curr()->type != token_types::identifier) { throw syntax_error{ "variable name must be an identifier", curr()->line, curr()->pos}; }
         std::string variable_name = curr()->value_str;
-        /* TODO : assignment -> overload declaration constructor */
-        return std::make_unique<DeclarationOperationNode>(variable_type, variable_name);
+        next();
+        if (done()) {
+            return std::make_unique<DeclarationOperationNode>(variable_type, variable_name);
+        }
+        if (curr()->type == token_types::equal_sign) {
+            next();
+            node_ptr rhs = expression();
+            return std::make_unique<DeclAndInitOperationNode>(variable_type, variable_name, std::move(rhs));
+        }
+        throw syntax_error{ "invalid token found in declaration", curr()->line, curr()->pos };
+        return nullptr;
     }
 
     node_ptr print_expr () {

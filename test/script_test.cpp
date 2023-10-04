@@ -245,3 +245,23 @@ TEST(ScriptTest, Test10) {
     ASSERT_EQ(env.get_variable("d")->get_type(), mlang::value_types::number);
     ASSERT_EQ(env.get_variable("d")->get_number(), 102);
 }
+
+TEST(ScriptTest, Test11) {
+    std::string script_text;
+    script_text += "number a = 5; \n";
+    script_text += "number b = a + 2; \n";
+    script_text += "number c = 3 * ( a + 2 ) - ( b - 2 );";
+    mlang::Script script { script_text };
+    mlang::Environment env {};
+    script.execute(env);
+
+    ASSERT_EQ(env.has_variable("a"), true);
+    ASSERT_EQ(env.get_variable("a")->get_type(), mlang::value_types::number);
+    ASSERT_EQ(env.get_variable("a")->get_number(), 5);
+    ASSERT_EQ(env.has_variable("b"), true);
+    ASSERT_EQ(env.get_variable("b")->get_type(), mlang::value_types::number);
+    ASSERT_EQ(env.get_variable("b")->get_number(), 7);
+    ASSERT_EQ(env.has_variable("c"), true);
+    ASSERT_EQ(env.get_variable("c")->get_type(), mlang::value_types::number);
+    ASSERT_EQ(env.get_variable("c")->get_number(), 16);
+}

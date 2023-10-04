@@ -87,6 +87,30 @@ private:
     bool m_escape { false };
     bool m_has_dot { false }; /* indicates whether a number already has a dot */
 
+    void start_new_token () {
+        m_current_token.clear();
+        m_current_token.set_line(m_code.get_line_num());
+        m_current_token.set_pos(m_code.get_column());
+    }
+
+    void start_new_token (token_types type) {
+        m_current_token.clear();
+        m_current_token.set_line(m_code.get_line_num());
+        m_current_token.set_pos(m_code.get_column());
+        m_current_token.set_type(type);
+    }
+
+    void finalize_token () {
+        m_tokens.push_back(m_current_token);
+        m_current_token.clear();
+    }
+
+    void finalize_token (token_types type) {
+        m_current_token.set_type(type);
+        m_tokens.push_back(m_current_token);
+        m_current_token.clear();
+    }
+
     void process_number () {
         if (m_current_state == tokenizer_states::none) {
             /* no tokens were in progress -> start a new one -> number */
