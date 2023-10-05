@@ -111,21 +111,31 @@ private:
         m_current_token.clear();
     }
 
-    void process_number () {
+    void append_curr () {
+        m_current_token.append(m_current_char);
+    }
+
+    void append_char (char c) {
+        m_current_token.append(c);
+    }
+
+    void set_state (tokenizer_states state) {
+        m_current_state = state;
+    }
+
+    void process_digit () {
         if (m_current_state == tokenizer_states::none) {
             /* no tokens were in progress -> start a new one -> number */
-            m_current_token.clear();
-            m_current_token.append(m_current_char);
-            m_current_state = tokenizer_states::parsing_number;
-            m_current_token.set_line(m_code.get_line_num());
-            m_current_token.set_pos(m_code.get_column());
+            start_new_token(token_types::number);
+            append_curr();
+            set_state(tokenizer_states::parsing_number);
         }
         else {
             /* tokenizer_states::parsing_identifier */
             /* tokenizer_states::parsing_string */
             /* tokenizer_states::parsing_number */
             /* just append the number */
-            m_current_token.append(m_current_char);
+            append_curr();
         }
     }
 
@@ -135,26 +145,18 @@ private:
         }
         else if (m_current_state == tokenizer_states::parsing_identifier) {
             /* parsing an identifier -> finalize this token */
-            m_current_token.set_type(token_types::identifier);
-            m_tokens.push_back(m_current_token);
-            m_current_token.clear();
-            m_current_state = tokenizer_states::none;
-            m_current_token.set_line(m_code.get_line_num());
-            m_current_token.set_pos(m_code.get_column());
+            finalize_token(token_types::identifier);
+            set_state(tokenizer_states::none);
         }
         else if (m_current_state == tokenizer_states::parsing_string) {
             /* parsing a string -> append, space can be part of a string */
-            m_current_token.append(m_current_char);
+            append_curr();
         }
         else if (m_current_state == tokenizer_states::parsing_number) {
             /* parsing a number -> finalize this token */
-            m_current_token.set_type(token_types::number);
+            finalize_token(token_types::number);
             m_has_dot = false;
-            m_tokens.push_back(m_current_token);
-            m_current_token.clear();
-            m_current_state = tokenizer_states::none;
-            m_current_token.set_line(m_code.get_line_num());
-            m_current_token.set_pos(m_code.get_column());
+            set_state(tokenizer_states::none);
         }
     }
 
@@ -171,7 +173,7 @@ private:
             /* parsing a string -> backslash in string can be tricky */
             if (!m_escape) m_escape = true;
             else {
-                m_current_token.append(m_current_char);
+                append_curr();
                 m_escape = false;
             }
         }
@@ -184,83 +186,65 @@ private:
     void process_double_quotes () {
         if (m_current_state == tokenizer_states::none) {
             /* start a string */
-            m_current_state = tokenizer_states::parsing_string;
-            m_current_token.clear();
-            m_current_token.set_line(m_code.get_line_num());
-            m_current_token.set_pos(m_code.get_column());
+            set_state(tokenizer_states::parsing_string);
+            start_new_token(token_types::string);
         }
         else if (m_current_state == tokenizer_states::parsing_identifier) {
             /* end the identifier, start a string */
-            m_current_token.set_type(token_types::identifier);
-            m_tokens.push_back(m_current_token);
-            m_current_state = tokenizer_states::parsing_string;
-            m_current_token.clear();
-            m_current_token.set_line(m_code.get_line_num());
-            m_current_token.set_pos(m_code.get_column());
+            finalize_token(token_types::identifier);
+            set_state(tokenizer_states::parsing_string);
+            start_new_token(token_types::string);
         }
         else if (m_current_state == tokenizer_states::parsing_string) {
             /* parsing a string -> if escaped, then just add to string, if not, then end string */
             if (m_escape) {
-                m_current_token.append(m_current_char);
+                append_curr();
                 m_escape = false;
             }
             else {
-                m_current_token.set_type(token_types::string);
-                m_tokens.push_back(m_current_token);
-                m_current_state = tokenizer_states::none;
-                m_current_token.clear();
-                m_current_token.set_line(m_code.get_line_num());
-                m_current_token.set_pos(m_code.get_column());
+                finalize_token(token_types::string);
+                set_state(tokenizer_states::none);
             }
         }
         else if (m_current_state == tokenizer_states::parsing_number) {
             /* end the number, start a string */
-            m_current_token.set_type(token_types::number);
-            m_has_dot = false;
-            m_tokens.push_back(m_current_token);
-            m_current_state = tokenizer_states::parsing_string;
-            m_current_token.clear();
-            m_current_token.set_line(m_code.get_line_num());
-            m_current_token.set_pos(m_code.get_column());
+            finalize_token(token_types::number);
+            set_state(tokenizer_states::parsing_string);
+            start_new_token(token_types::string);
         }
     }
 
     void process_letter () {
         if (m_current_state == tokenizer_states::none) {
             /* start an identifier */
-            m_current_state = tokenizer_states::parsing_identifier;
-            m_current_token.clear();
-            m_current_token.append(m_current_char);
-            m_current_token.set_line(m_code.get_line_num());
-            m_current_token.set_pos(m_code.get_column());
+            start_new_token(token_types::identifier);
+            append_curr();
+            set_state(tokenizer_states::parsing_identifier);
         }
         else if (m_current_state == tokenizer_states::parsing_identifier) {
             /* append to identifier */
-            m_current_token.append(m_current_char);
+            append_curr();
         }
         else if (m_current_state == tokenizer_states::parsing_string) {
             /* parsing a string -> escape or not */
             if (m_escape) {
-                if (m_current_char == 'n') m_current_token.append('\n');
-                else if (m_current_char == 't') m_current_token.append('\t');
-                else if (m_current_char == 'r') m_current_token.append('\r');
+                if (m_current_char == 'n') append_char('\n');
+                else if (m_current_char == 't') append_char('\t');
+                else if (m_current_char == 'r') append_char('\r');
+                /* TODO : rest of the escape sequences */
                 else throw syntax_error{"invalid escape sequence", m_code.get_line_num(), m_code.get_column()};
                 m_escape = false;
             }
             else {
-                m_current_token.append(m_current_char);
+                append_curr();
             }
         }
         else if (m_current_state == tokenizer_states::parsing_number) {
             /* end the number, start an identifier */
-            m_current_token.set_type(token_types::number);
-            m_has_dot = false;
-            m_tokens.push_back(m_current_token);
-            m_current_state = tokenizer_states::parsing_identifier;
-            m_current_token.clear();
-            m_current_token.append(m_current_char);
-            m_current_token.set_line(m_code.get_line_num());
-            m_current_token.set_pos(m_code.get_column());
+            finalize_token(token_types::number);
+            set_state(tokenizer_states::parsing_identifier);
+            start_new_token(token_types::identifier);
+            append_curr();
         }
     }
 
@@ -277,7 +261,7 @@ private:
                 throw syntax_error{"invalid escape sequence", m_code.get_line_num(), m_code.get_column()};
             }
             else {
-                m_current_token.append(m_current_char);
+                append_curr();
             }
         }
         else if (m_current_state == tokenizer_states::parsing_number) {
@@ -288,28 +272,19 @@ private:
     void process_dot () {
         if (m_current_state == tokenizer_states::none) {
             /* start a number with 0.xxx */
-            m_current_state = tokenizer_states::parsing_number;
-            m_current_token.clear();
-            m_current_token.append('0');
-            m_current_token.append(m_current_char);
-            m_current_token.set_line(m_code.get_line_num());
-            m_current_token.set_pos(m_code.get_column());
+            set_state(tokenizer_states::parsing_number);
+            start_new_token(token_types::number);
+            append_char('0');
+            append_curr();
             m_has_dot = true;
         }
         else if (m_current_state == tokenizer_states::parsing_identifier) {
             /* end identifier and start a new one -> . -> end and clear */
-            m_current_token.set_type(token_types::identifier);
-            m_tokens.push_back(m_current_token);
-            m_current_token.clear();
-            m_current_token.append(m_current_char);
-            m_current_token.set_type(token_types::dot);
-            m_current_token.set_line(m_code.get_line_num());
-            m_current_token.set_pos(m_code.get_column());
-            m_tokens.push_back(m_current_token);
-            m_current_token.clear();
-            m_current_state = tokenizer_states::none;
-            m_current_token.set_line(m_code.get_line_num());
-            m_current_token.set_pos(m_code.get_column());
+            finalize_token(token_types::identifier);
+            set_state(tokenizer_states::none);
+            start_new_token(token_types::dot);
+            append_curr();
+            finalize_token(token_types::dot);
         }
         else if (m_current_state == tokenizer_states::parsing_string) {
             /* parsing a string -> escape or not */
@@ -317,26 +292,22 @@ private:
                 throw syntax_error{"invalid escape sequence", m_code.get_line_num(), m_code.get_column()};
             }
             else {
-                m_current_token.append(m_current_char);
+                append_curr();
             }
         }
         else if (m_current_state == tokenizer_states::parsing_number) {
             /* append to number -> float */
             if (!m_has_dot) {
                 m_has_dot = true;
-                m_current_token.append(m_current_char);
+                append_curr();
             }
             else {
-                m_current_token.set_type(token_types::number);
-                m_tokens.push_back(m_current_token);
-                m_current_token.clear();
                 /* start a number with 0.xxx */
-                m_current_state = tokenizer_states::parsing_number;
-                m_current_token.clear();
-                m_current_token.append('0');
-                m_current_token.append(m_current_char);
-                m_current_token.set_line(m_code.get_line_num());
-                m_current_token.set_pos(m_code.get_column());
+                finalize_token(token_types::number);
+                set_state(tokenizer_states::parsing_number);
+                start_new_token(token_types::number);
+                append_char('0');
+                append_curr();
                 m_has_dot = true;
             }
         }
@@ -344,31 +315,17 @@ private:
 
     void process_standalone_sign (token_types type) {
         if (m_current_state == tokenizer_states::none) {
-            /* equal sign */
-            m_current_token.clear();
-            m_current_token.append(m_current_char);
-            m_current_token.set_type(type);
-            m_current_token.set_line(m_code.get_line_num());
-            m_current_token.set_pos(m_code.get_column());
-            m_tokens.push_back(m_current_token);
-            m_current_token.clear();
-            m_current_token.set_line(m_code.get_line_num());
-            m_current_token.set_pos(m_code.get_column());
+            start_new_token(type);
+            append_curr();
+            finalize_token();
         }
         else if (m_current_state == tokenizer_states::parsing_identifier) {
             /* end identifier and start a new one -> end and clear */
-            m_current_token.set_type(token_types::identifier);
-            m_tokens.push_back(m_current_token);
-            m_current_token.clear();
-            m_current_token.set_line(m_code.get_line_num());
-            m_current_token.set_pos(m_code.get_column());
-            m_current_token.append(m_current_char);
-            m_current_token.set_type(type);
-            m_tokens.push_back(m_current_token);
-            m_current_token.clear();
-            m_current_state = tokenizer_states::none;
-            m_current_token.set_line(m_code.get_line_num());
-            m_current_token.set_pos(m_code.get_column());
+            finalize_token(token_types::identifier);
+            start_new_token(type);
+            append_curr();
+            finalize_token();
+            set_state(tokenizer_states::none);
         }
         else if (m_current_state == tokenizer_states::parsing_string) {
             /* parsing a string -> escape or not */
@@ -376,24 +333,17 @@ private:
                 throw syntax_error{"invalid escape sequence", m_code.get_line_num(), m_code.get_column()};
             }
             else {
-                m_current_token.append(m_current_char);
+                append_curr();
             }
         }
         else if (m_current_state == tokenizer_states::parsing_number) {
             /* end number and start a new one -> end and clear */
-            m_current_token.set_type(token_types::number);
+            finalize_token(token_types::number);
+            start_new_token(type);
+            append_curr();
+            finalize_token();
+            set_state(tokenizer_states::none);
             m_has_dot = false;
-            m_tokens.push_back(m_current_token);
-            m_current_token.clear();
-            m_current_token.set_line(m_code.get_line_num());
-            m_current_token.set_pos(m_code.get_column());
-            m_current_token.append(m_current_char);
-            m_current_token.set_type(type);
-            m_tokens.push_back(m_current_token);
-            m_current_token.clear();
-            m_current_token.set_line(m_code.get_line_num());
-            m_current_token.set_pos(m_code.get_column());
-            m_current_state = tokenizer_states::none;
         }
     }
 public:
@@ -425,7 +375,7 @@ public:
                 case '7' :
                 case '8' :
                 case '9' : {
-                    process_number();
+                    process_digit();
                     break;
                 }
                 case '\\': {
