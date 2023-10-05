@@ -43,7 +43,7 @@ public:
         Value rhs {};
         m_right->execute(env, rhs);
         Value* m_val = env.get_variable(m_var_name);
-        if (m_val->get_type() != m_var_type) {
+        if (rhs.get_type() != m_var_type) {
             throw incompatible_type_error {};
         }
         *m_val = rhs;

@@ -104,10 +104,6 @@ public:
                         debug("token with type 'function'");
                         m_tokens.push_back(Token{token_types::kw_function, token.get_line(), token.get_pos()});
                     }
-                    else if (token.get_value().compare("endfunction") == 0) {
-                        debug("token with type 'endfunction'");
-                        m_tokens.push_back(Token{token_types::kw_endfunction, token.get_line(), token.get_pos()});
-                    }
                     else if (token.get_value().compare("number") == 0) {
                         debug("token with type 'variable'");
                         m_tokens.push_back(Token{token_types::kw_number, token.get_line(), token.get_pos()});

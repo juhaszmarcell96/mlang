@@ -11,5 +11,6 @@ add_executable (
     ast_test.cpp
     parser_test.cpp
     script_test.cpp
+    error_test.cpp
 )
 target_link_libraries (tests ${GTEST_LIBRARIES} pthread)

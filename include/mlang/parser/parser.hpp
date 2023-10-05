@@ -507,6 +507,10 @@ public:
                 m_index = 0;
             }
         }
+        if (m_tokens.size() != 0) {
+            /* TODO : last line is not terminated with ';' */
+            throw syntax_error{ "missing ';'", m_tokens.back()->line, m_tokens.back()->pos};
+        }
         return main_node;
     }
 };

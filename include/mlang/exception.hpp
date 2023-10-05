@@ -5,14 +5,21 @@
 
 namespace mlang {
 
-class bad_value_type : public std::exception {
+class LangException {
+protected:
+    std::string m_message;
+public:
+    virtual const char* what () const noexcept = 0;
+};
+
+class bad_value_type : public LangException {
 public:
     const char* what () const noexcept override {
         return "bad type";
     }
 };
 
-class bad_operation : public std::exception {
+class bad_operation : public LangException {
 private:
     std::string m_message;
 public:
@@ -24,7 +31,7 @@ public:
     bad_operation (const std::string& message) : m_message(message) {}
 };
 
-class syntax_error : public std::exception {
+class syntax_error : public LangException {
 private:
     std::string m_message;
 public:
@@ -41,7 +48,7 @@ public:
     }
 };
 
-class semantics_error : public std::exception {
+class semantics_error : public LangException {
 private:
     std::string m_message;
 public:
@@ -58,7 +65,7 @@ public:
     }
 };
 
-class unexpected_error : public std::exception {
+class unexpected_error : public LangException {
 private:
     std::string m_message;
 public:
@@ -70,7 +77,7 @@ public:
     unexpected_error (const std::string& message) : m_message(message) {}
 };
 
-class redeclaration_error : public std::exception {
+class redeclaration_error : public LangException {
 private:
     std::string m_message;
 public:
@@ -84,7 +91,7 @@ public:
     }
 };
 
-class bad_type_error : public std::exception {
+class bad_type_error : public LangException {
 private:
     std::string m_message;
 public:
@@ -98,7 +105,7 @@ public:
     }
 };
 
-class undefined_var_error : public std::exception {
+class undefined_var_error : public LangException {
 private:
     std::string m_message;
 public:
@@ -112,7 +119,7 @@ public:
     }
 };
 
-class incompatible_type_error : public std::exception {
+class incompatible_type_error : public LangException {
 private:
     std::string m_message;
 public:
