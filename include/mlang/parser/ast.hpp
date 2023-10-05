@@ -19,6 +19,7 @@
 #include "mlang/parser/ast/if_node.hpp"
 #include "mlang/parser/ast/for_node.hpp"
 #include "mlang/parser/ast/while_node.hpp"
+#include "mlang/parser/ast/break_node.hpp"
 
 
 

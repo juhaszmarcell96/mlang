@@ -39,14 +39,15 @@ factor      -> unary ( ( "/" | "*" ) unary )* ;
 unary       -> ( "-" | "!" ) unary | primary;
 primary     -> NUMBER | STRING | "true" | "false" | "(" expression ")" | IDENTIFIER;
 
-TODO : ++, --, while, return, break, continue, functions, refine error handling, switch-case, array handling
+TODO : ++, --, return, break, continue, functions, refine error handling, switch-case, array handling
 
-statement   -> declaration | expression | assignment | if | for | while | end | elif | else | print ";"
+statement   -> declaration | expression | assignment | if | for | while | end | elif | else | print | control ";"
 print       -> "print" "(" STRING ( "," expression )* ")"
 if          -> "if" "(" expression ")"
 elif        -> "elif" "(" expression ")"
 else        -> "else"
 while       -> "while" "(" expression ")"
+control     -> "break" | "continue" | ("return" expression)
 for         -> "for" "(" assignment ( "," assignment )* ";" expression ( "," expression )* ";" expression ( "," expression )* ")"
 end         -> "end"
 declaration -> "number" | "string" | "array" | "bool" IDENTIFIER ( "=" expression )?

@@ -76,6 +76,9 @@ private:
             case token_types::kw_while: {
                 return while_statement();
             }
+            case token_types::kw_break: {
+                return break_statement();
+            }
             case token_types::kw_end: {
                 return end_statement(); /* can return nullptr as well if it does not do anything */
             }
@@ -347,6 +350,14 @@ private:
         }
         m_next_scope = m_current_scope->get_parent();
         return std::make_unique<EndStatementNode>();
+    }
+
+    node_ptr break_statement () {
+        trace("break_statement");
+        if (curr()->type != token_types::kw_break) {
+            throw unexpected_error{"statement not an break statement"};
+        }
+        return std::make_unique<BreakNode>();
     }
 
     node_ptr expression () {

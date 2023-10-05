@@ -37,7 +37,8 @@ enum class ast_node_types {
     less,
     greater_equal,
     less_equal,
-    print
+    print,
+    break_node
 };
 
 class Node;

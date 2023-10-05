@@ -23,3 +23,21 @@ TEST(WhileLoopTest, Test0) {
     ASSERT_EQ(env.get_variable("b")->get_type(), mlang::value_types::number);
     ASSERT_EQ(env.get_variable("b")->get_number(), 0);
 }
+
+TEST(WhileLoopTest, Test1) {
+    std::string script_text;
+    script_text += "number a = 0; \n";
+    script_text += "while (true); \n";
+    script_text += "    a += 1; \n";
+    script_text += "    if (a == 100); \n";
+    script_text += "        break; \n";
+    script_text += "    end; \n";
+    script_text += "end; \n";
+    mlang::Script script { script_text };
+    mlang::EnvStack env {};
+    script.execute(env);
+
+    ASSERT_EQ(env.has_variable("a"), true);
+    ASSERT_EQ(env.get_variable("a")->get_type(), mlang::value_types::number);
+    ASSERT_EQ(env.get_variable("a")->get_number(), 100);
+}

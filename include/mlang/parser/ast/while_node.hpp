@@ -1,6 +1,7 @@
 #pragma once
 
 #include "mlang/parser/ast/node.hpp"
+#include "mlang/parser/ast/exception.hpp"
 
 namespace mlang {
 
@@ -16,12 +17,28 @@ public:
     void execute (EnvStack& env, Value& return_val) override {
         env.enter_scope();
         while (true) {
-            Value condition_val {};
-            m_condition->execute(env, condition_val);
-            if (!condition_val) { break; }
-            /* execute scope */
-            for (auto& node : m_nodes) {
-                node->execute(env, return_val);
+            try {
+                Value condition_val {};
+                m_condition->execute(env, condition_val);
+                if (!condition_val) { break; }
+                /* execute scope */
+                for (auto& node : m_nodes) {
+                    node->execute(env, return_val);
+                }
+            }
+            catch (const Break& e) {
+                /* handle break */
+                break;
+            }
+            catch (const Continue& e) {
+                /* handle continue */
+                continue;
+            }
+            catch (const Return& e) {
+                /* handle return -> exit the scope and throw it further, it is not ours to handle */
+                /* TODO : how about function returns? How will those be handled? By exception? Or rather by returning from the function as AST? */
+                env.exit_scope();
+                throw;
             }
         }
         env.exit_scope();
