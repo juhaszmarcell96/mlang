@@ -462,7 +462,7 @@ public:
     
     const std::vector<Token>& get_tokens () const { return m_tokens; }
 
-    void execute (Environment& env) {
+    void execute (EnvStack& env) {
         Parser parser {};
         node_ptr root = parser.parse( m_tokens );
         Value ret_val {};

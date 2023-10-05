@@ -11,7 +11,7 @@ public:
     UnaryNotOperationNode(node_ptr right) : Node(ast_node_types::unary_not), m_right(std::move(right)) {}
     ~UnaryNotOperationNode () = default;
     const Node* const get_right () const { return m_right.get(); }
-    void execute (Environment& env, Value& return_val) override {
+    void execute (EnvStack& env, Value& return_val) override {
         Value rhs {};
         m_right->execute(env, rhs);
         return_val = Value{ !rhs };
@@ -29,7 +29,7 @@ public:
     UnaryMinusOperationNode(node_ptr right) : Node(ast_node_types::unary_minus), m_right(std::move(right)) {}
     ~UnaryMinusOperationNode () = default;
     const Node* const get_right () const { return m_right.get(); }
-    void execute (Environment& env, Value& return_val) override {
+    void execute (EnvStack& env, Value& return_val) override {
         Value rhs {};
         m_right->execute(env, rhs);
         return_val = Value{ -rhs };

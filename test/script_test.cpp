@@ -95,7 +95,7 @@ TEST(ScriptTest, Test4) {
 TEST(ScriptTest, Test5) {
     std::string script_text = "number num;";
     mlang::Script script { script_text };
-    mlang::Environment env {};
+    mlang::EnvStack env {};
     script.execute(env);
 
     ASSERT_EQ(env.has_variable("num"), true);
@@ -106,7 +106,7 @@ TEST(ScriptTest, Test5) {
 TEST(ScriptTest, Test6) {
     std::string script_text = "number n; string s; bool b; array a;";
     mlang::Script script { script_text };
-    mlang::Environment env {};
+    mlang::EnvStack env {};
     script.execute(env);
 
     ASSERT_EQ(env.has_variable("n"), true);
@@ -126,7 +126,7 @@ TEST(ScriptTest, Test7) {
     std::string script_text = "number n; \n";
     script_text += "n = 5;";
     mlang::Script script { script_text };
-    mlang::Environment env {};
+    mlang::EnvStack env {};
     script.execute(env);
 
     ASSERT_EQ(env.has_variable("n"), true);
@@ -143,7 +143,7 @@ TEST(ScriptTest, Test8) {
     script_text += "b = a + 2; \n";
     script_text += "c = 3 * ( a + 2 ) - ( b - 2 );";
     mlang::Script script { script_text };
-    mlang::Environment env {};
+    mlang::EnvStack env {};
     script.execute(env);
 
     ASSERT_EQ(env.has_variable("a"), true);
@@ -161,7 +161,6 @@ TEST(ScriptTest, Test8) {
     script_text += "b *= a; \n";
     script_text += "c /= b * 2 - 10 * a;";
     mlang::Script script2 { script_text };
-    env.jump(0);
     script2.execute(env);
 
     ASSERT_EQ(env.has_variable("a"), true);
@@ -188,7 +187,7 @@ TEST(ScriptTest, Test9) {
     script_text += "    c = 3; \n";
     script_text += "end; \n";
     mlang::Script script { script_text };
-    mlang::Environment env {};
+    mlang::EnvStack env {};
     script.execute(env);
 
     ASSERT_EQ(env.has_variable("a"), true);
@@ -229,7 +228,7 @@ TEST(ScriptTest, Test10) {
     script_text += "    d = 102; \n";
     script_text += "end; \n";
     mlang::Script script { script_text };
-    mlang::Environment env {};
+    mlang::EnvStack env {};
     script.execute(env);
 
     ASSERT_EQ(env.has_variable("a"), true);
@@ -252,7 +251,7 @@ TEST(ScriptTest, Test11) {
     script_text += "number b = a + 2; \n";
     script_text += "number c = 3 * ( a + 2 ) - ( b - 2 );";
     mlang::Script script { script_text };
-    mlang::Environment env {};
+    mlang::EnvStack env {};
     script.execute(env);
 
     ASSERT_EQ(env.has_variable("a"), true);
@@ -274,7 +273,7 @@ TEST(ScriptTest, Test12) {
     script_text += "    a += 2; \n";
     script_text += "end; \n";
     mlang::Script script { script_text };
-    mlang::Environment env {};
+    mlang::EnvStack env {};
     script.execute(env);
 
     ASSERT_EQ(env.has_variable("a"), true);

@@ -14,7 +14,7 @@ int main(int argc, char* argv[]) {
     file.close();
 
     mlang::Script script { buffer.str() };
-    mlang::Environment env {};
+    mlang::EnvStack env {};
     script.execute(env);
 
     return 0;

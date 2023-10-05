@@ -10,7 +10,7 @@ private:
     std::vector<node_ptr> m_args;
     std::size_t m_index { 0 };
 
-    std::string get_integer (Environment& env) {
+    std::string get_integer (EnvStack& env) {
         if (m_index >= m_args.size()) { throw syntax_error{"mismatch in print arguments"}; }
         Value res {};
         m_args[m_index]->execute(env, res);
@@ -18,7 +18,7 @@ private:
         return std::to_string(static_cast<int>(res.get_number()));
     }
 
-    std::string get_string (Environment& env) {
+    std::string get_string (EnvStack& env) {
         if (m_index >= m_args.size()) { throw syntax_error{"mismatch in print arguments"}; }
         Value res {};
         m_args[m_index]->execute(env, res);
@@ -26,7 +26,7 @@ private:
         return res.get_string();
     }
 
-    std::string get_float (Environment& env) {
+    std::string get_float (EnvStack& env) {
         if (m_index >= m_args.size()) { throw syntax_error{"mismatch in print arguments"}; }
         Value res {};
         m_args[m_index]->execute(env, res);
@@ -34,7 +34,7 @@ private:
         return std::to_string(res.get_number());
     }
 
-    std::string get_bool (Environment& env) {
+    std::string get_bool (EnvStack& env) {
         if (m_index >= m_args.size()) { throw syntax_error{"mismatch in print arguments"}; }
         Value res {};
         m_args[m_index]->execute(env, res);
@@ -44,7 +44,7 @@ private:
 public:
     PrintNode(const std::string& m_rule, std::vector<node_ptr> args) : Node(ast_node_types::print), m_rule(m_rule), m_args(std::move(args)) {}
     ~PrintNode () = default;
-    void execute (Environment& env, Value& return_val) override {
+    void execute (EnvStack& env, Value& return_val) override {
         m_index = 0;
         std::string result;
         for  (std::size_t i = 0; i < m_rule.length(); ++i) {

@@ -8,7 +8,9 @@ class EndStatementNode : public Node {
 public:
     EndStatementNode() : Node(ast_node_types::end_statement) {}
     ~EndStatementNode () = default;
-    void execute (Environment& env, Value& return_val) override { }
+    void execute (EnvStack& env, Value& return_val) override {
+        /* exit scope */
+    }
     void print () const override {
         std::cout << "end";
     }

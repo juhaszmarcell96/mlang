@@ -13,7 +13,7 @@ public:
     ~DeclarationOperationNode () = default;
     value_types get_var_type () const { return m_var_type; }
     const std::string& get_var_name () const { return m_var_name; }
-    void execute (Environment& env, Value& return_val) override {
+    void execute (EnvStack& env, Value& return_val) override {
         if (env.has_variable(m_var_name)) {
             throw redeclaration_error{m_var_name};
         }
@@ -35,7 +35,7 @@ public:
     value_types get_var_type () const { return m_var_type; }
     const std::string& get_var_name () const { return m_var_name; }
     const Node* const get_right () const { return m_right.get(); }
-    void execute (Environment& env, Value& return_val) override {
+    void execute (EnvStack& env, Value& return_val) override {
         if (env.has_variable(m_var_name)) {
             throw redeclaration_error{m_var_name};
         }

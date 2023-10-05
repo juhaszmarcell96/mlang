@@ -19,7 +19,7 @@ class BinaryAddOperationNode : public BinaryOperationNodeBase {
 public:
     BinaryAddOperationNode(node_ptr left, node_ptr right) : BinaryOperationNodeBase(ast_node_types::binary_add, std::move(left), std::move(right)) {}
     ~BinaryAddOperationNode () = default;
-    void execute (Environment& env, Value& return_val) override {
+    void execute (EnvStack& env, Value& return_val) override {
         Value lhs {};
         Value rhs {};
         m_left->execute(env, lhs);
@@ -39,7 +39,7 @@ class BinarySubOperationNode : public BinaryOperationNodeBase {
 public:
     BinarySubOperationNode(node_ptr left, node_ptr right) : BinaryOperationNodeBase(ast_node_types::binary_sub, std::move(left), std::move(right)) {}
     ~BinarySubOperationNode () = default;
-    void execute (Environment& env, Value& return_val) override {
+    void execute (EnvStack& env, Value& return_val) override {
         Value lhs {};
         Value rhs {};
         m_left->execute(env, lhs);
@@ -59,7 +59,7 @@ class BinaryMulOperationNode : public BinaryOperationNodeBase {
 public:
     BinaryMulOperationNode(node_ptr left, node_ptr right) : BinaryOperationNodeBase(ast_node_types::binary_mul, std::move(left), std::move(right)) {}
     ~BinaryMulOperationNode () = default;
-    void execute (Environment& env, Value& return_val) override {
+    void execute (EnvStack& env, Value& return_val) override {
         Value lhs {};
         Value rhs {};
         m_left->execute(env, lhs);
@@ -79,7 +79,7 @@ class BinaryDivOperationNode : public BinaryOperationNodeBase {
 public:
     BinaryDivOperationNode(node_ptr left, node_ptr right) : BinaryOperationNodeBase(ast_node_types::binary_div, std::move(left), std::move(right)) {}
     ~BinaryDivOperationNode () = default;
-    void execute (Environment& env, Value& return_val) override {
+    void execute (EnvStack& env, Value& return_val) override {
         Value lhs {};
         Value rhs {};
         m_left->execute(env, lhs);

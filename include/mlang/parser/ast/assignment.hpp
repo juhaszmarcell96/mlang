@@ -13,7 +13,7 @@ public:
     ~AssignmentOperationNode () = default;
     const std::string& get_var_name () const { return m_var_name; }
     const Node* const get_right () const { return m_right.get(); }
-    void execute (Environment& env, Value& return_val) override {
+    void execute (EnvStack& env, Value& return_val) override {
         if (!env.has_variable(m_var_name)) {
             throw undefined_var_error{m_var_name};
         }
@@ -41,7 +41,7 @@ public:
     ~AddEqualOperationNode () = default;
     const std::string& get_var_name () const { return m_var_name; }
     const Node* const get_right () const { return m_right.get(); }
-    void execute (Environment& env, Value& return_val) override {
+    void execute (EnvStack& env, Value& return_val) override {
         if (!env.has_variable(m_var_name)) {
             throw undefined_var_error{m_var_name};
         }
@@ -66,7 +66,7 @@ public:
     ~SubEqualOperationNode () = default;
     const std::string& get_var_name () const { return m_var_name; }
     const Node* const get_right () const { return m_right.get(); }
-    void execute (Environment& env, Value& return_val) override {
+    void execute (EnvStack& env, Value& return_val) override {
         if (!env.has_variable(m_var_name)) {
             throw undefined_var_error{m_var_name};
         }
@@ -91,7 +91,7 @@ public:
     ~MulEqualOperationNode () = default;
     const std::string& get_var_name () const { return m_var_name; }
     const Node* const get_right () const { return m_right.get(); }
-    void execute (Environment& env, Value& return_val) override {
+    void execute (EnvStack& env, Value& return_val) override {
         if (!env.has_variable(m_var_name)) {
             throw undefined_var_error{m_var_name};
         }
@@ -116,7 +116,7 @@ public:
     ~DivEqualOperationNode () = default;
     const std::string& get_var_name () const { return m_var_name; }
     const Node* const get_right () const { return m_right.get(); }
-    void execute (Environment& env, Value& return_val) override {
+    void execute (EnvStack& env, Value& return_val) override {
         if (!env.has_variable(m_var_name)) {
             throw undefined_var_error{m_var_name};
         }

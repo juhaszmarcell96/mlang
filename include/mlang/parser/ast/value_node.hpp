@@ -11,7 +11,7 @@ public:
     explicit ValueNode(Value value) : Node(ast_node_types::value), m_value(value) {}
     ~ValueNode () = default;
     const Value& get_value () const { return m_value; }
-    void execute (Environment& env, Value& return_val) override {
+    void execute (EnvStack& env, Value& return_val) override {
         return_val = m_value;
     }
     void print () const override { std::cout << m_value.to_string(); }

@@ -13,7 +13,7 @@ public:
     ~BinaryEqualityOperationNode () = default;
     const Node* const get_left () const { return m_left.get(); }
     const Node* const get_right () const { return m_right.get(); }
-    void execute (Environment& env, Value& return_val) override {
+    void execute (EnvStack& env, Value& return_val) override {
         Value lhs {};
         Value rhs {};
         m_left->execute(env, lhs);
@@ -38,7 +38,7 @@ public:
     ~BinaryInequalityOperationNode () = default;
     const Node* const get_left () const { return m_left.get(); }
     const Node* const get_right () const { return m_right.get(); }
-    void execute (Environment& env, Value& return_val) override {
+    void execute (EnvStack& env, Value& return_val) override {
         Value lhs {};
         Value rhs {};
         m_left->execute(env, lhs);
@@ -63,7 +63,7 @@ public:
     ~ComparisonGreaterNode () = default;
     const Node* const get_left () const { return m_left.get(); }
     const Node* const get_right () const { return m_right.get(); }
-    void execute (Environment& env, Value& return_val) override {
+    void execute (EnvStack& env, Value& return_val) override {
         Value lhs {};
         Value rhs {};
         m_left->execute(env, lhs);
@@ -88,7 +88,7 @@ public:
     ~ComparisonLessNode () = default;
     const Node* const get_left () const { return m_left.get(); }
     const Node* const get_right () const { return m_right.get(); }
-    void execute (Environment& env, Value& return_val) override {
+    void execute (EnvStack& env, Value& return_val) override {
         Value lhs {};
         Value rhs {};
         m_left->execute(env, lhs);
@@ -113,7 +113,7 @@ public:
     ~ComparisonGreaterEqualNode () = default;
     const Node* const get_left () const { return m_left.get(); }
     const Node* const get_right () const { return m_right.get(); }
-    void execute (Environment& env, Value& return_val) override {
+    void execute (EnvStack& env, Value& return_val) override {
         Value lhs {};
         Value rhs {};
         m_left->execute(env, lhs);
@@ -138,7 +138,7 @@ public:
     ~ComparisonLessEqualNode () = default;
     const Node* const get_left () const { return m_left.get(); }
     const Node* const get_right () const { return m_right.get(); }
-    void execute (Environment& env, Value& return_val) override {
+    void execute (EnvStack& env, Value& return_val) override {
         Value lhs {};
         Value rhs {};
         m_left->execute(env, lhs);

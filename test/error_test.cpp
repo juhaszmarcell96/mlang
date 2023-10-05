@@ -12,7 +12,7 @@ TEST(ErrorTest, Test0) {
     script_text += "number a = 5; \n";
     script_text += "number i = a"; // missing ';'
     mlang::Script script { script_text };
-    mlang::Environment env {};
+    mlang::EnvStack env {};
 
     try {
         script.execute(env);
@@ -29,7 +29,7 @@ TEST(ErrorTest, Test1) {
     script_text += "string a; \n";
     script_text += "number i = a;"; // incompatible types
     mlang::Script script { script_text };
-    mlang::Environment env {};
+    mlang::EnvStack env {};
 
     try {
         script.execute(env);
@@ -46,7 +46,7 @@ TEST(ErrorTest, Test2) {
     script_text += "number a; \n";
     script_text += "a = \"hmm\";"; // incompatible types
     mlang::Script script { script_text };
-    mlang::Environment env {};
+    mlang::EnvStack env {};
 
     try {
         script.execute(env);
@@ -62,7 +62,7 @@ TEST(ErrorTest, Test3) {
     std::string script_text;
     script_text += "string a = 5;"; // incompatible types
     mlang::Script script { script_text };
-    mlang::Environment env {};
+    mlang::EnvStack env {};
 
     try {
         script.execute(env);

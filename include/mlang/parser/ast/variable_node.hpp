@@ -11,7 +11,7 @@ public:
     explicit VariableNode(const std::string& var_name) : Node(ast_node_types::variable), m_var_name(var_name) {}
     ~VariableNode () = default;
     const std::string& get_var_name () const { return m_var_name; }
-    void execute (Environment& env, Value& return_val) override {
+    void execute (EnvStack& env, Value& return_val) override {
         if (!env.has_variable(m_var_name)) {
             throw undefined_var_error{m_var_name};
         }

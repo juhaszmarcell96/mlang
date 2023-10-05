@@ -35,7 +35,7 @@ TEST(ParserTest, Test0) {
     ASSERT_EQ(node_ptr->get_var_name(), "num");
 
     mlang::Value ret_val {};
-    mlang::Environment env {};
+    mlang::EnvStack env {};
 
     ASSERT_EQ(env.has_variable("num"), false);
 
@@ -49,7 +49,7 @@ TEST(ParserTest, Test0) {
 TEST(ParserTest, Test1) {
     /* num = 5; */
     mlang::Value ret_val {};
-    mlang::Environment env {};
+    mlang::EnvStack env {};
     env.declare_variable("num", mlang::value_types::number);
 
     mlang::Token t0 { mlang::token_types::identifier, "num", 0, 0 };

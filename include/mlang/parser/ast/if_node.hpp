@@ -24,7 +24,7 @@ public:
     ~IfStatementNode () = default;
     const std::vector<node_ptr>& get_nodes () const { return m_nodes; }
     const Node* const get_condition () const { return m_condition.get(); }
-    void execute (Environment& env, Value& return_val) override {
+    void execute (EnvStack& env, Value& return_val) override {
         Value cond_val {};
 
         /* if */
