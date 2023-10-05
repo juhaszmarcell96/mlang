@@ -40,3 +40,36 @@ TEST(ErrorTest, Test1) {
         SUCCEED();
     }
 }
+
+TEST(ErrorTest, Test2) {
+    std::string script_text;
+    script_text += "number a; \n";
+    script_text += "a = \"hmm\";"; // incompatible types
+    mlang::Script script { script_text };
+    mlang::Environment env {};
+
+    try {
+        script.execute(env);
+        FAIL();
+    }
+    catch (const mlang::LangException& e) {
+        //std::cout << e.what() << std::endl;
+        SUCCEED();
+    }
+}
+
+TEST(ErrorTest, Test3) {
+    std::string script_text;
+    script_text += "string a = 5;"; // incompatible types
+    mlang::Script script { script_text };
+    mlang::Environment env {};
+
+    try {
+        script.execute(env);
+        FAIL();
+    }
+    catch (const mlang::LangException& e) {
+        //std::cout << e.what() << std::endl;
+        SUCCEED();
+    }
+}
