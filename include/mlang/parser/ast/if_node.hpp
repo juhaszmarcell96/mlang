@@ -27,12 +27,14 @@ public:
     void execute (EnvStack& env, Value& return_val) override {
         Value cond_val {};
 
+        env.enter_scope();
         /* if */
         m_condition->execute(env, cond_val);
         if (cond_val) {
             for (auto& node : m_nodes) {
                 node->execute(env, return_val);
             }
+            env.exit_scope();
             return;
         }
         /* elif */
@@ -42,6 +44,7 @@ public:
                 for (auto& node : m_elif_nodes[i]) {
                     node->execute(env, return_val);
                 }
+                env.exit_scope();
                 return;
             }
         }
@@ -50,6 +53,7 @@ public:
             for (auto& node : m_else_nodes) {
                 node->execute(env, return_val);
             }
+            env.exit_scope();
             return;
         }
     }

@@ -283,3 +283,19 @@ TEST(ScriptTest, Test12) {
     ASSERT_EQ(env.get_variable("i")->get_type(), mlang::value_types::number);
     ASSERT_EQ(env.get_variable("i")->get_number(), 10);
 }
+
+TEST(ScriptTest, Test13) {
+    std::string script_text;
+    script_text += "number a = 5; \n";
+    script_text += "if (a == 5); \n";
+    script_text += "    number b = 2; \n";
+    script_text += "end; \n";
+    mlang::Script script { script_text };
+    mlang::EnvStack env {};
+    script.execute(env);
+
+    ASSERT_EQ(env.has_variable("a"), true);
+    ASSERT_EQ(env.get_variable("a")->get_type(), mlang::value_types::number);
+    ASSERT_EQ(env.get_variable("a")->get_number(), 5);
+    ASSERT_EQ(env.has_variable("b"), false);
+}

@@ -16,6 +16,7 @@ public:
     ~ForStatementNode () = default;
     const std::vector<node_ptr>& get_nodes () const { return m_nodes; }
     void execute (EnvStack& env, Value& return_val) override {
+        env.enter_scope();
         /* assignments */
         for (auto& node : m_assignments) {
             node->execute(env, return_val);
@@ -25,7 +26,7 @@ public:
             for (auto& test : m_tests) {
                 Value test_val {};
                 test->execute(env, test_val);
-                /* if a condition is not satisfied, return */
+                /* if a condition is not satisfied, break the loop */
                 if (!test_val) {
                     return;
                 }
@@ -39,6 +40,7 @@ public:
                 node->execute(env, return_val);
             }
         }
+        env.exit_scope();
     }
     Node* get_parent () override {
         return m_parent_scope;
