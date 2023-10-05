@@ -73,6 +73,9 @@ private:
             case token_types::kw_for: {
                 return for_statement();
             }
+            case token_types::kw_while: {
+                return while_statement();
+            }
             case token_types::kw_end: {
                 return end_statement(); /* can return nullptr as well if it does not do anything */
             }
@@ -312,6 +315,28 @@ private:
         if (!done()) { throw syntax_error{ "'for' statement not terminated properly", curr()->line, curr()->pos}; }
         m_next_scope = for_node_ptr.get();
         return for_node_ptr;
+    }
+
+    node_ptr while_statement () {
+        // while       -> "while" "(" expression ")"
+        trace("while_statement");
+        if (curr()->type != token_types::kw_while) {
+            throw unexpected_error{"statement not an while statement"};
+        }
+        next();
+        if (done()) { throw syntax_error{ "condition not found for 'while'", curr()->line, curr()->pos}; }
+        if (curr()->type != token_types::round_bracket_open) {
+            throw syntax_error{ "missing '(' after 'while'", curr()->line, curr()->pos};
+        }
+        next();
+        if (done()) { throw syntax_error{ "condition not found for 'while'", curr()->line, curr()->pos}; }
+        node_ptr condition = expression();
+        if (curr()->type != token_types::round_bracket_close) {
+            throw syntax_error{ "unmatched parentheses", curr()->line, curr()->pos};
+        }
+        std::unique_ptr<WhileStatementNode> while_node_ptr = std::make_unique<WhileStatementNode>(std::move(condition), m_current_scope);
+        m_next_scope = while_node_ptr.get();
+        return while_node_ptr;
     }
 
     node_ptr end_statement () {

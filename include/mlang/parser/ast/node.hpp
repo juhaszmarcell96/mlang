@@ -29,6 +29,7 @@ enum class ast_node_types {
     mul_equal,
     if_statement,
     for_statement,
+    while_statement,
     end_statement,
     equality,
     inequality,
