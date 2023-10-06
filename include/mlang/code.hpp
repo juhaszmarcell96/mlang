@@ -28,7 +28,7 @@ public:
         if (m_index >= m_code.length()) return false;
         if (m_code[m_index] == '\n') {
             ++m_line_num;
-            m_column = 1;
+            m_column = 0;
         }
         else {
             ++m_column;

@@ -73,3 +73,21 @@ TEST(ErrorTest, Test3) {
         SUCCEED();
     }
 }
+
+TEST(ErrorTest, Test4) {
+    std::string script_text;
+    script_text += "number a = 5 \n"; // missing ';'
+    script_text += "string b; \n";
+    script_text += "b = \"hmm\";";
+    mlang::Script script { script_text };
+    mlang::EnvStack env {};
+
+    try {
+        script.execute(env);
+        FAIL();
+    }
+    catch (const mlang::LangException& e) {
+        //std::cout << e.what() << std::endl;
+        SUCCEED();
+    }
+}

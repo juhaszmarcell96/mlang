@@ -5,12 +5,7 @@
 
 namespace mlang {
 
-class LangException {
-protected:
-    std::string m_message;
-public:
-    virtual const char* what () const noexcept = 0;
-};
+class LangException : public std::exception { };
 
 class bad_value_type : public LangException {
 public:

@@ -101,11 +101,13 @@ private:
     }
 
     void finalize_token () {
+        //std::cout << "finalizing token " << m_current_token.get_value() << " position " << m_current_token.get_line() << ":" << m_current_token.get_pos() << std::endl;
         m_tokens.push_back(m_current_token);
         m_current_token.clear();
     }
 
     void finalize_token (token_types type) {
+        //std::cout << "finalizing token " << m_current_token.get_value() << " position " << m_current_token.get_line() << ":" << m_current_token.get_pos() << std::endl;
         m_current_token.set_type(type);
         m_tokens.push_back(m_current_token);
         m_current_token.clear();
