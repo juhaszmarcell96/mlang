@@ -41,11 +41,6 @@ enum class ast_node_types {
     break_node
 };
 
-enum class value_category {
-    lvalue = 0,
-    rvalue = 1
-};
-
 class Node;
 
 typedef std::unique_ptr<Node> node_ptr;
@@ -53,10 +48,8 @@ typedef std::unique_ptr<Node> node_ptr;
 class Node {
 private:
     ast_node_types m_type { ast_node_types::none };
-    value_category m_category = { value_category::lvalue };
 public:
     Node (ast_node_types type) : m_type(type) {}
-    Node (ast_node_types type, value_category category) : m_type(type), m_category(category) {}
     virtual ~Node () = default;
     virtual void execute (EnvStack& env, Value& return_val) = 0;
     virtual void add_node (node_ptr node) {
@@ -75,9 +68,10 @@ public:
     virtual void print () const = 0;
 
     ast_node_types get_type () const { return m_type; }
-
-    value_category get_category () const { return m_category; }
-    void set_category (value_category category) { m_category = category; }
+    
+    virtual bool is_lvalue () const {
+        return false;
+    }
 };
 
 } /* namespace mlang */

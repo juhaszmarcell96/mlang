@@ -39,7 +39,7 @@ factor      -> unary ( ( "/" | "*" ) unary )* ;
 unary       -> ( "-" | "!" ) unary | primary;
 primary     -> NUMBER | STRING | "true" | "false" | "(" expression ")" | IDENTIFIER;
 
-TODO : ++, --, return, break, continue, functions, refine error handling, switch-case, array handling
+TODO : ++, --, return, break, continue, functions, refine error handling, switch-case, array handling, pointer/reference type
 
 statement   -> declaration | expression | assignment | if | for | while | end | elif | else | print | control ";"
 print       -> "print" "(" STRING ( "," expression )* ")"
@@ -61,5 +61,5 @@ unary       -> ( "-" | "!" ) unary | primary;
 primary     -> NUMBER | STRING | "true" | "false" | "(" expression ")" | IDENTIFIER | "[" expression "]";
 
 
-primary     -> NUMBER | STRING | "true" | "false" | "(" expression ")" | variable;
-variable    -> IDENTIFIER ("[" expression "]")?
+primary     -> NUMBER | STRING | "true" | "false" | "(" expression ")" | lvalue;
+lvalue      -> ( "++" | "--" )? IDENTIFIER ("[" expression "]")?

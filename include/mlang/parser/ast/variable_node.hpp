@@ -19,6 +19,10 @@ public:
         return_val = *m_val;
     }
     void print () const override { std::cout << "var:" << m_var_name; }
+    
+    bool is_lvalue () const override {
+        return true;
+    }
 };
 
 } /* namespace mlang */
