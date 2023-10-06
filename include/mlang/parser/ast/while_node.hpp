@@ -17,10 +17,10 @@ public:
     void execute (EnvStack& env, Value& return_val) override {
         env.enter_scope();
         while (true) {
+            Value condition_val {};
+            m_condition->execute(env, condition_val);
+            if (!condition_val) { break; }
             try {
-                Value condition_val {};
-                m_condition->execute(env, condition_val);
-                if (!condition_val) { break; }
                 /* execute scope */
                 for (auto& node : m_nodes) {
                     node->execute(env, return_val);

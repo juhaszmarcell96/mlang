@@ -1,6 +1,7 @@
 #pragma once
 
 #include "mlang/parser/ast/node.hpp"
+#include "mlang/parser/ast/exception.hpp"
 
 namespace mlang {
 
@@ -31,9 +32,25 @@ public:
                     return;
                 }
             }
-            /* execute scope */
-            for (auto& node : m_nodes) {
-                node->execute(env, return_val);
+            try {
+                /* execute scope */
+                for (auto& node : m_nodes) {
+                    node->execute(env, return_val);
+                }
+            }
+            catch (const Break& e) {
+                /* handle break */
+                /* break the loop */
+                break;
+            }
+            catch (const Continue& e) {
+                /* handle continue */
+                /* nothing to do, we carry on with the updates */
+            }
+            catch (const Return& e) {
+                /* handle return -> exit the scope and throw it further, it is not ours to handle */
+                env.exit_scope();
+                throw;
             }
             /* do updates */
             for (auto& node : m_updates) {

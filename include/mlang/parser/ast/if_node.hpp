@@ -1,6 +1,7 @@
 #pragma once
 
 #include "mlang/parser/ast/node.hpp"
+#include "mlang/parser/ast/exception.hpp"
 
 namespace mlang {
 
@@ -28,33 +29,53 @@ public:
         Value cond_val {};
 
         env.enter_scope();
-        /* if */
-        m_condition->execute(env, cond_val);
-        if (cond_val) {
-            for (auto& node : m_nodes) {
-                node->execute(env, return_val);
-            }
-            env.exit_scope();
-            return;
-        }
-        /* elif */
-        for (std::size_t i = 0; i < m_elif_conditions.size(); ++i) {
-            m_elif_conditions[i]->execute(env, cond_val);
+        try {
+            /* if */
+            m_condition->execute(env, cond_val);
             if (cond_val) {
-                for (auto& node : m_elif_nodes[i]) {
+                for (auto& node : m_nodes) {
+                    node->execute(env, return_val);
+                }
+                env.exit_scope();
+                return;
+            }
+            /* elif */
+            for (std::size_t i = 0; i < m_elif_conditions.size(); ++i) {
+                m_elif_conditions[i]->execute(env, cond_val);
+                if (cond_val) {
+                    for (auto& node : m_elif_nodes[i]) {
+                        node->execute(env, return_val);
+                    }
+                    env.exit_scope();
+                    return;
+                }
+            }
+            /* else */
+            if (m_else_defined) {
+                for (auto& node : m_else_nodes) {
                     node->execute(env, return_val);
                 }
                 env.exit_scope();
                 return;
             }
         }
-        /* else */
-        if (m_else_defined) {
-            for (auto& node : m_else_nodes) {
-                node->execute(env, return_val);
-            }
+        catch (const Break& e) {
+            /* handle break */
+            /* this is not ours to handle, exit the scope and throw it further */
             env.exit_scope();
-            return;
+            throw;
+        }
+        catch (const Continue& e) {
+            /* handle continue */
+            /* this is not ours to handle, exit the scope and throw it further */
+            env.exit_scope();
+            throw;
+        }
+        catch (const Return& e) {
+            /* handle  return */
+            /* this is not ours to handle, exit the scope and throw it further */
+            env.exit_scope();
+            throw;
         }
     }
     void add_node (node_ptr node) override {
