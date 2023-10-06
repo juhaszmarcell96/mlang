@@ -63,3 +63,47 @@ primary     -> NUMBER | STRING | "true" | "false" | "(" expression ")" | IDENTIF
 
 primary     -> NUMBER | STRING | "true" | "false" | "(" expression ")" | lvalue;
 lvalue      -> ( "++" | "--" )? IDENTIFIER ("[" expression "]")?
+
+TODO : shadowing -> can redefine a variable in the local scope
+
+
+
+
+
+
+
+
+
+
+
+
+
+statement   -> declaration | expression | assignment | if | for | while | end | elif | else | print | control | function ";"
+function    -> "function" IDENTIFIER "(" ( typename IDENTIFIER ("," typename IDENTIFIER)* )? ")" "-" ">" typename;
+print       -> "print" "(" STRING ( "," expression )* ")"
+if          -> "if" "(" expression ")"
+elif        -> "elif" "(" expression ")"
+else        -> "else"
+while       -> "while" "(" expression ")"
+control     -> "break" | "continue" | ("return" expression) | ("exit" expression )
+for         -> "for" "(" assignment ( "," assignment )* ";" expression ( "," expression )* ";" expression ( "," expression )* ")"
+end         -> "end"
+declaration -> "number" | "string" | "array" | "bool" IDENTIFIER ( "=" expression )?
+assignment  -> lvalue ( ( "=" assignment )* | ("+=" | "-=" | "*=" | "/=" expression) )+;
+expression  -> equality
+equality    -> comparison ( ( "!=" | "==" ) comparison )* ;
+comparison  -> term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
+term        -> factor ( ( "-" | "+" ) factor )* ;
+factor      -> unary ( ( "/" | "*" ) unary )* ;
+unary       -> ( "-" | "!" ) unary | primary;
+primary     -> NUMBER | STRING | "true" | "false" | "(" expression ")" | lvalue | func_call;
+lvalue      -> ( "++" | "--" )? IDENTIFIER ("[" expression "]")?
+func_call   -> IDENTIFIER "(" (expression)* ")"
+
+typename    -> "number" | "string" | "array" | "bool"
+
+
+
+
+
+

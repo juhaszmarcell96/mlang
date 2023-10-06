@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-#include "mlang/code.hpp"
+#include "mlang/tokenizer/code.hpp"
 #include "mlang/exception.hpp"
 
 namespace mlang {
