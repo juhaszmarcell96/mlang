@@ -53,8 +53,8 @@ typedef std::vector<Value> Array;
 /* TODO : use std::variant */
 class Value {
 private:
-    value_types m_type = value_types::none;
-    void* m_value = nullptr;
+    value_types m_type { value_types::none };
+    void* m_value { nullptr };
 
     static void assert_type(value_types t1, value_types t2) {
         if (t1 != t2) {
