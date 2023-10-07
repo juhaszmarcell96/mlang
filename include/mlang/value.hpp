@@ -97,7 +97,14 @@ public:
             case value_types::none:    { return "none"; }
             case value_types::number:  { return "number:" + std::to_string(get_number()); }
             case value_types::string:  { return "string:" + get_string(); }
-            case value_types::array:   { return "array"; /* TODO */ }
+            case value_types::array:   {
+                std::string str = "array:";
+                for (const Value& val : get_array()) {
+                    str += val.to_string();
+                    str += ",";
+                }
+                return str;
+            }
             case value_types::boolean: { if (get_boolean()) return "bool:true"; else return "bool:false"; }
             default: { throw bad_value_type{}; }
         }

@@ -7,6 +7,7 @@
 
 #include "mlang/parser/ast/value_node.hpp"
 #include "mlang/parser/ast/variable_node.hpp"
+#include "mlang/parser/ast/indexing_node.hpp"
 
 #include "mlang/parser/ast/binary_operations.hpp"
 #include "mlang/parser/ast/unary_operations.hpp"

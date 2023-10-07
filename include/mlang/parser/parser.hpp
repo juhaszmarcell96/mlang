@@ -603,6 +603,9 @@ private:
                 if (check_type(token_types::round_bracket_open)) {
                     return function_call(current_str);
                 }
+                if (check_type(token_types::square_bracket_open)) {
+                    return indexing(current_str);
+                }
             }
             return std::make_unique<VariableNode>(current_str);
         }
@@ -626,7 +629,13 @@ private:
         return func_ptr;
     }
 
-
+    node_ptr indexing (const std::string& name) {
+        trace("indexing");
+        consume(token_types::square_bracket_open, "missing '[' in function call");
+        node_ptr index_expr = expression();
+        consume(token_types::square_bracket_close, "missing ']' in function call");
+        return std::make_unique<IndexingNode>(name, std::move(index_expr));
+    }
 
 public:
     Parser () = default;

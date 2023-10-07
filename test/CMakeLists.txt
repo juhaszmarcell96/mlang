@@ -14,5 +14,6 @@ add_executable (
     error_test.cpp
     while_loop_test.cpp
     function_test.cpp
+    indexing_test.cpp
 )
 target_link_libraries (tests ${GTEST_LIBRARIES} pthread)
