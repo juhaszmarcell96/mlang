@@ -1,6 +1,7 @@
 #pragma once
 
 #include "mlang/parser/ast/node.hpp"
+#include "mlang/object/none.hpp"
 
 namespace mlang {
 
@@ -15,7 +16,7 @@ public:
         if (env.has_variable(m_var_name)) {
             throw redeclaration_error{m_var_name};
         }
-        env.declare_variable(m_var_name, "none");
+        env.declare_variable(m_var_name, None::type_name);
     }
     void print () const override {
         std::cout << "declare:" << m_var_name;
@@ -35,7 +36,7 @@ public:
         std::shared_ptr<Object> rhs;
         m_right->execute(env, rhs);
         if (!rhs) throw RuntimeError{"right hand side of addition returned null"};
-        env.declare_variable(m_var_name, "none");
+        env.declare_variable(m_var_name, None::type_name);
         env.set_variable(m_var_name, rhs.get());
     }
     void print () const override {

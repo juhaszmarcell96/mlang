@@ -24,10 +24,10 @@ public:
         std::shared_ptr<Object> rhs;
         m_left->execute(env, lhs);
         m_right->execute(env, rhs);
-        if (!lhs) throw RuntimeError{"left hand side of addition returned null"};
-        if (!rhs) throw RuntimeError{"right hand side of addition returned null"};
+        if (!lhs) throw RuntimeError{"left hand side of " + operators::binary_add + "' returned null"};
+        if (!rhs) throw RuntimeError{"right hand side of " + operators::binary_add + "' returned null"};
         return_val = env.create_value(lhs->get_typename());
-        lhs->call("binary_add", std::vector<Object*>{ rhs.get() }, return_val);
+        lhs->call(operators::binary_add, std::vector<Object*>{ rhs.get() }, return_val);
     }
     void print () const override {
         std::cout << "( ";
@@ -47,10 +47,10 @@ public:
         std::shared_ptr<Object> rhs;
         m_left->execute(env, lhs);
         m_right->execute(env, rhs);
-        if (!lhs) throw RuntimeError{"left hand side of addition returned null"};
-        if (!rhs) throw RuntimeError{"right hand side of addition returned null"};
+        if (!lhs) throw RuntimeError{"left hand side of " + operators::binary_sub + "' returned null"};
+        if (!rhs) throw RuntimeError{"right hand side of " + operators::binary_sub + "' returned null"};
         return_val = env.create_value(lhs->get_typename());
-        lhs->call("binary_sub", std::vector<Object*>{ rhs.get() }, return_val);
+        lhs->call(operators::binary_sub, std::vector<Object*>{ rhs.get() }, return_val);
     }
     void print () const override {
         std::cout << "( ";
@@ -70,10 +70,10 @@ public:
         std::shared_ptr<Object> rhs;
         m_left->execute(env, lhs);
         m_right->execute(env, rhs);
-        if (!lhs) throw RuntimeError{"left hand side of addition returned null"};
-        if (!rhs) throw RuntimeError{"right hand side of addition returned null"};
+        if (!lhs) throw RuntimeError{"left hand side of " + operators::binary_mul + "' returned null"};
+        if (!rhs) throw RuntimeError{"right hand side of " + operators::binary_mul + "' returned null"};
         return_val = env.create_value(lhs->get_typename());
-        lhs->call("binary_mul", std::vector<Object*>{ rhs.get() }, return_val);
+        lhs->call(operators::binary_mul, std::vector<Object*>{ rhs.get() }, return_val);
     }
     void print () const override {
         std::cout << "( ";
@@ -93,10 +93,10 @@ public:
         std::shared_ptr<Object> rhs;
         m_left->execute(env, lhs);
         m_right->execute(env, rhs);
-        if (!lhs) throw RuntimeError{"left hand side of addition returned null"};
-        if (!rhs) throw RuntimeError{"right hand side of addition returned null"};
+        if (!lhs) throw RuntimeError{"left hand side of " + operators::binary_div + "' returned null"};
+        if (!rhs) throw RuntimeError{"right hand side of " + operators::binary_div + "' returned null"};
         return_val = env.create_value(lhs->get_typename());
-        lhs->call("binary_div", std::vector<Object*>{ rhs.get() }, return_val);
+        lhs->call(operators::binary_div, std::vector<Object*>{ rhs.get() }, return_val);
     }
     void print () const override {
         std::cout << "( ";

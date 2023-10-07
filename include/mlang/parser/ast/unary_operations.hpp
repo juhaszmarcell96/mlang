@@ -14,8 +14,8 @@ public:
     void execute (EnvStack& env, std::shared_ptr<Object>& return_val) override {
         std::shared_ptr<Object> rhs;
         m_right->execute(env, rhs);
-        if (!rhs) { throw RuntimeError { "right hand side of unary not return null" }; }
-        rhs->call("unary_not", std::vector<Object*>{}, return_val);
+        if (!rhs) throw RuntimeError{"right hand side of " + operators::unary_not + "' returned null"};
+        rhs->call(operators::unary_not, std::vector<Object*>{}, return_val);
     }
     void print () const override {
         std::cout << "!";
@@ -33,8 +33,8 @@ public:
     void execute (EnvStack& env, std::shared_ptr<Object>& return_val) override {
         std::shared_ptr<Object> rhs;
         m_right->execute(env, rhs);
-        if (!rhs) { throw RuntimeError { "right hand side of unary minus return null" }; }
-        rhs->call("unary_minus", std::vector<Object*>{}, return_val);
+        if (!rhs) throw RuntimeError{"right hand side of " + operators::unary_minus + "' returned null"};
+        rhs->call(operators::unary_minus, std::vector<Object*>{}, return_val);
     }
     void print () const override {
         std::cout << "-";

@@ -2,17 +2,15 @@
 
 #include <string>
 
-#include "mlang/tokenizer/tokenizer.hpp"
 #include "mlang/script.hpp"
-#include "mlang/environment.hpp"
 
 TEST(ScriptTest, Test0) {
-    std::string script_text = "number a = 5;";
+    std::string script_text = "var a = 5;";
     mlang::Script script { script_text };
     auto tokens = script.get_tokens();
 
     ASSERT_EQ(tokens.size(), 5);
-    ASSERT_EQ(tokens[0].type, mlang::token_types::kw_number);
+    ASSERT_EQ(tokens[0].type, mlang::token_types::kw_var);
     ASSERT_EQ(tokens[1].type, mlang::token_types::identifier);
     ASSERT_EQ(tokens[1].value_str, "a");
     ASSERT_EQ(tokens[2].type, mlang::token_types::equal_sign);
@@ -42,12 +40,12 @@ TEST(ScriptTest, Test1) {
 }
 
 TEST(ScriptTest, Test2) {
-    std::string script_text = "string str = \"asd\";\nstr += \"fgh\";";
+    std::string script_text = "var str = \"asd\";\nstr += \"fgh\";";
     mlang::Script script { script_text };
     auto tokens = script.get_tokens();
 
     ASSERT_EQ(tokens.size(), 9);
-    ASSERT_EQ(tokens[0].type, mlang::token_types::kw_string);
+    ASSERT_EQ(tokens[0].type, mlang::token_types::kw_var);
     ASSERT_EQ(tokens[1].type, mlang::token_types::identifier);
     ASSERT_EQ(tokens[1].value_str, "str");
     ASSERT_EQ(tokens[2].type, mlang::token_types::equal_sign);
@@ -79,12 +77,12 @@ TEST(ScriptTest, Test3) {
 }
 
 TEST(ScriptTest, Test4) {
-    std::string script_text = "bool m_state = false;";
+    std::string script_text = "var m_state = false;";
     mlang::Script script { script_text };
     auto tokens = script.get_tokens();
 
     ASSERT_EQ(tokens.size(), 5);
-    ASSERT_EQ(tokens[0].type, mlang::token_types::kw_bool);
+    ASSERT_EQ(tokens[0].type, mlang::token_types::kw_var);
     ASSERT_EQ(tokens[1].type, mlang::token_types::identifier);
     ASSERT_EQ(tokens[1].value_str, "m_state");
     ASSERT_EQ(tokens[2].type, mlang::token_types::equal_sign);
@@ -93,52 +91,48 @@ TEST(ScriptTest, Test4) {
 }
 
 TEST(ScriptTest, Test5) {
-    std::string script_text = "number num;";
+    std::string script_text = "var num;";
     mlang::Script script { script_text };
     mlang::EnvStack env {};
     script.execute(env);
 
     ASSERT_EQ(env.has_variable("num"), true);
-    ASSERT_EQ(env.get_variable("num")->get_type(), mlang::value_types::number);
-    ASSERT_EQ(env.get_variable("num")->get_number(), 0);
+    ASSERT_EQ(env.get_variable("num")->get_typename(), mlang::None::type_name);
 }
 
 TEST(ScriptTest, Test6) {
-    std::string script_text = "number n; string s; bool b; array a;";
+    std::string script_text = "var n; var s; var b; var a;";
     mlang::Script script { script_text };
     mlang::EnvStack env {};
     script.execute(env);
 
     ASSERT_EQ(env.has_variable("n"), true);
-    ASSERT_EQ(env.get_variable("n")->get_type(), mlang::value_types::number);
-    ASSERT_EQ(env.get_variable("n")->get_number(), 0);
+    ASSERT_EQ(env.get_variable("n")->get_typename(), mlang::None::type_name);
     ASSERT_EQ(env.has_variable("s"), true);
-    ASSERT_EQ(env.get_variable("s")->get_type(), mlang::value_types::string);
-    ASSERT_EQ(env.get_variable("s")->get_string(), "");
+    ASSERT_EQ(env.get_variable("s")->get_typename(), mlang::None::type_name);
     ASSERT_EQ(env.has_variable("b"), true);
-    ASSERT_EQ(env.get_variable("b")->get_type(), mlang::value_types::boolean);
-    ASSERT_EQ(env.get_variable("b")->get_boolean(), false);
+    ASSERT_EQ(env.get_variable("b")->get_typename(), mlang::None::type_name);
     ASSERT_EQ(env.has_variable("a"), true);
-    ASSERT_EQ(env.get_variable("a")->get_type(), mlang::value_types::array);
+    ASSERT_EQ(env.get_variable("a")->get_typename(), mlang::None::type_name);
 }
 
 TEST(ScriptTest, Test7) {
-    std::string script_text = "number n; \n";
+    std::string script_text = "var n; \n";
     script_text += "n = 5;";
     mlang::Script script { script_text };
     mlang::EnvStack env {};
     script.execute(env);
 
     ASSERT_EQ(env.has_variable("n"), true);
-    ASSERT_EQ(env.get_variable("n")->get_type(), mlang::value_types::number);
+    ASSERT_EQ(env.get_variable("n")->get_typename(), mlang::Number::type_name);
     ASSERT_EQ(env.get_variable("n")->get_number(), 5);
 }
 
 TEST(ScriptTest, Test8) {
     std::string script_text;
-    script_text += "number a; \n";
-    script_text += "number b; \n";
-    script_text += "number c; \n";
+    script_text += "var a; \n";
+    script_text += "var b; \n";
+    script_text += "var c; \n";
     script_text += "a = 5; \n";
     script_text += "b = a + 2; \n";
     script_text += "c = 3 * ( a + 2 ) - ( b - 2 );";
@@ -147,13 +141,13 @@ TEST(ScriptTest, Test8) {
     script.execute(env);
 
     ASSERT_EQ(env.has_variable("a"), true);
-    ASSERT_EQ(env.get_variable("a")->get_type(), mlang::value_types::number);
+    ASSERT_EQ(env.get_variable("a")->get_typename(), mlang::Number::type_name);
     ASSERT_EQ(env.get_variable("a")->get_number(), 5);
     ASSERT_EQ(env.has_variable("b"), true);
-    ASSERT_EQ(env.get_variable("b")->get_type(), mlang::value_types::number);
+    ASSERT_EQ(env.get_variable("b")->get_typename(), mlang::Number::type_name);
     ASSERT_EQ(env.get_variable("b")->get_number(), 7);
     ASSERT_EQ(env.has_variable("c"), true);
-    ASSERT_EQ(env.get_variable("c")->get_type(), mlang::value_types::number);
+    ASSERT_EQ(env.get_variable("c")->get_typename(), mlang::Number::type_name);
     ASSERT_EQ(env.get_variable("c")->get_number(), 16);
 
     script_text.clear();
@@ -164,21 +158,21 @@ TEST(ScriptTest, Test8) {
     script2.execute(env);
 
     ASSERT_EQ(env.has_variable("a"), true);
-    ASSERT_EQ(env.get_variable("a")->get_type(), mlang::value_types::number);
+    ASSERT_EQ(env.get_variable("a")->get_typename(), mlang::Number::type_name);
     ASSERT_EQ(env.get_variable("a")->get_number(), 2);
     ASSERT_EQ(env.has_variable("b"), true);
-    ASSERT_EQ(env.get_variable("b")->get_type(), mlang::value_types::number);
+    ASSERT_EQ(env.get_variable("b")->get_typename(), mlang::Number::type_name);
     ASSERT_EQ(env.get_variable("b")->get_number(), 14);
     ASSERT_EQ(env.has_variable("c"), true);
-    ASSERT_EQ(env.get_variable("c")->get_type(), mlang::value_types::number);
+    ASSERT_EQ(env.get_variable("c")->get_typename(), mlang::Number::type_name);
     ASSERT_EQ(env.get_variable("c")->get_number(), 2);
 }
 
 TEST(ScriptTest, Test9) {
     std::string script_text;
-    script_text += "number a; \n";
-    script_text += "number b; \n";
-    script_text += "number c; \n";
+    script_text += "var a; \n";
+    script_text += "var b; \n";
+    script_text += "var c; \n";
     script_text += "a = 5; \n";
     script_text += "if (a == 5); \n";
     script_text += "    b = 10; \n";
@@ -191,22 +185,21 @@ TEST(ScriptTest, Test9) {
     script.execute(env);
 
     ASSERT_EQ(env.has_variable("a"), true);
-    ASSERT_EQ(env.get_variable("a")->get_type(), mlang::value_types::number);
+    ASSERT_EQ(env.get_variable("a")->get_typename(), mlang::Number::type_name);
     ASSERT_EQ(env.get_variable("a")->get_number(), 5);
     ASSERT_EQ(env.has_variable("b"), true);
-    ASSERT_EQ(env.get_variable("b")->get_type(), mlang::value_types::number);
+    ASSERT_EQ(env.get_variable("b")->get_typename(), mlang::Number::type_name);
     ASSERT_EQ(env.get_variable("b")->get_number(), 10);
     ASSERT_EQ(env.has_variable("c"), true);
-    ASSERT_EQ(env.get_variable("c")->get_type(), mlang::value_types::number);
-    ASSERT_EQ(env.get_variable("c")->get_number(), 0);
+    ASSERT_EQ(env.get_variable("c")->get_typename(), mlang::None::type_name);
 }
 
 TEST(ScriptTest, Test10) {
     std::string script_text;
-    script_text += "number a; \n";
-    script_text += "number b; \n";
-    script_text += "number c; \n";
-    script_text += "number d; \n";
+    script_text += "var a; \n";
+    script_text += "var b; \n";
+    script_text += "var c; \n";
+    script_text += "var d; \n";
     script_text += "a = 5; \n";
     script_text += "if (a == 5); \n";
     script_text += "    b = 10; \n";
@@ -232,43 +225,43 @@ TEST(ScriptTest, Test10) {
     script.execute(env);
 
     ASSERT_EQ(env.has_variable("a"), true);
-    ASSERT_EQ(env.get_variable("a")->get_type(), mlang::value_types::number);
+    ASSERT_EQ(env.get_variable("a")->get_typename(), mlang::Number::type_name);
     ASSERT_EQ(env.get_variable("a")->get_number(), 5);
     ASSERT_EQ(env.has_variable("b"), true);
-    ASSERT_EQ(env.get_variable("b")->get_type(), mlang::value_types::number);
+    ASSERT_EQ(env.get_variable("b")->get_typename(), mlang::Number::type_name);
     ASSERT_EQ(env.get_variable("b")->get_number(), 10);
     ASSERT_EQ(env.has_variable("c"), true);
-    ASSERT_EQ(env.get_variable("c")->get_type(), mlang::value_types::number);
+    ASSERT_EQ(env.get_variable("c")->get_typename(), mlang::Number::type_name);
     ASSERT_EQ(env.get_variable("c")->get_number(), 4);
     ASSERT_EQ(env.has_variable("d"), true);
-    ASSERT_EQ(env.get_variable("d")->get_type(), mlang::value_types::number);
+    ASSERT_EQ(env.get_variable("d")->get_typename(), mlang::Number::type_name);
     ASSERT_EQ(env.get_variable("d")->get_number(), 102);
 }
 
 TEST(ScriptTest, Test11) {
     std::string script_text;
-    script_text += "number a = 5; \n";
-    script_text += "number b = a + 2; \n";
-    script_text += "number c = 3 * ( a + 2 ) - ( b - 2 );";
+    script_text += "var a = 5; \n";
+    script_text += "var b = a + 2; \n";
+    script_text += "var c = 3 * ( a + 2 ) - ( b - 2 );";
     mlang::Script script { script_text };
     mlang::EnvStack env {};
     script.execute(env);
 
     ASSERT_EQ(env.has_variable("a"), true);
-    ASSERT_EQ(env.get_variable("a")->get_type(), mlang::value_types::number);
+    ASSERT_EQ(env.get_variable("a")->get_typename(), mlang::Number::type_name);
     ASSERT_EQ(env.get_variable("a")->get_number(), 5);
     ASSERT_EQ(env.has_variable("b"), true);
-    ASSERT_EQ(env.get_variable("b")->get_type(), mlang::value_types::number);
+    ASSERT_EQ(env.get_variable("b")->get_typename(), mlang::Number::type_name);
     ASSERT_EQ(env.get_variable("b")->get_number(), 7);
     ASSERT_EQ(env.has_variable("c"), true);
-    ASSERT_EQ(env.get_variable("c")->get_type(), mlang::value_types::number);
+    ASSERT_EQ(env.get_variable("c")->get_typename(), mlang::Number::type_name);
     ASSERT_EQ(env.get_variable("c")->get_number(), 16);
 }
 
 TEST(ScriptTest, Test12) {
     std::string script_text;
-    script_text += "number a = 5; \n";
-    script_text += "number i; \n";
+    script_text += "var a = 5; \n";
+    script_text += "var i; \n";
     script_text += "for (i = 0; i < 10; i += 1); \n";
     script_text += "    a += 2; \n";
     script_text += "end; \n";
@@ -277,25 +270,25 @@ TEST(ScriptTest, Test12) {
     script.execute(env);
 
     ASSERT_EQ(env.has_variable("a"), true);
-    ASSERT_EQ(env.get_variable("a")->get_type(), mlang::value_types::number);
+    ASSERT_EQ(env.get_variable("a")->get_typename(), mlang::Number::type_name);
     ASSERT_EQ(env.get_variable("a")->get_number(), 25);
     ASSERT_EQ(env.has_variable("i"), true);
-    ASSERT_EQ(env.get_variable("i")->get_type(), mlang::value_types::number);
+    ASSERT_EQ(env.get_variable("i")->get_typename(), mlang::Number::type_name);
     ASSERT_EQ(env.get_variable("i")->get_number(), 10);
 }
 
 TEST(ScriptTest, Test13) {
     std::string script_text;
-    script_text += "number a = 5; \n";
+    script_text += "var a = 5; \n";
     script_text += "if (a == 5); \n";
-    script_text += "    number b = 2; \n";
+    script_text += "    var b = 2; \n";
     script_text += "end; \n";
     mlang::Script script { script_text };
     mlang::EnvStack env {};
     script.execute(env);
 
     ASSERT_EQ(env.has_variable("a"), true);
-    ASSERT_EQ(env.get_variable("a")->get_type(), mlang::value_types::number);
+    ASSERT_EQ(env.get_variable("a")->get_typename(), mlang::Number::type_name);
     ASSERT_EQ(env.get_variable("a")->get_number(), 5);
     ASSERT_EQ(env.has_variable("b"), false);
 }

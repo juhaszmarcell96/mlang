@@ -9,8 +9,8 @@
 
 TEST(ErrorTest, Test0) {
     std::string script_text;
-    script_text += "number a = 5; \n";
-    script_text += "number i = a"; // missing ';'
+    script_text += "var a = 5; \n";
+    script_text += "var i = a"; // missing ';'
     mlang::Script script { script_text };
     mlang::EnvStack env {};
 
@@ -26,8 +26,8 @@ TEST(ErrorTest, Test0) {
 
 TEST(ErrorTest, Test1) {
     std::string script_text;
-    script_text += "string a; \n";
-    script_text += "number i = a;"; // incompatible types
+    script_text += "var a; \n";
+    script_text += "var i = a;"; // incompatible types
     mlang::Script script { script_text };
     mlang::EnvStack env {};
 

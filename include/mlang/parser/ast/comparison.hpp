@@ -18,10 +18,10 @@ public:
         std::shared_ptr<Object> rhs;
         m_left->execute(env, lhs);
         m_right->execute(env, rhs);
-        if (!lhs) throw RuntimeError{"left hand side of addition returned null"};
-        if (!rhs) throw RuntimeError{"right hand side of addition returned null"};
+        if (!lhs) throw RuntimeError{"left hand side of " + operators::binary_equality + "' returned null"};
+        if (!rhs) throw RuntimeError{"right hand side of " + operators::binary_equality + "' returned null"};
         return_val = env.create_value(lhs->get_typename());
-        lhs->call("binary_equality", std::vector<Object*>{ rhs.get() }, return_val);
+        lhs->call(operators::binary_equality, std::vector<Object*>{ rhs.get() }, return_val);
     }
     void print () const override {
         std::cout << "( ";
@@ -46,10 +46,10 @@ public:
         std::shared_ptr<Object> rhs;
         m_left->execute(env, lhs);
         m_right->execute(env, rhs);
-        if (!lhs) throw RuntimeError{"left hand side of addition returned null"};
-        if (!rhs) throw RuntimeError{"right hand side of addition returned null"};
+        if (!lhs) throw RuntimeError{"left hand side of " + operators::binary_inequality + "' returned null"};
+        if (!rhs) throw RuntimeError{"right hand side of " + operators::binary_inequality + "' returned null"};
         return_val = env.create_value(lhs->get_typename());
-        lhs->call("binary_inequality", std::vector<Object*>{ rhs.get() }, return_val);
+        lhs->call(operators::binary_inequality, std::vector<Object*>{ rhs.get() }, return_val);
     }
     void print () const override {
         std::cout << "( ";
@@ -74,10 +74,10 @@ public:
         std::shared_ptr<Object> rhs;
         m_left->execute(env, lhs);
         m_right->execute(env, rhs);
-        if (!lhs) throw RuntimeError{"left hand side of addition returned null"};
-        if (!rhs) throw RuntimeError{"right hand side of addition returned null"};
+        if (!lhs) throw RuntimeError{"left hand side of " + operators::comparison_greater + "' returned null"};
+        if (!rhs) throw RuntimeError{"right hand side of " + operators::comparison_greater + "' returned null"};
         return_val = env.create_value(lhs->get_typename());
-        lhs->call("comparison_greater", std::vector<Object*>{ rhs.get() }, return_val);
+        lhs->call(operators::comparison_greater, std::vector<Object*>{ rhs.get() }, return_val);
     }
     void print () const override {
         std::cout << "( ";
@@ -102,10 +102,10 @@ public:
         std::shared_ptr<Object> rhs;
         m_left->execute(env, lhs);
         m_right->execute(env, rhs);
-        if (!lhs) throw RuntimeError{"left hand side of addition returned null"};
-        if (!rhs) throw RuntimeError{"right hand side of addition returned null"};
+        if (!lhs) throw RuntimeError{"left hand side of " + operators::comparison_less + "' returned null"};
+        if (!rhs) throw RuntimeError{"right hand side of " + operators::comparison_less + "' returned null"};
         return_val = env.create_value(lhs->get_typename());
-        lhs->call("comparison_less", std::vector<Object*>{ rhs.get() }, return_val);
+        lhs->call(operators::comparison_less, std::vector<Object*>{ rhs.get() }, return_val);
     }
     void print () const override {
         std::cout << "( ";
@@ -130,10 +130,10 @@ public:
         std::shared_ptr<Object> rhs;
         m_left->execute(env, lhs);
         m_right->execute(env, rhs);
-        if (!lhs) throw RuntimeError{"left hand side of addition returned null"};
-        if (!rhs) throw RuntimeError{"right hand side of addition returned null"};
+        if (!lhs) throw RuntimeError{"left hand side of " + operators::comparison_greater_equal + "' returned null"};
+        if (!rhs) throw RuntimeError{"right hand side of " + operators::comparison_greater_equal + "' returned null"};
         return_val = env.create_value(lhs->get_typename());
-        lhs->call("comparison_greater_equal", std::vector<Object*>{ rhs.get() }, return_val);
+        lhs->call(operators::comparison_greater_equal, std::vector<Object*>{ rhs.get() }, return_val);
     }
     void print () const override {
         std::cout << "( ";
@@ -158,10 +158,10 @@ public:
         std::shared_ptr<Object> rhs;
         m_left->execute(env, lhs);
         m_right->execute(env, rhs);
-        if (!lhs) throw RuntimeError{"left hand side of addition returned null"};
-        if (!rhs) throw RuntimeError{"right hand side of addition returned null"};
+        if (!lhs) throw RuntimeError{"left hand side of " + operators::comparison_less_equal + "' returned null"};
+        if (!rhs) throw RuntimeError{"right hand side of " + operators::comparison_less_equal + "' returned null"};
         return_val = env.create_value(lhs->get_typename());
-        lhs->call("comparison_less_equal", std::vector<Object*>{ rhs.get() }, return_val);
+        lhs->call(operators::comparison_less_equal, std::vector<Object*>{ rhs.get() }, return_val);
     }
     void print () const override {
         std::cout << "( ";

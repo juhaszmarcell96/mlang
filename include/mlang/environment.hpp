@@ -4,6 +4,7 @@
 #include "mlang/object/none.hpp"
 #include "mlang/object/number.hpp"
 #include "mlang/object/string.hpp"
+#include "mlang/object/boolean.hpp"
 #include "mlang/function.hpp"
 #include "mlang/exception.hpp"
 
@@ -19,9 +20,10 @@ class FunctionDeclNode;
 
 class Environment {
 private:
-    static inline std::map<std::string, std::shared_ptr<ObjectFactory>> m_types { { "none", std::make_shared<NoneFactory>() },
-                                                                                  { "number", std::make_shared<NumberFactory>() },
-                                                                                  { "string", std::make_shared<StringFactory>() }   };
+    static inline std::map<std::string, std::shared_ptr<ObjectFactory>> m_types { { None::type_name, std::make_shared<NoneFactory>() },
+                                                                                  { Number::type_name, std::make_shared<NumberFactory>() },
+                                                                                  { Boolean::type_name, std::make_shared<BooleanFactory>() },
+                                                                                  { String::type_name, std::make_shared<StringFactory>() }   };
     std::map<std::string, std::shared_ptr<Object>> m_variables;
     std::map<std::string, std::shared_ptr<Function>> m_functions;
 

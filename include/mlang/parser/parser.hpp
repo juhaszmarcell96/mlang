@@ -10,6 +10,7 @@
 #include "mlang/object/object.hpp"
 #include "mlang/object/string.hpp"
 #include "mlang/object/number.hpp"
+#include "mlang/object/boolean.hpp"
 
 #define TRACE_PARSER 0
 
@@ -555,16 +556,16 @@ private:
             next();
             return std::make_unique<ValueNode>(std::make_shared<String>(current_value));
         }
-        //if (check_type(token_types::kw_true)) {
-        //    trace("primary true");
-        //    next();
-        //    return std::make_unique<ValueNode>(Value{true});
-        //}
-        //if (check_type(token_types::kw_false)) {
-        //    trace("primary false");
-        //    next();
-        //    return std::make_unique<ValueNode>(Value{false});
-        //}
+        if (check_type(token_types::kw_true)) {
+            trace("primary true");
+            next();
+            return std::make_unique<ValueNode>(std::make_shared<Boolean>(true));
+        }
+        if (check_type(token_types::kw_false)) {
+            trace("primary false");
+            next();
+            return std::make_unique<ValueNode>(std::make_shared<Boolean>(false));
+        }
         if (check_type(token_types::round_bracket_open)) {
             trace("primary '('");
             assert_next("statement terminated unexpectedly");

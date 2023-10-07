@@ -3,6 +3,7 @@
 #include <string>
 
 #include "mlang/object/object.hpp"
+#include "mlang/object/boolean.hpp"
 
 namespace mlang {
 
@@ -14,54 +15,31 @@ public:
     Number (bool lvalue) : Object(lvalue) {}
     Number (const double value) : Object(false), m_value(value) {}
     Number (const double value, bool lvalue) : Object(lvalue), m_value(value) {}
+    Number (const int value) : Object(false), m_value(value) {}
+    Number (const int value, bool lvalue) : Object(lvalue), m_value(value) {}
     ~Number () = default;
+    
+    const static inline std::string type_name { "Number" };
 
     const double get () const { return m_value; }
 
     /* construct */
     void construct (const std::vector<Object*>& params) override {
-        if (params.size() == 0) {
-            /* default constructor */
-            m_value = 0.0;
-        }
-        else if (params.size() == 1) {
-            /* copy constructor */
-            if (params[0] == nullptr) {
-                throw RuntimeError { "number copy constructor parameter is null" };
-            }
-            Number* num_ptr = dynamic_cast<Number*>(params[0]);
-            if (num_ptr == nullptr) {
-                throw RuntimeError { "number copy constructor parameter is not a number object" };
-            }
-            m_value = num_ptr->get();
-        }
-        else {
-            throw RuntimeError { "Too many arguments in number constructor" };
-        }
+        if (params.size() == 0) { m_value = 0.0; }
+        assert_params(params, 1, type_name, operators::construct);
+        assert_parameter(params[0], type_name, operators::construct);
+        const Number* num_ptr = assert_cast<const Number*>(params[0], type_name);
+        m_value = num_ptr->get();
     }
     /* assign */
-    Object* assign (const std::vector<Object*>& params) override {
-        if (params.size() == 1) {
-            /* copy assignment */
-            if (params[0] == nullptr) {
-                throw RuntimeError { "number assignment parameter is null" };
-            }
-            Number* num_ptr = dynamic_cast<Number*>(params[0]);
-            if (num_ptr == nullptr) {
-                throw RuntimeError { "number assignment parameter is not a number object" };
-            }
-            m_value = num_ptr->get();
-        }
-        else {
-            throw RuntimeError { "invalid number of arguments in number assignment" };
-        }
-        return this;
+    void assign (const std::vector<Object*>& params) override {
+        assert_params(params, 1, type_name, operators::assign);
+        assert_parameter(params[0], type_name, operators::assign);
+        const Number* num_ptr = assert_cast<const Number*>(params[0], type_name);
+        m_value = num_ptr->get();
     }
     void assign (const Object* param) override {
-        if (param == nullptr) {
-            throw RuntimeError { "assignment argument is null" };
-        }
-        const Number* num_ptr = dynamic_cast<const Number*>(param);
+        const Number* num_ptr = assert_cast<const Number*>(param, type_name);
         m_value = num_ptr->get();
     }
     /* destruct */
@@ -69,64 +47,175 @@ public:
         m_value = 0.0;
     }
 
-    void binary_add (const std::vector<Object*>& params, std::shared_ptr<Object>& ret_val) {
-        if (params.size() != 1) { throw RuntimeError { "no operand found for binary addition" }; }
-        Number* num_ptr = dynamic_cast<Number*>(params[0]);
-        if (num_ptr == nullptr) { throw RuntimeError { "invalid type for addition" }; }
-        ret_val = std::make_shared<Number>(m_value + num_ptr->get(), false);
+    bool is_true () const override {
+        return m_value != 0;
     }
 
-    void binary_sub (const std::vector<Object*>& params, std::shared_ptr<Object>& ret_val) {
-        if (params.size() != 1) { throw RuntimeError { "no operand found for binary subtraction" }; }
-        Number* num_ptr = dynamic_cast<Number*>(params[0]);
-        if (num_ptr == nullptr) { throw RuntimeError { "invalid type for subtraction" }; }
-        ret_val = std::make_shared<Number>(m_value - num_ptr->get(), false);
+    std::shared_ptr<Object> binary_add (const std::vector<Object*>& params) {
+        assert_params(params, 1, type_name, operators::binary_add);
+        assert_parameter(params[0], type_name, operators::binary_add);
+        const Number* num_ptr = assert_cast<const Number*>(params[0], type_name);
+        return std::make_shared<Number>(m_value + num_ptr->get(), false);
     }
 
-    void binary_mul (const std::vector<Object*>& params, std::shared_ptr<Object>& ret_val) {
-        if (params.size() != 1) { throw RuntimeError { "no operand found for binary addition" }; }
-        Number* num_ptr = dynamic_cast<Number*>(params[0]);
-        if (num_ptr == nullptr) { throw RuntimeError { "invalid type for multiplication" }; }
-        ret_val = std::make_shared<Number>(m_value * num_ptr->get(), false);
+    std::shared_ptr<Object> binary_sub (const std::vector<Object*>& params) {
+        assert_params(params, 1, type_name, operators::binary_sub);
+        assert_parameter(params[0], type_name, operators::binary_sub);
+        const Number* num_ptr = assert_cast<const Number*>(params[0], type_name);
+        return std::make_shared<Number>(m_value - num_ptr->get(), false);
     }
 
-    void binary_div (const std::vector<Object*>& params, std::shared_ptr<Object>& ret_val) {
-        if (params.size() != 1) { throw RuntimeError { "no operand found for binary addition" }; }
-        Number* num_ptr = dynamic_cast<Number*>(params[0]);
-        if (num_ptr == nullptr) { throw RuntimeError { "invalid type for division" }; }
-        ret_val = std::make_shared<Number>(m_value / num_ptr->get(), false);
+    std::shared_ptr<Object> binary_mul (const std::vector<Object*>& params) {
+        assert_params(params, 1, type_name, operators::binary_mul);
+        assert_parameter(params[0], type_name, operators::binary_mul);
+        const Number* num_ptr = assert_cast<const Number*>(params[0], type_name);
+        return std::make_shared<Number>(m_value * num_ptr->get(), false);
+    }
+
+    std::shared_ptr<Object> binary_div (const std::vector<Object*>& params) {
+        assert_params(params, 1, type_name, operators::binary_div);
+        assert_parameter(params[0], type_name, operators::binary_div);
+        const Number* num_ptr = assert_cast<const Number*>(params[0], type_name);
+        return std::make_shared<Number>(m_value / num_ptr->get(), false);
+    }
+
+    void add_equal (const std::vector<Object*>& params) {
+        assert_params(params, 1, type_name, operators::add_equal);
+        assert_parameter(params[0], type_name, operators::add_equal);
+        const Number* num_ptr = assert_cast<const Number*>(params[0], type_name);
+        m_value += num_ptr->get();
+    }
+
+    void sub_equal (const std::vector<Object*>& params) {
+        assert_params(params, 1, type_name, operators::sub_equal);
+        assert_parameter(params[0], type_name, operators::sub_equal);
+        const Number* num_ptr = assert_cast<const Number*>(params[0], type_name);
+        m_value -= num_ptr->get();
+    }
+
+    void mul_equal (const std::vector<Object*>& params) {
+        assert_params(params, 1, type_name, operators::mul_equal);
+        assert_parameter(params[0], type_name, operators::mul_equal);
+        const Number* num_ptr = assert_cast<const Number*>(params[0], type_name);
+        m_value *= num_ptr->get();
+    }
+
+    void div_equal (const std::vector<Object*>& params) {
+        assert_params(params, 1, type_name, operators::div_equal);
+        assert_parameter(params[0], type_name, operators::div_equal);
+        const Number* num_ptr = assert_cast<const Number*>(params[0], type_name);
+        m_value /= num_ptr->get();
+    }
+
+    std::shared_ptr<Object> comparison_equal (const std::vector<Object*>& params) {
+        assert_params(params, 1, type_name, operators::binary_equality);
+        assert_parameter(params[0], type_name, operators::binary_equality);
+        const Number* num_ptr = assert_cast<const Number*>(params[0], type_name);
+        return std::make_shared<Boolean>(m_value == num_ptr->get(), false);
+    }
+
+    std::shared_ptr<Object> comparison_not_equal (const std::vector<Object*>& params) {
+        assert_params(params, 1, type_name, operators::binary_inequality);
+        assert_parameter(params[0], type_name, operators::binary_inequality);
+        const Number* num_ptr = assert_cast<const Number*>(params[0], type_name);
+        return std::make_shared<Boolean>(m_value != num_ptr->get(), false);
+    }
+
+    std::shared_ptr<Object> comparison_greater (const std::vector<Object*>& params) {
+        assert_params(params, 1, type_name, operators::comparison_greater);
+        assert_parameter(params[0], type_name, operators::comparison_greater);
+        const Number* num_ptr = assert_cast<const Number*>(params[0], type_name);
+        return std::make_shared<Boolean>(m_value > num_ptr->get(), false);
+    }
+
+    std::shared_ptr<Object> comparison_less (const std::vector<Object*>& params) {
+        assert_params(params, 1, type_name, operators::comparison_less);
+        assert_parameter(params[0], type_name, operators::comparison_less);
+        const Number* num_ptr = assert_cast<const Number*>(params[0], type_name);
+        return std::make_shared<Boolean>(m_value < num_ptr->get(), false);
+    }
+
+    std::shared_ptr<Object> comparison_greater_equal (const std::vector<Object*>& params) {
+        assert_params(params, 1, type_name, operators::comparison_greater_equal);
+        assert_parameter(params[0], type_name, operators::comparison_greater_equal);
+        const Number* num_ptr = assert_cast<const Number*>(params[0], type_name);
+        return std::make_shared<Boolean>(m_value >= num_ptr->get(), false);
+    }
+
+    std::shared_ptr<Object> comparison_less_equal (const std::vector<Object*>& params) {
+        assert_params(params, 1, type_name, operators::comparison_less_equal);
+        assert_parameter(params[0], type_name, operators::comparison_less_equal);
+        const Number* num_ptr = assert_cast<const Number*>(params[0], type_name);
+        return std::make_shared<Boolean>(m_value <= num_ptr->get(), false);
+    }
+
+    std::shared_ptr<Object> unary_minus () {
+        return std::make_shared<Number>(-m_value, false);
     }
 
 
     void call (const std::string& func, const std::vector<Object*>& params, std::shared_ptr<Object>& ret_val) override {
-        if (func.compare("construct") == 0) {
-            this->construct(params);
+        if (func.compare(operators::construct) == 0) {
+            construct(params);
         }
-        //else if (func.compare("assign") == 0) {
-        //    ret_val = *(this->assign(params));
-        //}
-        else if (func.compare("destruct") == 0) {
-            this->destruct();
+        else if (func.compare(operators::assign) == 0) {
+            assign(params);
         }
-        else if (func.compare("binary_add") == 0) {
-            this->binary_add(params, ret_val);
+        else if (func.compare(operators::destruct) == 0) {
+            destruct();
         }
-        else if (func.compare("binary_sub") == 0) {
-            this->binary_sub(params, ret_val);
+        else if (func.compare(operators::binary_add) == 0) {
+            ret_val = binary_add(params);
         }
-        else if (func.compare("binary_mul") == 0) {
-            this->binary_mul(params, ret_val);
+        else if (func.compare(operators::binary_sub) == 0) {
+            ret_val = binary_sub(params);
         }
-        else if (func.compare("binary_div") == 0) {
-            this->binary_div(params, ret_val);
+        else if (func.compare(operators::binary_mul) == 0) {
+            ret_val = binary_mul(params);
+        }
+        else if (func.compare(operators::binary_div) == 0) {
+            ret_val = binary_div(params);
+        }
+        else if (func.compare(operators::add_equal) == 0) {
+            add_equal(params);
+        }
+        else if (func.compare(operators::sub_equal) == 0) {
+            sub_equal(params);
+        }
+        else if (func.compare(operators::mul_equal) == 0) {
+            mul_equal(params);
+        }
+        else if (func.compare(operators::div_equal) == 0) {
+            div_equal(params);
+        }
+        else if (func.compare(operators::binary_equality) == 0) {
+            ret_val = comparison_equal(params);
+        }
+        else if (func.compare(operators::binary_inequality) == 0) {
+            ret_val = comparison_not_equal(params);
+        }
+        else if (func.compare(operators::comparison_greater) == 0) {
+            ret_val = comparison_greater(params);
+        }
+        else if (func.compare(operators::comparison_less) == 0) {
+            ret_val = comparison_less(params);
+        }
+        else if (func.compare(operators::comparison_greater_equal) == 0) {
+            ret_val = comparison_greater_equal(params);
+        }
+        else if (func.compare(operators::comparison_less_equal) == 0) {
+            ret_val = comparison_less_equal(params);
+        }
+        else if (func.compare(operators::unary_minus) == 0) {
+            ret_val = unary_minus();
         }
         else {
-            throw RuntimeError { "object of type 'number' has no '" + func + "' member function" };
+            throw RuntimeError { "object of type '" + type_name + "' has no '" + func + "' member function" };
         }
     }
 
     std::string get_string () const override { return std::to_string(m_value); }
-    std::string get_typename () const override { return "number"; }
+    std::string get_typename () const override { return type_name; }
     double get_number () const override { return m_value; }
 };
 
