@@ -11,12 +11,11 @@ public:
     explicit VariableNode(const std::string& var_name) : Node(ast_node_types::variable), m_var_name(var_name) {}
     ~VariableNode () = default;
     const std::string& get_var_name () const { return m_var_name; }
-    void execute (EnvStack& env, Value& return_val) override {
+    void execute (EnvStack& env, std::shared_ptr<Object>& return_val) override {
         if (!env.has_variable(m_var_name)) {
             throw undefined_var_error{m_var_name};
         }
-        Value* m_val = env.get_variable(m_var_name);
-        return_val = *m_val;
+        return_val = env.get_variable(m_var_name);
     }
     void print () const override { std::cout << "var:" << m_var_name; }
     

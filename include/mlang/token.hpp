@@ -73,10 +73,7 @@ enum class token_types {
     kw_case,               /* case */
     kw_default,            /* default */
     kw_function,           /* function */
-    kw_number,             /* number */
-    kw_string,             /* string */
-    kw_array,              /* array */
-    kw_bool,               /* bool */
+    kw_var,                /* var */
     kw_return,             /* return */
     kw_exit,               /* exit */
     kw_print               /* print */
@@ -165,10 +162,7 @@ struct Token {
             case token_types::kw_case : { return 4; }
             case token_types::kw_default : { return 7; }
             case token_types::kw_function : { return 8; }
-            case token_types::kw_number : { return 6; }
-            case token_types::kw_string : { return 6; }
-            case token_types::kw_array : { return 5; }
-            case token_types::kw_bool : { return 4; }
+            case token_types::kw_var : { return 3; }
             case token_types::kw_return : { return 6; }
             case token_types::kw_exit : { return 4; }
             case token_types::kw_print : { return 5; }
@@ -244,10 +238,7 @@ struct Token {
             case token_types::kw_case : { return "case"; }
             case token_types::kw_default : { return "default"; }
             case token_types::kw_function : { return "function"; }
-            case token_types::kw_number : { return "number"; }
-            case token_types::kw_string : { return "string"; }
-            case token_types::kw_array : { return "array"; }
-            case token_types::kw_bool : { return "bool"; }
+            case token_types::kw_var : { return "var"; }
             case token_types::kw_return : { return "return"; }
             case token_types::kw_exit : { return "exit"; }
             case token_types::kw_print : { return "print"; }

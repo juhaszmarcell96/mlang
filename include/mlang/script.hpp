@@ -7,7 +7,7 @@
 
 #include "tokenizer/tokenizer.hpp"
 #include "mlang/exception.hpp"
-#include "mlang/value.hpp"
+#include "mlang/object/object.hpp"
 #include "mlang/token.hpp"
 #include "mlang/parser/parser.hpp"
 #include "mlang/environment.hpp"
@@ -104,21 +104,9 @@ public:
                         debug("token with type 'function'");
                         m_tokens.push_back(Token{token_types::kw_function, token.get_line(), token.get_pos()});
                     }
-                    else if (token.get_value().compare("number") == 0) {
+                    else if (token.get_value().compare("var") == 0) {
                         debug("token with type 'variable'");
-                        m_tokens.push_back(Token{token_types::kw_number, token.get_line(), token.get_pos()});
-                    }
-                    else if (token.get_value().compare("string") == 0) {
-                        debug("token with type 'variable'");
-                        m_tokens.push_back(Token{token_types::kw_string, token.get_line(), token.get_pos()});
-                    }
-                    else if (token.get_value().compare("array") == 0) {
-                        debug("token with type 'variable'");
-                        m_tokens.push_back(Token{token_types::kw_array, token.get_line(), token.get_pos()});
-                    }
-                    else if (token.get_value().compare("bool") == 0) {
-                        debug("token with type 'variable'");
-                        m_tokens.push_back(Token{token_types::kw_bool, token.get_line(), token.get_pos()});
+                        m_tokens.push_back(Token{token_types::kw_var, token.get_line(), token.get_pos()});
                     }
                     else if (token.get_value().compare("return") == 0) {
                         debug("token with type 'return'");
@@ -465,7 +453,7 @@ public:
     void execute (EnvStack& env) {
         Parser parser {};
         node_ptr root = parser.parse( m_tokens );
-        Value ret_val {};
+        std::shared_ptr<Object> ret_val;
         //root->print();
         root->execute(env, ret_val);
         //env.step();

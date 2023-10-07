@@ -16,7 +16,7 @@ public:
     ForStatementNode(Node* parent_scope) : Node(ast_node_types::for_statement), m_parent_scope(parent_scope) {}
     ~ForStatementNode () = default;
     const std::vector<node_ptr>& get_nodes () const { return m_nodes; }
-    void execute (EnvStack& env, Value& return_val) override {
+    void execute (EnvStack& env, std::shared_ptr<Object>& return_val) override {
         env.enter_scope();
         /* assignments */
         for (auto& node : m_assignments) {
@@ -25,10 +25,11 @@ public:
         while (true) {
             /* check tests */
             for (auto& test : m_tests) {
-                Value test_val {};
+                std::shared_ptr<Object> test_val;
                 test->execute(env, test_val);
+                if (!test_val) throw RuntimeError{"for loop condition returned null"};
                 /* if a condition is not satisfied, break the loop */
-                if (!test_val) {
+                if (!test_val->is_true()) {
                     return;
                 }
             }

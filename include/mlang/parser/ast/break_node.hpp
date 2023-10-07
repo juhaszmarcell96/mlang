@@ -9,7 +9,7 @@ class BreakNode : public Node {
 public:
     BreakNode() : Node(ast_node_types::break_node) {}
     ~BreakNode () = default;
-    void execute (EnvStack& env, Value& return_val) override {
+    void execute (EnvStack& env, std::shared_ptr<Object>& return_val) override {
         throw Break {};
     }
     void print () const override {

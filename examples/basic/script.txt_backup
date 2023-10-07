@@ -2,3 +2,28 @@ function sum (number a, number b) -> number;
     number sum = a + b;
     return b;
 end;
+
+number num;
+num = 2 + 3 - 4 * ( 8 + 9 ) / 2;
+print("%d", num);
+string s;
+num += 0.5;
+s = "the number is : ";
+print("%s%d", s, num);
+print("and in float it is %f", num);
+bool b;
+b = false;
+print("my bool has the %% value '%b'", b);
+if (b);
+    print("my bool is true");
+else;
+    print("my bool is false");
+end;
+
+number i;
+for (i = 0; i < 10; i += 1);
+    print("%d", i);
+    if (i == 7);
+        print("yay");
+    end;
+end;

@@ -13,18 +13,12 @@ public:
     ~AssignmentOperationNode () = default;
     const std::string& get_var_name () const { return m_var_name; }
     const Node* const get_right () const { return m_right.get(); }
-    void execute (EnvStack& env, Value& return_val) override {
-        if (!env.has_variable(m_var_name)) {
-            throw undefined_var_error{m_var_name};
-        }
-        Value ret_val {};
-        m_right->execute(env, ret_val);
-        Value* m_val = env.get_variable(m_var_name);
-        if (m_val->get_type() != ret_val.get_type()) {
-            throw incompatible_type_error {};
-        }
-        *m_val = ret_val;
-        return_val = *m_val;
+    void execute (EnvStack& env, std::shared_ptr<Object>& return_val) override {
+        std::shared_ptr<Object> rhs;
+        m_right->execute(env, rhs);
+        if (!rhs) throw RuntimeError{"right hand side of addition returned null"};
+        env.set_variable(m_var_name, rhs.get());
+        //return_val = env.get_variable(m_var_name);
     }
     void print () const override {
         std::cout << m_var_name << "=";
@@ -41,15 +35,11 @@ public:
     ~AddEqualOperationNode () = default;
     const std::string& get_var_name () const { return m_var_name; }
     const Node* const get_right () const { return m_right.get(); }
-    void execute (EnvStack& env, Value& return_val) override {
-        if (!env.has_variable(m_var_name)) {
-            throw undefined_var_error{m_var_name};
-        }
-        Value rhs {};
+    void execute (EnvStack& env, std::shared_ptr<Object>& return_val) override {
+        std::shared_ptr<Object> rhs;
         m_right->execute(env, rhs);
-        Value* m_val = env.get_variable(m_var_name);
-        *m_val += rhs;
-        return_val = *m_val;
+        if (!rhs) throw RuntimeError{"right hand side of addition returned null"};
+        env.get_variable(m_var_name)->call("add_equal", std::vector<Object*>{ rhs.get() }, return_val);
     }
     void print () const override {
         std::cout << m_var_name << "+=";
@@ -66,15 +56,11 @@ public:
     ~SubEqualOperationNode () = default;
     const std::string& get_var_name () const { return m_var_name; }
     const Node* const get_right () const { return m_right.get(); }
-    void execute (EnvStack& env, Value& return_val) override {
-        if (!env.has_variable(m_var_name)) {
-            throw undefined_var_error{m_var_name};
-        }
-        Value rhs {};
+    void execute (EnvStack& env, std::shared_ptr<Object>& return_val) override {
+        std::shared_ptr<Object> rhs;
         m_right->execute(env, rhs);
-        Value* m_val = env.get_variable(m_var_name);
-        *m_val -= rhs;
-        return_val = *m_val;
+        if (!rhs) throw RuntimeError{"right hand side of addition returned null"};
+        env.get_variable(m_var_name)->call("sub_equal", std::vector<Object*>{ rhs.get() }, return_val);
     }
     void print () const override {
         std::cout << m_var_name << "-=";
@@ -91,15 +77,11 @@ public:
     ~MulEqualOperationNode () = default;
     const std::string& get_var_name () const { return m_var_name; }
     const Node* const get_right () const { return m_right.get(); }
-    void execute (EnvStack& env, Value& return_val) override {
-        if (!env.has_variable(m_var_name)) {
-            throw undefined_var_error{m_var_name};
-        }
-        Value rhs {};
+    void execute (EnvStack& env, std::shared_ptr<Object>& return_val) override {
+        std::shared_ptr<Object> rhs;
         m_right->execute(env, rhs);
-        Value* m_val = env.get_variable(m_var_name);
-        *m_val *= rhs;
-        return_val = *m_val;
+        if (!rhs) throw RuntimeError{"right hand side of addition returned null"};
+        env.get_variable(m_var_name)->call("mul_equal", std::vector<Object*>{ rhs.get() }, return_val);
     }
     void print () const override {
         std::cout << m_var_name << "*=";
@@ -116,15 +98,11 @@ public:
     ~DivEqualOperationNode () = default;
     const std::string& get_var_name () const { return m_var_name; }
     const Node* const get_right () const { return m_right.get(); }
-    void execute (EnvStack& env, Value& return_val) override {
-        if (!env.has_variable(m_var_name)) {
-            throw undefined_var_error{m_var_name};
-        }
-        Value rhs {};
+    void execute (EnvStack& env, std::shared_ptr<Object>& return_val) override {
+        std::shared_ptr<Object> rhs;
         m_right->execute(env, rhs);
-        Value* m_val = env.get_variable(m_var_name);
-        *m_val /= rhs;
-        return_val = *m_val;
+        if (!rhs) throw RuntimeError{"right hand side of addition returned null"};
+        env.get_variable(m_var_name)->call("div_equal", std::vector<Object*>{ rhs.get() }, return_val);
     }
     void print () const override {
         std::cout << m_var_name << "/=";

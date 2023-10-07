@@ -11,7 +11,7 @@ public:
     MainNode() : Node(ast_node_types::main) {}
     ~MainNode () = default;
     const std::vector<node_ptr>& get_nodes () const { return m_nodes; }
-    void execute (EnvStack& env, Value& return_val) override {
+    void execute (EnvStack& env, std::shared_ptr<Object>& return_val) override {
         for (auto& node : m_nodes) {
             node->execute(env, return_val);
         }

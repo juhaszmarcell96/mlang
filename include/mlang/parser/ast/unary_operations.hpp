@@ -11,10 +11,11 @@ public:
     UnaryNotOperationNode(node_ptr right) : Node(ast_node_types::unary_not), m_right(std::move(right)) {}
     ~UnaryNotOperationNode () = default;
     const Node* const get_right () const { return m_right.get(); }
-    void execute (EnvStack& env, Value& return_val) override {
-        Value rhs {};
+    void execute (EnvStack& env, std::shared_ptr<Object>& return_val) override {
+        std::shared_ptr<Object> rhs;
         m_right->execute(env, rhs);
-        return_val = Value{ !rhs };
+        if (!rhs) { throw RuntimeError { "right hand side of unary not return null" }; }
+        rhs->call("unary_not", std::vector<Object*>{}, return_val);
     }
     void print () const override {
         std::cout << "!";
@@ -29,10 +30,11 @@ public:
     UnaryMinusOperationNode(node_ptr right) : Node(ast_node_types::unary_minus), m_right(std::move(right)) {}
     ~UnaryMinusOperationNode () = default;
     const Node* const get_right () const { return m_right.get(); }
-    void execute (EnvStack& env, Value& return_val) override {
-        Value rhs {};
+    void execute (EnvStack& env, std::shared_ptr<Object>& return_val) override {
+        std::shared_ptr<Object> rhs;
         m_right->execute(env, rhs);
-        return_val = Value{ -rhs };
+        if (!rhs) { throw RuntimeError { "right hand side of unary minus return null" }; }
+        rhs->call("unary_minus", std::vector<Object*>{}, return_val);
     }
     void print () const override {
         std::cout << "-";

@@ -13,12 +13,15 @@ public:
     ~BinaryEqualityOperationNode () = default;
     const Node* const get_left () const { return m_left.get(); }
     const Node* const get_right () const { return m_right.get(); }
-    void execute (EnvStack& env, Value& return_val) override {
-        Value lhs {};
-        Value rhs {};
+    void execute (EnvStack& env, std::shared_ptr<Object>& return_val) override {
+        std::shared_ptr<Object> lhs;
+        std::shared_ptr<Object> rhs;
         m_left->execute(env, lhs);
         m_right->execute(env, rhs);
-        return_val = Value{ lhs == rhs };
+        if (!lhs) throw RuntimeError{"left hand side of addition returned null"};
+        if (!rhs) throw RuntimeError{"right hand side of addition returned null"};
+        return_val = env.create_value(lhs->get_typename());
+        lhs->call("binary_equality", std::vector<Object*>{ rhs.get() }, return_val);
     }
     void print () const override {
         std::cout << "( ";
@@ -38,12 +41,15 @@ public:
     ~BinaryInequalityOperationNode () = default;
     const Node* const get_left () const { return m_left.get(); }
     const Node* const get_right () const { return m_right.get(); }
-    void execute (EnvStack& env, Value& return_val) override {
-        Value lhs {};
-        Value rhs {};
+    void execute (EnvStack& env, std::shared_ptr<Object>& return_val) override {
+        std::shared_ptr<Object> lhs;
+        std::shared_ptr<Object> rhs;
         m_left->execute(env, lhs);
         m_right->execute(env, rhs);
-        return_val = Value{ lhs != rhs };
+        if (!lhs) throw RuntimeError{"left hand side of addition returned null"};
+        if (!rhs) throw RuntimeError{"right hand side of addition returned null"};
+        return_val = env.create_value(lhs->get_typename());
+        lhs->call("binary_inequality", std::vector<Object*>{ rhs.get() }, return_val);
     }
     void print () const override {
         std::cout << "( ";
@@ -63,12 +69,15 @@ public:
     ~ComparisonGreaterNode () = default;
     const Node* const get_left () const { return m_left.get(); }
     const Node* const get_right () const { return m_right.get(); }
-    void execute (EnvStack& env, Value& return_val) override {
-        Value lhs {};
-        Value rhs {};
+    void execute (EnvStack& env, std::shared_ptr<Object>& return_val) override {
+        std::shared_ptr<Object> lhs;
+        std::shared_ptr<Object> rhs;
         m_left->execute(env, lhs);
         m_right->execute(env, rhs);
-        return_val = Value{ lhs > rhs };
+        if (!lhs) throw RuntimeError{"left hand side of addition returned null"};
+        if (!rhs) throw RuntimeError{"right hand side of addition returned null"};
+        return_val = env.create_value(lhs->get_typename());
+        lhs->call("comparison_greater", std::vector<Object*>{ rhs.get() }, return_val);
     }
     void print () const override {
         std::cout << "( ";
@@ -88,12 +97,15 @@ public:
     ~ComparisonLessNode () = default;
     const Node* const get_left () const { return m_left.get(); }
     const Node* const get_right () const { return m_right.get(); }
-    void execute (EnvStack& env, Value& return_val) override {
-        Value lhs {};
-        Value rhs {};
+    void execute (EnvStack& env, std::shared_ptr<Object>& return_val) override {
+        std::shared_ptr<Object> lhs;
+        std::shared_ptr<Object> rhs;
         m_left->execute(env, lhs);
         m_right->execute(env, rhs);
-        return_val = Value{ lhs < rhs };
+        if (!lhs) throw RuntimeError{"left hand side of addition returned null"};
+        if (!rhs) throw RuntimeError{"right hand side of addition returned null"};
+        return_val = env.create_value(lhs->get_typename());
+        lhs->call("comparison_less", std::vector<Object*>{ rhs.get() }, return_val);
     }
     void print () const override {
         std::cout << "( ";
@@ -113,12 +125,15 @@ public:
     ~ComparisonGreaterEqualNode () = default;
     const Node* const get_left () const { return m_left.get(); }
     const Node* const get_right () const { return m_right.get(); }
-    void execute (EnvStack& env, Value& return_val) override {
-        Value lhs {};
-        Value rhs {};
+    void execute (EnvStack& env, std::shared_ptr<Object>& return_val) override {
+        std::shared_ptr<Object> lhs;
+        std::shared_ptr<Object> rhs;
         m_left->execute(env, lhs);
         m_right->execute(env, rhs);
-        return_val = Value{ lhs >= rhs };
+        if (!lhs) throw RuntimeError{"left hand side of addition returned null"};
+        if (!rhs) throw RuntimeError{"right hand side of addition returned null"};
+        return_val = env.create_value(lhs->get_typename());
+        lhs->call("comparison_greater_equal", std::vector<Object*>{ rhs.get() }, return_val);
     }
     void print () const override {
         std::cout << "( ";
@@ -138,12 +153,15 @@ public:
     ~ComparisonLessEqualNode () = default;
     const Node* const get_left () const { return m_left.get(); }
     const Node* const get_right () const { return m_right.get(); }
-    void execute (EnvStack& env, Value& return_val) override {
-        Value lhs {};
-        Value rhs {};
+    void execute (EnvStack& env, std::shared_ptr<Object>& return_val) override {
+        std::shared_ptr<Object> lhs;
+        std::shared_ptr<Object> rhs;
         m_left->execute(env, lhs);
         m_right->execute(env, rhs);
-        return_val = Value{ lhs <= rhs };
+        if (!lhs) throw RuntimeError{"left hand side of addition returned null"};
+        if (!rhs) throw RuntimeError{"right hand side of addition returned null"};
+        return_val = env.create_value(lhs->get_typename());
+        lhs->call("comparison_less_equal", std::vector<Object*>{ rhs.get() }, return_val);
     }
     void print () const override {
         std::cout << "( ";

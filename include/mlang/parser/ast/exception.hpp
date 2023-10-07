@@ -3,7 +3,7 @@
 #include <string>
 #include <exception>
 
-#include "mlang/value.hpp"
+#include "mlang/object/object.hpp"
 
 namespace mlang {
 
@@ -24,14 +24,14 @@ public:
 /* return should probably hold the return value */
 class Return : public std::exception {
 private:
-    Value m_val;
+    std::shared_ptr<Object> m_val;
 public:
-    Return (const Value& val) : m_val(val) {}
+    Return (std::shared_ptr<Object> val) : m_val(val) {}
     const char* what () const noexcept override {
         return "return";
     }
 
-    const Value& get_value () const { return m_val; }
+    const std::shared_ptr<Object> get_value () const { return m_val; }
 };
 
 } /* namespace mlang */

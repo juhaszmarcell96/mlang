@@ -4,9 +4,12 @@
 
 #include "mlang/token.hpp"
 #include "mlang/environment.hpp"
-#include "mlang/value.hpp"
 #include "mlang/exception.hpp"
 #include "mlang/parser/ast.hpp"
+
+#include "mlang/object/object.hpp"
+#include "mlang/object/string.hpp"
+#include "mlang/object/number.hpp"
 
 #define TRACE_PARSER 0
 
@@ -132,10 +135,7 @@ private:
         trace("statement");
         token_types current_type = curr()->type;
         switch (current_type) {
-            case token_types::kw_string:
-            case token_types::kw_number:
-            case token_types::kw_array:
-            case token_types::kw_bool: {
+            case token_types::kw_var: {
                 return declaration();
             }
             case token_types::kw_if: {
@@ -247,27 +247,19 @@ private:
     }
 
     node_ptr declaration () {
-        // declaration -> "number" | "string" | "array" | "bool" IDENTIFIER ( "=" expression )?
+        // declaration -> "var" IDENTIFIER ( "=" expression )?
         trace("declaration");
-        value_types variable_type;
-        switch (curr()->type) {
-            case token_types::kw_array  : { variable_type = value_types::array; break; }
-            case token_types::kw_number : { variable_type = value_types::number; break; }
-            case token_types::kw_string : { variable_type = value_types::string; break; }
-            case token_types::kw_bool   : { variable_type = value_types::boolean; break; }
-            default : { throw unexpected_error{"type name not found in declaration"}; break; }
-        }
         assert_next(token_types::identifier, "missing variable name in declaration");
         std::string variable_name = curr()->value_str;
         next();
         if (done()) {
-            return std::make_unique<DeclarationOperationNode>(variable_type, variable_name);
+            return std::make_unique<DeclarationOperationNode>(variable_name);
         }
         if (curr()->type == token_types::equal_sign) {
             assert_next("statement terminated unexpectedly");
             node_ptr rhs = expression();
             assert_done();
-            return std::make_unique<DeclAndInitOperationNode>(variable_type, variable_name, std::move(rhs));
+            return std::make_unique<DeclAndInitOperationNode>(variable_name, std::move(rhs));
         }
         throw syntax_error{ "invalid token found in declaration", curr()->line, curr()->pos };
         return nullptr;
@@ -299,28 +291,17 @@ private:
     }
 
     node_ptr function_declaration () {
-        // func_decl   -> "function" IDENTIFIER "(" ( typename IDENTIFIER ("," typename IDENTIFIER)* )? ")" "-" ">" typename;
+        // func_decl   -> "function" IDENTIFIER "(" ( IDENTIFIER IDENTIFIER ("," IDENTIFIER IDENTIFIER)* )? ")" "-" ">" IDENTIFIER;
         trace("function_declaration");
         consume(token_types::kw_function, "statement not a function declaration");
         consume(token_types::identifier, "missing function name");
         std::unique_ptr<FunctionDeclNode> func_ptr = std::make_unique<FunctionDeclNode>(prev()->value_str, m_current_scope);
         consume(token_types::round_bracket_open, "missing '(' after keyword 'function'");
         while (true) {
-            if (consume(token_types::kw_number)) {
-                consume(token_types::identifier, "missing identifier after keyword 'number'");
-                func_ptr->add_parameter(value_types::number, prev()->value_str);
-            }
-            else if (consume(token_types::kw_string)) {
-                consume(token_types::identifier, "missing identifier after keyword 'string'");
-                func_ptr->add_parameter(value_types::string, prev()->value_str);
-            }
-            else if (consume(token_types::kw_array)) {
-                consume(token_types::identifier, "missing identifier after keyword 'array'");
-                func_ptr->add_parameter(value_types::array, prev()->value_str);
-            }
-            else if (consume(token_types::kw_bool)) {
-                consume(token_types::identifier, "missing identifier after keyword 'bool'");
-                func_ptr->add_parameter(value_types::boolean, prev()->value_str);
+            if (consume(token_types::identifier)) {
+                std::string type_name = prev()->value_str;
+                consume(token_types::identifier, "missing identifier after typename '" + type_name + "'");
+                func_ptr->add_parameter(type_name, prev()->value_str);
             }
 
             if (consume(token_types::comma)) { continue; }
@@ -330,11 +311,8 @@ private:
         }
         consume(token_types::dash, "missing return type after function declaration");
         consume(token_types::greater, "missing return type after function declaration");
-        if (consume(token_types::kw_number)) { func_ptr->define_ret_type(value_types::number); }
-        else if (consume(token_types::kw_string)) { func_ptr->define_ret_type(value_types::string); }
-        else if (consume(token_types::kw_array)) { func_ptr->define_ret_type(value_types::array); }
-        else if (consume(token_types::kw_bool)) { func_ptr->define_ret_type(value_types::boolean); }
-        else { assert_error("invalid return type"); }
+        consume(token_types::identifier, "invalid return type");
+        func_ptr->define_ret_type(prev()->value_str);
         assert_done();
         m_next_scope = func_ptr.get();
         return func_ptr;
@@ -569,24 +547,24 @@ private:
             trace("primary number");
             double current_value = curr()->value_num;
             next();
-            return std::make_unique<ValueNode>(Value{current_value});
+            return std::make_unique<ValueNode>(std::make_shared<Number>(current_value));
         }
         if (check_type(token_types::string)) {
             trace("primary string");
             std::string current_value = curr()->value_str;
             next();
-            return std::make_unique<ValueNode>(Value{current_value});
+            return std::make_unique<ValueNode>(std::make_shared<String>(current_value));
         }
-        if (check_type(token_types::kw_true)) {
-            trace("primary true");
-            next();
-            return std::make_unique<ValueNode>(Value{true});
-        }
-        if (check_type(token_types::kw_false)) {
-            trace("primary false");
-            next();
-            return std::make_unique<ValueNode>(Value{false});
-        }
+        //if (check_type(token_types::kw_true)) {
+        //    trace("primary true");
+        //    next();
+        //    return std::make_unique<ValueNode>(Value{true});
+        //}
+        //if (check_type(token_types::kw_false)) {
+        //    trace("primary false");
+        //    next();
+        //    return std::make_unique<ValueNode>(Value{false});
+        //}
         if (check_type(token_types::round_bracket_open)) {
             trace("primary '('");
             assert_next("statement terminated unexpectedly");

@@ -1,6 +1,9 @@
 #pragma once
 
-#include "mlang/value.hpp"
+#include "mlang/object/object.hpp"
+#include "mlang/object/none.hpp"
+#include "mlang/object/number.hpp"
+#include "mlang/object/string.hpp"
 #include "mlang/function.hpp"
 #include "mlang/exception.hpp"
 
@@ -16,7 +19,10 @@ class FunctionDeclNode;
 
 class Environment {
 private:
-    std::map<std::string, std::shared_ptr<Value>> m_variables;
+    static inline std::map<std::string, std::shared_ptr<ObjectFactory>> m_types { { "none", std::make_shared<NoneFactory>() },
+                                                                                  { "number", std::make_shared<NumberFactory>() },
+                                                                                  { "string", std::make_shared<StringFactory>() }   };
+    std::map<std::string, std::shared_ptr<Object>> m_variables;
     std::map<std::string, std::shared_ptr<Function>> m_functions;
 
     Environment* m_parent { nullptr };
@@ -26,9 +32,29 @@ public:
     ~Environment () = default;
 
     void reset () {
+        m_types.clear();
         m_variables.clear();
         m_functions.clear();
         m_parent = nullptr;
+    }
+
+    bool has_type (const std::string& type_name) const {
+        if (m_types.count(type_name) != 0) { return true; }
+        else { return false; }
+    }
+
+    void define_type (const std::string& type_name, std::shared_ptr<ObjectFactory> factory) {
+        if (has_type(type_name)) {
+            throw RuntimeError{"type " + type_name + " already exists"};
+        }
+        m_types[type_name] = factory;
+    }
+
+    std::shared_ptr<Object> create_value (const std::string& type) {
+        if (m_types.count(type) == 0) {
+            throw RuntimeError{"type " + type + " is unknown"};
+        }
+        return m_types[type]->create();
     }
 
     bool has_variable (const std::string& variable_name) const {
@@ -37,22 +63,42 @@ public:
         else { return false; }
     }
 
-    void declare_variable (const std::string& variable_name, value_types type) {
-        if (has_variable(variable_name)) {
-            throw semantics_error{"variable " + variable_name + " already exists"};
+    void declare_variable (const std::string& variable_name, const std::string& type) {
+        if (m_types.count(type) == 0) {
+            throw RuntimeError{"type " + type + " is unknown"};
         }
-        m_variables[variable_name] = std::make_shared<Value>(type);
+        if (has_variable(variable_name)) {
+            throw RuntimeError{"variable " + variable_name + " already exists"};
+        }
+        m_variables[variable_name] = m_types[type]->create();
     }
 
-    Value* get_variable (const std::string& variable_name) {
+    std::shared_ptr<Object> get_variable (const std::string& variable_name) {
         if (m_variables.count(variable_name) != 0) {
-            return m_variables[variable_name].get();
+            return m_variables[variable_name];
         }
         else if (m_parent != nullptr) {
             return m_parent->get_variable(variable_name);
         }
         else {
-            throw semantics_error{"variable " + variable_name + " does not exists"};
+            throw RuntimeError{"variable " + variable_name + " does not exists"};
+        }
+    }
+
+    void set_variable (const std::string& variable_name, Object* value) {
+        if (m_variables.count(variable_name) != 0) {
+            std::string type_name = value->get_typename();
+            if (!has_type(type_name)) {
+                throw RuntimeError{"type " + type_name + " is unknown"};
+            }
+            m_variables[variable_name] = m_types[type_name]->create();
+            m_variables[variable_name]->assign(value);
+        }
+        else if (m_parent != nullptr) {
+            m_parent->set_variable(variable_name, value);
+        }
+        else {
+            throw RuntimeError{"variable " + variable_name + " does not exists"};
         }
     }
 
@@ -64,7 +110,7 @@ public:
 
     void declare_function (const std::string& function_name, FunctionDeclNode* function) {
         if (has_function(function_name)) {
-            throw semantics_error{"function " + function_name + " already exists"};
+            throw RuntimeError{"function " + function_name + " already exists"};
         }
         m_functions[function_name] = std::make_shared<Function>(function);
     }
@@ -77,7 +123,7 @@ public:
             return m_parent->get_function(function_name);
         }
         else {
-            throw semantics_error{"function " + function_name + " does not exists"};
+            throw RuntimeError{"function " + function_name + " does not exists"};
         }
     }
 };
@@ -103,12 +149,16 @@ public:
         return m_env_stack.top()->has_variable(variable_name);
     }
 
-    void declare_variable (const std::string& variable_name, value_types type) {
+    void declare_variable (const std::string& variable_name, const std::string& type) {
         m_env_stack.top()->declare_variable(variable_name, type);
     }
 
-    Value* get_variable (const std::string& variable_name) {
+    std::shared_ptr<Object> get_variable (const std::string& variable_name) {
         return m_env_stack.top()->get_variable(variable_name);
+    }
+
+    void set_variable (const std::string& variable_name, Object* value) {
+        return m_env_stack.top()->set_variable(variable_name, value);
     }
 
     bool has_function (const std::string& function_name) const {
@@ -121,6 +171,10 @@ public:
 
     Function* get_function (const std::string& function_name) {
         return m_env_stack.top()->get_function(function_name);
+    }
+
+    std::shared_ptr<Object> create_value (const std::string& type) {
+        return m_env_stack.top()->create_value(type);
     }
 };
 
