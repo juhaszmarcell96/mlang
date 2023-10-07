@@ -1,0 +1,106 @@
+#pragma once
+
+#include "mlang/parser/ast/node.hpp"
+#include "mlang/parser/ast/exception.hpp"
+#include "mlang/function.hpp"
+
+namespace mlang {
+
+struct FuncParam {
+    value_types type { value_types::none };
+    std::string name;
+};
+
+class FunctionDeclNode : public Node {
+private:
+    std::string m_name;
+    Node* m_parent_scope { nullptr };
+    std::vector<node_ptr> m_nodes;
+    std::vector<FuncParam> m_params;
+    value_types m_ret_type { value_types::none };
+public:
+    FunctionDeclNode(const std::string& name, Node* parent_scope) : Node(ast_node_types::func_decl), m_name(name), m_parent_scope(parent_scope) {}
+    ~FunctionDeclNode () = default;
+    const std::vector<node_ptr>& get_nodes () const { return m_nodes; }
+    void execute (EnvStack& env, Value& return_val) override {
+        // create function object with "this" pointer
+        // define it in the environment
+        env.declare_function(m_name, this);
+    }
+    void call (std::vector<Value> params, Value& return_val) {
+        // function should be able to call other function and use global variables
+        /* check if the parameters have the same length, none of them are nullptr and have the same type */
+        /* same with the return value */
+        if (params.size() != m_params.size()) {
+            throw RuntimeError{ "function " + m_name + " expects " + std::to_string(m_params.size()) + " parameters but got " + std::to_string(params.size()) };
+        }
+        //if (return_val == nullptr) {
+        //    throw RuntimeError{ "return value is null for function " + m_name };
+        //}
+        EnvStack env {};
+        for (std::size_t i = 0; i < params.size(); ++i) {
+            //if (params[i] == nullptr) {
+            //    throw RuntimeError{ "parameter is null for function " + m_name };
+            //}
+            //if (params[i]->get_type() != m_params[i].type) {
+            //    throw RuntimeError{ "parameter type is invalid for function " + m_name };
+            //}
+            if (params[i].get_type() != m_params[i].type) {
+                throw RuntimeError{ "parameter type is invalid for function " + m_name };
+            }
+            env.declare_variable(m_params[i].name, m_params[i].type);
+            *(env.get_variable(m_params[i].name)) = params[i];
+        }
+        try {
+            for (auto& node : m_nodes) {
+                node->execute(env, return_val);
+            }
+        }
+        catch (const Break& e) {
+            /* handle break */
+            /* should not have gotten a break exception */
+            throw RuntimeError{ "invalid 'break' in function " + m_name };
+        }
+        catch (const Continue& e) {
+            /* should not have gotten a continue exception */
+            throw RuntimeError{ "invalid 'continue' in function " + m_name };
+        }
+        catch (const Return& e) {
+            /* handle  return */
+            return_val = e.get_value();
+        }
+    }
+    void add_node (node_ptr node) override {
+        m_nodes.push_back(std::move(node));
+    }
+    Node* get_parent () override {
+        return m_parent_scope;
+    }
+    bool add_parameter (value_types type, const std::string& name) {
+        for (const FuncParam param : m_params) {
+            if (param.name.compare(name) == 0) {
+                return false;
+            }
+        }
+        m_params.push_back(FuncParam{.type=type, .name=name});
+        return true;
+    }
+    void define_ret_type (value_types type) {
+        m_ret_type = type;
+    }
+    void print () const override {
+        /* if */
+        std::cout << "function " << m_name << " ( ";
+        for (std::size_t i = 0; i < m_params.size(); ++i) {
+            std::cout << m_params[i].name;
+            if (i < m_params.size() - 1) { std::cout << ", "; }
+        }
+        std::cout << " )" << std::endl;
+        for (auto& node : m_nodes) {
+            node->print();
+            std::cout << std::endl;
+        }
+    }
+};
+
+} /* namespace mlang */

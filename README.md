@@ -78,8 +78,8 @@ TODO : shadowing -> can redefine a variable in the local scope
 
 
 
-statement   -> declaration | expression | assignment | if | for | while | end | elif | else | print | control | function ";"
-function    -> "function" IDENTIFIER "(" ( typename IDENTIFIER ("," typename IDENTIFIER)* )? ")" "-" ">" typename;
+statement   -> declaration | expression | assignment | if | for | while | end | elif | else | print | control | func_decl ";"
+func_decl   -> "function" IDENTIFIER "(" ( typename IDENTIFIER ("," typename IDENTIFIER)* )? ")" "-" ">" typename;
 print       -> "print" "(" STRING ( "," expression )* ")"
 if          -> "if" "(" expression ")"
 elif        -> "elif" "(" expression ")"

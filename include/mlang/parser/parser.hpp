@@ -53,8 +53,25 @@ private:
         #endif
     }
 
+    bool consume (token_types type) {
+        if (done()) { throw syntax_error{ "statement terminated unexpectedly", prev()->line, prev()->pos}; }
+        if (curr()->type == type) {
+            next();
+            return true;
+        }
+        return false;
+    }
+
+    void consume (token_types type, const std::string& err_msg) {
+        if (done()) { throw syntax_error{ err_msg, prev()->line, prev()->pos}; }
+        if (curr()->type != type) {
+            throw syntax_error{ err_msg, curr()->line, curr()->pos};
+        }
+        next();
+    }
+
     void assert_current (token_types type, const std::string& err_msg) const {
-        if (done()) { throw syntax_error{ err_msg, curr()->line, curr()->pos}; }
+        if (done()) { throw syntax_error{ err_msg, prev()->line, prev()->pos}; }
         if (curr()->type != type) {
             throw syntax_error{ err_msg, curr()->line, curr()->pos};
         }
@@ -62,12 +79,12 @@ private:
 
     void assert_next (const std::string& err_msg) {
         next();
-        if (done()) { throw syntax_error{ err_msg, curr()->line, curr()->pos}; }
+        if (done()) { throw syntax_error{ err_msg, prev()->line, prev()->pos}; }
     }
 
     void assert_next (token_types type, const std::string& err_msg) {
         next();
-        if (done()) { throw syntax_error{ err_msg, curr()->line, curr()->pos}; }
+        if (done()) { throw syntax_error{ err_msg, prev()->line, prev()->pos}; }
         if (curr()->type != type) {
             throw syntax_error{ err_msg, curr()->line, curr()->pos};
         }
@@ -99,11 +116,11 @@ private:
     }
 
     void assert_not_done () {
-        if (done()) { throw syntax_error{ "expression terminated unexpectedly", curr()->line, curr()->pos}; }
+        if (done()) { throw syntax_error{ "expression terminated unexpectedly", prev()->line, prev()->pos}; }
     }
 
     bool check_type (token_types type) {
-        if (done()) { throw syntax_error{ "expression terminated unexpectedly", curr()->line, curr()->pos}; }
+        if (done()) { throw syntax_error{ "expression terminated unexpectedly", prev()->line, prev()->pos}; }
         return curr()->type == type;
     }
 
@@ -141,8 +158,17 @@ private:
             case token_types::kw_break: {
                 return break_statement();
             }
+            case token_types::kw_return: {
+                return return_statement();
+            }
             case token_types::kw_end: {
                 return end_statement(); /* can return nullptr as well if it does not do anything */
+            }
+            case token_types::kw_function: {
+                /* function declaration is added to the current scope, the AST node execute adds the function to the environment */
+                /* and it does nothing else, does not execute the body. The function object in the environment has a pointer to  */
+                /* the function AST node and it calls a distinct "call" function to execute the body in a given context */
+                return function_declaration();
             }
             case token_types::identifier: {
                 if (!peekable()) return primary();
@@ -272,6 +298,48 @@ private:
         return std::make_unique<PrintNode>(rule, std::move(args));
     }
 
+    node_ptr function_declaration () {
+        // func_decl   -> "function" IDENTIFIER "(" ( typename IDENTIFIER ("," typename IDENTIFIER)* )? ")" "-" ">" typename;
+        trace("function_declaration");
+        consume(token_types::kw_function, "statement not a function declaration");
+        consume(token_types::identifier, "missing function name");
+        std::unique_ptr<FunctionDeclNode> func_ptr = std::make_unique<FunctionDeclNode>(prev()->value_str, m_current_scope);
+        consume(token_types::round_bracket_open, "missing '(' after keyword 'function'");
+        while (true) {
+            if (consume(token_types::kw_number)) {
+                consume(token_types::identifier, "missing identifier after keyword 'number'");
+                func_ptr->add_parameter(value_types::number, prev()->value_str);
+            }
+            else if (consume(token_types::kw_string)) {
+                consume(token_types::identifier, "missing identifier after keyword 'string'");
+                func_ptr->add_parameter(value_types::string, prev()->value_str);
+            }
+            else if (consume(token_types::kw_array)) {
+                consume(token_types::identifier, "missing identifier after keyword 'array'");
+                func_ptr->add_parameter(value_types::array, prev()->value_str);
+            }
+            else if (consume(token_types::kw_bool)) {
+                consume(token_types::identifier, "missing identifier after keyword 'bool'");
+                func_ptr->add_parameter(value_types::boolean, prev()->value_str);
+            }
+
+            if (consume(token_types::comma)) { continue; }
+            
+            consume(token_types::round_bracket_close, "missing ')' after function declaration");
+            break;
+        }
+        consume(token_types::dash, "missing return type after function declaration");
+        consume(token_types::greater, "missing return type after function declaration");
+        if (consume(token_types::kw_number)) { func_ptr->define_ret_type(value_types::number); }
+        else if (consume(token_types::kw_string)) { func_ptr->define_ret_type(value_types::string); }
+        else if (consume(token_types::kw_array)) { func_ptr->define_ret_type(value_types::array); }
+        else if (consume(token_types::kw_bool)) { func_ptr->define_ret_type(value_types::boolean); }
+        else { assert_error("invalid return type"); }
+        assert_done();
+        m_next_scope = func_ptr.get();
+        return func_ptr;
+    }
+
     node_ptr if_statement () {
         // if          -> "if" "(" expression ")"
         trace("if_statement");
@@ -372,6 +440,14 @@ private:
         assert_current(token_types::kw_break, "statement not a 'break' statement");
         assert_next_done();
         return std::make_unique<BreakNode>();
+    }
+
+    node_ptr return_statement () {
+        trace("return_statement");
+        consume(token_types::kw_return, "not a return statement");
+        node_ptr value = expression();
+        assert_done();
+        return std::make_unique<ReturnNode>(std::move(value));
     }
 
     node_ptr expression () {
@@ -523,11 +599,35 @@ private:
             trace("primary identifier");
             std::string current_str = curr()->value_str;
             next();
+            if (!done()) {
+                if (check_type(token_types::round_bracket_open)) {
+                    return function_call(current_str);
+                }
+            }
             return std::make_unique<VariableNode>(current_str);
         }
         throw syntax_error{ "unexpected primary token", curr()->line, curr()->pos};
         return nullptr;
     }
+
+    node_ptr function_call (const std::string& name) {
+        // func_call   -> IDENTIFIER "(" (expression)* ")"
+        trace("function_call");
+        consume(token_types::round_bracket_open, "missing '(' in function call");
+        std::unique_ptr<FunctionCallNode> func_ptr = std::make_unique<FunctionCallNode>(name);
+        while (true) {
+            if (consume(token_types::round_bracket_close)) { break; }
+            func_ptr->add_parameter(expression());
+            if (consume(token_types::comma)) { continue; }
+            if (consume(token_types::round_bracket_close)) { break; }
+            assert_error("invalid function call syntax");
+        }
+        assert_done();
+        return func_ptr;
+    }
+
+
+
 public:
     Parser () = default;
     ~Parser () = default;

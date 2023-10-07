@@ -125,4 +125,16 @@ public:
     incompatible_type_error () : m_message("types are not compatible") {}
 };
 
+class RuntimeError : public LangException {
+private:
+    std::string m_message;
+public:
+    const char* what () const noexcept override {
+        return m_message.c_str();
+    }
+
+    RuntimeError () : m_message("runtime error") {}
+    RuntimeError (const std::string& message) : m_message(message) {}
+};
+
 } /* namespace mlang */

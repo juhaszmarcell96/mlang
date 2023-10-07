@@ -38,7 +38,10 @@ enum class ast_node_types {
     greater_equal,
     less_equal,
     print,
-    break_node
+    break_node,
+    return_node,
+    func_decl,
+    func_call
 };
 
 class Node;
