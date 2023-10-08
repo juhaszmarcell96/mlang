@@ -17,7 +17,7 @@ TEST(ASTTest, Test0) {
     ASSERT_EQ(env.has_variable(var_name), false);
 
     mlang::DeclarationOperationNode node { var_name };
-    node.execute(env, ret_val);
+    node.execute(env);
 
     ASSERT_EQ(env.has_variable(var_name), true);
     ASSERT_EQ(env.get_variable(var_name)->get_typename(), mlang::None::type_name);
@@ -25,7 +25,7 @@ TEST(ASTTest, Test0) {
     std::shared_ptr<mlang::Number> num_ptr = std::make_shared<mlang::Number>(5);
     std::unique_ptr<mlang::ValueNode> rhs = std::make_unique<mlang::ValueNode>(num_ptr);
     mlang::AssignmentOperationNode assignment { var_name, std::move(rhs) };
-    assignment.execute(env, ret_val);
+    assignment.execute(env);
 
     ASSERT_EQ(env.has_variable(var_name), true);
     ASSERT_EQ(env.get_variable(var_name)->get_typename(), mlang::Number::type_name);

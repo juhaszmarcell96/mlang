@@ -14,17 +14,16 @@ public:
     WhileStatementNode(node_ptr condition, Node* parent_scope) : Node(ast_node_types::while_statement), m_condition(std::move(condition)), m_parent_scope(parent_scope) {}
     ~WhileStatementNode () = default;
     const std::vector<node_ptr>& get_nodes () const { return m_nodes; }
-    void execute (EnvStack& env, std::shared_ptr<Object>& return_val) override {
+    std::shared_ptr<Object> execute (EnvStack& env) override {
         env.enter_scope();
         while (true) {
-            std::shared_ptr<Object> cond_val;
-            m_condition->execute(env, cond_val);
+            std::shared_ptr<Object> cond_val = m_condition->execute(env);
             if (!cond_val) throw RuntimeError{"if statement condition returned null"};
             if (!cond_val->is_true()) { break; }
             try {
                 /* execute scope */
                 for (auto& node : m_nodes) {
-                    node->execute(env, return_val);
+                    node->execute(env);
                 }
             }
             catch (const Break& e) {
@@ -43,6 +42,7 @@ public:
             }
         }
         env.exit_scope();
+        return nullptr;
     }
     Node* get_parent () override {
         return m_parent_scope;

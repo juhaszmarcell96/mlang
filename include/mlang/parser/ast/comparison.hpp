@@ -13,14 +13,12 @@ public:
     ~BinaryEqualityOperationNode () = default;
     const Node* const get_left () const { return m_left.get(); }
     const Node* const get_right () const { return m_right.get(); }
-    void execute (EnvStack& env, std::shared_ptr<Object>& return_val) override {
-        std::shared_ptr<Object> lhs;
-        std::shared_ptr<Object> rhs;
-        m_left->execute(env, lhs);
-        m_right->execute(env, rhs);
+    std::shared_ptr<Object> execute (EnvStack& env) override {
+        std::shared_ptr<Object> lhs = m_left->execute(env);
+        std::shared_ptr<Object> rhs = m_right->execute(env);
         if (!lhs) throw RuntimeError{"left hand side of '==' returned null"};
         if (!rhs) throw RuntimeError{"right hand side of '==' returned null"};
-        return_val = lhs->operator_comparison_equal(rhs.get());
+        return lhs->operator_comparison_equal(rhs.get());
     }
     void print () const override {
         std::cout << "( ";
@@ -40,14 +38,12 @@ public:
     ~BinaryInequalityOperationNode () = default;
     const Node* const get_left () const { return m_left.get(); }
     const Node* const get_right () const { return m_right.get(); }
-    void execute (EnvStack& env, std::shared_ptr<Object>& return_val) override {
-        std::shared_ptr<Object> lhs;
-        std::shared_ptr<Object> rhs;
-        m_left->execute(env, lhs);
-        m_right->execute(env, rhs);
+    std::shared_ptr<Object> execute (EnvStack& env) override {
+        std::shared_ptr<Object> lhs = m_left->execute(env);
+        std::shared_ptr<Object> rhs = m_right->execute(env);
         if (!lhs) throw RuntimeError{"left hand side of '!=' returned null"};
         if (!rhs) throw RuntimeError{"right hand side of '!=' returned null"};
-        return_val = lhs->operator_comparison_not_equal(rhs.get());
+        return lhs->operator_comparison_not_equal(rhs.get());
     }
     void print () const override {
         std::cout << "( ";
@@ -67,14 +63,12 @@ public:
     ~ComparisonGreaterNode () = default;
     const Node* const get_left () const { return m_left.get(); }
     const Node* const get_right () const { return m_right.get(); }
-    void execute (EnvStack& env, std::shared_ptr<Object>& return_val) override {
-        std::shared_ptr<Object> lhs;
-        std::shared_ptr<Object> rhs;
-        m_left->execute(env, lhs);
-        m_right->execute(env, rhs);
+    std::shared_ptr<Object> execute (EnvStack& env) override {
+        std::shared_ptr<Object> lhs = m_left->execute(env);
+        std::shared_ptr<Object> rhs = m_right->execute(env);
         if (!lhs) throw RuntimeError{"left hand side of '>' returned null"};
         if (!rhs) throw RuntimeError{"right hand side of '>' returned null"};
-        return_val = lhs->operator_greater(rhs.get());
+        return lhs->operator_greater(rhs.get());
     }
     void print () const override {
         std::cout << "( ";
@@ -94,14 +88,12 @@ public:
     ~ComparisonLessNode () = default;
     const Node* const get_left () const { return m_left.get(); }
     const Node* const get_right () const { return m_right.get(); }
-    void execute (EnvStack& env, std::shared_ptr<Object>& return_val) override {
-        std::shared_ptr<Object> lhs;
-        std::shared_ptr<Object> rhs;
-        m_left->execute(env, lhs);
-        m_right->execute(env, rhs);
+    std::shared_ptr<Object> execute (EnvStack& env) override {
+        std::shared_ptr<Object> lhs = m_left->execute(env);
+        std::shared_ptr<Object> rhs = m_right->execute(env);
         if (!lhs) throw RuntimeError{"left hand side of '<' returned null"};
         if (!rhs) throw RuntimeError{"right hand side of '<' returned null"};
-        return_val = lhs->operator_less(rhs.get());
+        return lhs->operator_less(rhs.get());
     }
     void print () const override {
         std::cout << "( ";
@@ -121,14 +113,12 @@ public:
     ~ComparisonGreaterEqualNode () = default;
     const Node* const get_left () const { return m_left.get(); }
     const Node* const get_right () const { return m_right.get(); }
-    void execute (EnvStack& env, std::shared_ptr<Object>& return_val) override {
-        std::shared_ptr<Object> lhs;
-        std::shared_ptr<Object> rhs;
-        m_left->execute(env, lhs);
-        m_right->execute(env, rhs);
+    std::shared_ptr<Object> execute (EnvStack& env) override {
+        std::shared_ptr<Object> lhs = m_left->execute(env);
+        std::shared_ptr<Object> rhs = m_right->execute(env);
         if (!lhs) throw RuntimeError{"left hand side of '>=' returned null"};
         if (!rhs) throw RuntimeError{"right hand side of '>=' returned null"};
-        return_val = lhs->operator_greater_equal(rhs.get());
+        return lhs->operator_greater_equal(rhs.get());
     }
     void print () const override {
         std::cout << "( ";
@@ -148,14 +138,12 @@ public:
     ~ComparisonLessEqualNode () = default;
     const Node* const get_left () const { return m_left.get(); }
     const Node* const get_right () const { return m_right.get(); }
-    void execute (EnvStack& env, std::shared_ptr<Object>& return_val) override {
-        std::shared_ptr<Object> lhs;
-        std::shared_ptr<Object> rhs;
-        m_left->execute(env, lhs);
-        m_right->execute(env, rhs);
+    std::shared_ptr<Object> execute (EnvStack& env) override {
+        std::shared_ptr<Object> lhs = m_left->execute(env);
+        std::shared_ptr<Object> rhs = m_right->execute(env);
         if (!lhs) throw RuntimeError{"left hand side of '<=' returned null"};
         if (!rhs) throw RuntimeError{"right hand side of '<=' returned null"};
-        return_val = lhs->operator_less_equal(rhs.get());
+        return lhs->operator_less_equal(rhs.get());
     }
     void print () const override {
         std::cout << "( ";

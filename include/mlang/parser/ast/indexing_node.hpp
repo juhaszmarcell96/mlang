@@ -14,13 +14,12 @@ public:
     ~IndexingNode () = default;
     const std::string& get_var_name () const { return m_var_name; }
     const Node* const get_index () const { return m_index.get(); }
-    void execute (EnvStack& env, std::shared_ptr<Object>& return_val) override {
+    std::shared_ptr<Object> execute (EnvStack& env) override {
         if (!env.has_variable(m_var_name)) {
             throw undefined_var_error{m_var_name};
         }
-        std::shared_ptr<Object> index;
-        m_index->execute(env, index);
-        return_val = env.get_variable(m_var_name)->operator_array_index(index.get());
+        std::shared_ptr<Object> index = m_index->execute(env);
+        return env.get_variable(m_var_name)->operator_array_index(index.get());
     }
     void print () const override {
         std::cout << m_var_name << "[";

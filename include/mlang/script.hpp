@@ -453,9 +453,8 @@ public:
     void execute (EnvStack& env) {
         Parser parser {};
         node_ptr root = parser.parse( m_tokens );
-        std::shared_ptr<Object> ret_val;
         //root->print();
-        root->execute(env, ret_val);
+        std::shared_ptr<Object> ret_val = root->execute(env);
         //env.step();
         //if (env.get_pc() >= lines.size()) break;
     }

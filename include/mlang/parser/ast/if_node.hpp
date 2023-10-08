@@ -25,40 +25,38 @@ public:
     ~IfStatementNode () = default;
     const std::vector<node_ptr>& get_nodes () const { return m_nodes; }
     const Node* const get_condition () const { return m_condition.get(); }
-    void execute (EnvStack& env, std::shared_ptr<Object>& return_val) override {
+    std::shared_ptr<Object> execute (EnvStack& env) override {
         env.enter_scope();
         try {
             /* if */
-            std::shared_ptr<Object> cond_val;
-            m_condition->execute(env, cond_val);
+            std::shared_ptr<Object> cond_val = m_condition->execute(env);
             if (!cond_val) throw RuntimeError{"if statement condition returned null"};
             if (cond_val->is_true()) {
                 for (auto& node : m_nodes) {
-                    node->execute(env, return_val);
+                    node->execute(env);
                 }
                 env.exit_scope();
-                return;
+                return nullptr;
             }
             /* elif */
             for (std::size_t i = 0; i < m_elif_conditions.size(); ++i) {
-                cond_val = nullptr;
-                m_elif_conditions[i]->execute(env, cond_val);
+                cond_val = m_elif_conditions[i]->execute(env);
                 if (!cond_val) throw RuntimeError{"elif statement condition returned null"};
                 if (cond_val->is_true()) {
                     for (auto& node : m_elif_nodes[i]) {
-                        node->execute(env, return_val);
+                        node->execute(env);
                     }
                     env.exit_scope();
-                    return;
+                    return nullptr;
                 }
             }
             /* else */
             if (m_else_defined) {
                 for (auto& node : m_else_nodes) {
-                    node->execute(env, return_val);
+                    node->execute(env);
                 }
                 env.exit_scope();
-                return;
+                return nullptr;
             }
         }
         catch (const Break& e) {
@@ -79,6 +77,7 @@ public:
             env.exit_scope();
             throw;
         }
+        return nullptr;
     }
     void add_node (node_ptr node) override {
         m_active_branch->push_back(std::move(node));

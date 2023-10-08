@@ -14,14 +14,13 @@ public:
     FunctionCallNode(const std::string& name) : Node(ast_node_types::func_call), m_name(name) {}
     ~FunctionCallNode () = default;
     const std::vector<node_ptr>& get_params () const { return m_params; }
-    void execute (EnvStack& env, std::shared_ptr<Object>& return_val) override {
+    std::shared_ptr<Object> execute (EnvStack& env) override {
         std::vector<std::shared_ptr<Object>> params;
         for (node_ptr& node : m_params) {
-            std::shared_ptr<Object> ret_val;
-            node->execute(env, ret_val);
+            std::shared_ptr<Object> ret_val = node->execute(env);
             params.push_back(ret_val);
         }
-        env.get_function(m_name)->get()->call(params, return_val);
+        return env.get_function(m_name)->get()->call(params);
     }
     void add_parameter (node_ptr param) {
         m_params.push_back(std::move(param));

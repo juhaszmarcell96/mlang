@@ -19,14 +19,12 @@ class BinaryAddOperationNode : public BinaryOperationNodeBase {
 public:
     BinaryAddOperationNode(node_ptr left, node_ptr right) : BinaryOperationNodeBase(ast_node_types::binary_add, std::move(left), std::move(right)) {}
     ~BinaryAddOperationNode () = default;
-    void execute (EnvStack& env, std::shared_ptr<Object>& return_val) override {
-        std::shared_ptr<Object> lhs;
-        std::shared_ptr<Object> rhs;
-        m_left->execute(env, lhs);
-        m_right->execute(env, rhs);
+    std::shared_ptr<Object> execute (EnvStack& env) override {
+        std::shared_ptr<Object> lhs = m_left->execute(env);
+        std::shared_ptr<Object> rhs = m_right->execute(env);
         if (!lhs) throw RuntimeError{"left hand side of '+' returned null"};
         if (!rhs) throw RuntimeError{"right hand side of '+' returned null"};
-        return_val = lhs->operator_binary_add(rhs.get());
+        return lhs->operator_binary_add(rhs.get());
     }
     void print () const override {
         std::cout << "( ";
@@ -41,14 +39,12 @@ class BinarySubOperationNode : public BinaryOperationNodeBase {
 public:
     BinarySubOperationNode(node_ptr left, node_ptr right) : BinaryOperationNodeBase(ast_node_types::binary_sub, std::move(left), std::move(right)) {}
     ~BinarySubOperationNode () = default;
-    void execute (EnvStack& env, std::shared_ptr<Object>& return_val) override {
-        std::shared_ptr<Object> lhs;
-        std::shared_ptr<Object> rhs;
-        m_left->execute(env, lhs);
-        m_right->execute(env, rhs);
+    std::shared_ptr<Object> execute (EnvStack& env) override {
+        std::shared_ptr<Object> lhs = m_left->execute(env);
+        std::shared_ptr<Object> rhs = m_right->execute(env);
         if (!lhs) throw RuntimeError{"left hand side of '-' returned null"};
         if (!rhs) throw RuntimeError{"right hand side of '-' returned null"};
-        return_val = lhs->operator_binary_sub(rhs.get());
+        return lhs->operator_binary_sub(rhs.get());
     }
     void print () const override {
         std::cout << "( ";
@@ -63,14 +59,12 @@ class BinaryMulOperationNode : public BinaryOperationNodeBase {
 public:
     BinaryMulOperationNode(node_ptr left, node_ptr right) : BinaryOperationNodeBase(ast_node_types::binary_mul, std::move(left), std::move(right)) {}
     ~BinaryMulOperationNode () = default;
-    void execute (EnvStack& env, std::shared_ptr<Object>& return_val) override {
-        std::shared_ptr<Object> lhs;
-        std::shared_ptr<Object> rhs;
-        m_left->execute(env, lhs);
-        m_right->execute(env, rhs);
+    std::shared_ptr<Object> execute (EnvStack& env) override {
+        std::shared_ptr<Object> lhs = m_left->execute(env);
+        std::shared_ptr<Object> rhs = m_right->execute(env);
         if (!lhs) throw RuntimeError{"left hand side of '*' returned null"};
         if (!rhs) throw RuntimeError{"right hand side of '*' returned null"};
-        return_val = lhs->operator_binary_mul(rhs.get());
+        return lhs->operator_binary_mul(rhs.get());
     }
     void print () const override {
         std::cout << "( ";
@@ -85,14 +79,12 @@ class BinaryDivOperationNode : public BinaryOperationNodeBase {
 public:
     BinaryDivOperationNode(node_ptr left, node_ptr right) : BinaryOperationNodeBase(ast_node_types::binary_div, std::move(left), std::move(right)) {}
     ~BinaryDivOperationNode () = default;
-    void execute (EnvStack& env, std::shared_ptr<Object>& return_val) override {
-        std::shared_ptr<Object> lhs;
-        std::shared_ptr<Object> rhs;
-        m_left->execute(env, lhs);
-        m_right->execute(env, rhs);
+    std::shared_ptr<Object> execute (EnvStack& env) override {
+        std::shared_ptr<Object> lhs = m_left->execute(env);
+        std::shared_ptr<Object> rhs = m_right->execute(env);
         if (!lhs) throw RuntimeError{"left hand side of '/' returned null"};
         if (!rhs) throw RuntimeError{"right hand side of '/' returned null"};
-        return_val = lhs->operator_binary_div(rhs.get());
+        return lhs->operator_binary_div(rhs.get());
     }
     void print () const override {
         std::cout << "( ";
