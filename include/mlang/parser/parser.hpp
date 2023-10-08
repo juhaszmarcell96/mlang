@@ -182,9 +182,11 @@ private:
                     case token_types::equal_sign: {
                         return assignment();
                     }
-                    //case token_types::round_bracket_open: {
-                    //    return function_call();
-                    //}
+                    case token_types::round_bracket_open: {
+                        std::string current_str = curr()->value_str;
+                        next();
+                        return function_call(current_str);
+                    }
                     default: {
                         return expression();
                     }
