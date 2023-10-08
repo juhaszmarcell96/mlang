@@ -62,7 +62,7 @@ public:
     }
 
 
-    void call (const std::string& func, const std::vector<std::shared_ptr<Object>>& params, std::shared_ptr<Object>& ret_val) override {
+    std::shared_ptr<Object> call (const std::string& func, const std::vector<std::shared_ptr<Object>>& params) override {
         if (func.compare(operators::construct) == 0) {
             construct(params);
         }
@@ -75,6 +75,7 @@ public:
         else {
             throw RuntimeError { "object of type '" + type_name + "' has no '" + func + "' member function" };
         }
+        return nullptr;
     }
 
     std::string get_string () const override { return (m_value ? "true" : "false"); }

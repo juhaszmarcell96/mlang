@@ -71,7 +71,8 @@ public:
     Object () = delete;
     Object (bool lvalue) : m_lvalue(lvalue) {};
     virtual ~Object () {};
-    virtual void call (const std::string& func, const std::vector<std::shared_ptr<Object>>& params, std::shared_ptr<Object>& ret_val) = 0;
+
+    virtual std::shared_ptr<Object> call (const std::string& func, const std::vector<std::shared_ptr<Object>>& params) = 0;
 
     virtual void construct (const std::vector<std::shared_ptr<Object>>& params) = 0;
     virtual void assign (const std::vector<std::shared_ptr<Object>>& params) = 0;

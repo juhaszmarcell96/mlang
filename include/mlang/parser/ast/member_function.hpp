@@ -22,7 +22,7 @@ public:
             node->execute(env, ret_val);
             params.push_back(ret_val);
         }
-        env.get_variable(m_var_name)->call(m_func_name, params, return_val);
+        return_val = env.get_variable(m_var_name)->call(m_func_name, params);
     }
     void add_parameter (node_ptr param) {
         m_params.push_back(std::move(param));

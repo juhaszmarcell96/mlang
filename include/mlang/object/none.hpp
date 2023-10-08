@@ -25,7 +25,7 @@ public:
         return false;
     }
 
-    void call (const std::string& func, const std::vector<std::shared_ptr<Object>>& params, std::shared_ptr<Object>& ret_val) override {
+    std::shared_ptr<Object> call (const std::string& func, const std::vector<std::shared_ptr<Object>>& params) override {
         throw RuntimeError { "object of type '" + type_name + "' has no member functions" };
     }
 
