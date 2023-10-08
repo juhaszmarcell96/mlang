@@ -51,31 +51,27 @@ public:
         return m_value != 0;
     }
 
-    std::shared_ptr<Object> binary_add (const std::vector<std::shared_ptr<Object>>& params) {
-        assert_params(params, 1, type_name, operators::binary_add);
-        assert_parameter(params[0], type_name, operators::binary_add);
-        const std::shared_ptr<Number> num_ptr = assert_cast<Number>(params[0], type_name);
+    std::shared_ptr<Object> operator_binary_add (const Object* param) override {
+        assert_parameter(param, type_name, "+");
+        const Number* num_ptr = assert_cast<const Number*>(param, type_name);
         return std::make_shared<Number>(m_value + num_ptr->get(), false);
     }
 
-    std::shared_ptr<Object> binary_sub (const std::vector<std::shared_ptr<Object>>& params) {
-        assert_params(params, 1, type_name, operators::binary_sub);
-        assert_parameter(params[0], type_name, operators::binary_sub);
-        const std::shared_ptr<Number> num_ptr = assert_cast<Number>(params[0], type_name);
+    std::shared_ptr<Object> operator_binary_sub (const Object* param) override {
+        assert_parameter(param, type_name, "-");
+        const Number* num_ptr = assert_cast<const Number*>(param, type_name);
         return std::make_shared<Number>(m_value - num_ptr->get(), false);
     }
 
-    std::shared_ptr<Object> binary_mul (const std::vector<std::shared_ptr<Object>>& params) {
-        assert_params(params, 1, type_name, operators::binary_mul);
-        assert_parameter(params[0], type_name, operators::binary_mul);
-        const std::shared_ptr<Number> num_ptr = assert_cast<Number>(params[0], type_name);
+    std::shared_ptr<Object> operator_binary_mul (const Object* param) override {
+        assert_parameter(param, type_name, "*");
+        const Number* num_ptr = assert_cast<const Number*>(param, type_name);
         return std::make_shared<Number>(m_value * num_ptr->get(), false);
     }
 
-    std::shared_ptr<Object> binary_div (const std::vector<std::shared_ptr<Object>>& params) {
-        assert_params(params, 1, type_name, operators::binary_div);
-        assert_parameter(params[0], type_name, operators::binary_div);
-        const std::shared_ptr<Number> num_ptr = assert_cast<Number>(params[0], type_name);
+    std::shared_ptr<Object> operator_binary_div (const Object* param) override {
+        assert_parameter(param, type_name, "/");
+        const Number* num_ptr = assert_cast<const Number*>(param, type_name);
         return std::make_shared<Number>(m_value / num_ptr->get(), false);
     }
 
@@ -103,50 +99,48 @@ public:
         m_value /= num_ptr->get();
     }
 
-    std::shared_ptr<Object> comparison_equal (const std::vector<std::shared_ptr<Object>>& params) {
-        assert_params(params, 1, type_name, operators::binary_equality);
-        assert_parameter(params[0], type_name, operators::binary_equality);
-        const std::shared_ptr<Number> num_ptr = assert_cast<Number>(params[0], type_name);
+    std::shared_ptr<Object> operator_comparison_equal (const Object* param) override {
+        assert_parameter(param, type_name, "==");
+        const Number* num_ptr = assert_cast<const Number*>(param, type_name);
         return std::make_shared<Boolean>(m_value == num_ptr->get(), false);
     }
 
-    std::shared_ptr<Object> comparison_not_equal (const std::vector<std::shared_ptr<Object>>& params) {
-        assert_params(params, 1, type_name, operators::binary_inequality);
-        assert_parameter(params[0], type_name, operators::binary_inequality);
-        const std::shared_ptr<Number> num_ptr = assert_cast<Number>(params[0], type_name);
+    std::shared_ptr<Object> operator_comparison_not_equal (const Object* param) override {
+        assert_parameter(param, type_name, "!=");
+        const Number* num_ptr = assert_cast<const Number*>(param, type_name);
         return std::make_shared<Boolean>(m_value != num_ptr->get(), false);
     }
 
-    std::shared_ptr<Object> comparison_greater (const std::vector<std::shared_ptr<Object>>& params) {
-        assert_params(params, 1, type_name, operators::comparison_greater);
-        assert_parameter(params[0], type_name, operators::comparison_greater);
-        const std::shared_ptr<Number> num_ptr = assert_cast<Number>(params[0], type_name);
+    std::shared_ptr<Object> operator_greater (const Object* param) override {
+        assert_parameter(param, type_name, ">");
+        const Number* num_ptr = assert_cast<const Number*>(param, type_name);
         return std::make_shared<Boolean>(m_value > num_ptr->get(), false);
     }
 
-    std::shared_ptr<Object> comparison_less (const std::vector<std::shared_ptr<Object>>& params) {
-        assert_params(params, 1, type_name, operators::comparison_less);
-        assert_parameter(params[0], type_name, operators::comparison_less);
-        const std::shared_ptr<Number> num_ptr = assert_cast<Number>(params[0], type_name);
+    std::shared_ptr<Object> operator_less (const Object* param) override {
+        assert_parameter(param, type_name, "<");
+        const Number* num_ptr = assert_cast<const Number*>(param, type_name);
         return std::make_shared<Boolean>(m_value < num_ptr->get(), false);
     }
 
-    std::shared_ptr<Object> comparison_greater_equal (const std::vector<std::shared_ptr<Object>>& params) {
-        assert_params(params, 1, type_name, operators::comparison_greater_equal);
-        assert_parameter(params[0], type_name, operators::comparison_greater_equal);
-        const std::shared_ptr<Number> num_ptr = assert_cast<Number>(params[0], type_name);
+    std::shared_ptr<Object> operator_greater_equal (const Object* param) override {
+        assert_parameter(param, type_name, ">=");
+        const Number* num_ptr = assert_cast<const Number*>(param, type_name);
         return std::make_shared<Boolean>(m_value >= num_ptr->get(), false);
     }
 
-    std::shared_ptr<Object> comparison_less_equal (const std::vector<std::shared_ptr<Object>>& params) {
-        assert_params(params, 1, type_name, operators::comparison_less_equal);
-        assert_parameter(params[0], type_name, operators::comparison_less_equal);
-        const std::shared_ptr<Number> num_ptr = assert_cast<Number>(params[0], type_name);
+    std::shared_ptr<Object> operator_less_equal (const Object* param) override {
+        assert_parameter(param, type_name, "<=");
+        const Number* num_ptr = assert_cast<const Number*>(param, type_name);
         return std::make_shared<Boolean>(m_value <= num_ptr->get(), false);
     }
 
-    std::shared_ptr<Object> unary_minus () {
+    std::shared_ptr<Object> unary_minus () override {
         return std::make_shared<Number>(-m_value, false);
+    }
+
+    std::shared_ptr<Object> unary_not () override {
+        return std::make_shared<Boolean>(!m_value, false);
     }
 
 
@@ -159,39 +153,6 @@ public:
         }
         else if (func.compare(operators::destruct) == 0) {
             destruct();
-        }
-        else if (func.compare(operators::binary_add) == 0) {
-            ret_val = binary_add(params);
-        }
-        else if (func.compare(operators::binary_sub) == 0) {
-            ret_val = binary_sub(params);
-        }
-        else if (func.compare(operators::binary_mul) == 0) {
-            ret_val = binary_mul(params);
-        }
-        else if (func.compare(operators::binary_div) == 0) {
-            ret_val = binary_div(params);
-        }
-        else if (func.compare(operators::binary_equality) == 0) {
-            ret_val = comparison_equal(params);
-        }
-        else if (func.compare(operators::binary_inequality) == 0) {
-            ret_val = comparison_not_equal(params);
-        }
-        else if (func.compare(operators::comparison_greater) == 0) {
-            ret_val = comparison_greater(params);
-        }
-        else if (func.compare(operators::comparison_less) == 0) {
-            ret_val = comparison_less(params);
-        }
-        else if (func.compare(operators::comparison_greater_equal) == 0) {
-            ret_val = comparison_greater_equal(params);
-        }
-        else if (func.compare(operators::comparison_less_equal) == 0) {
-            ret_val = comparison_less_equal(params);
-        }
-        else if (func.compare(operators::unary_minus) == 0) {
-            ret_val = unary_minus();
         }
         else {
             throw RuntimeError { "object of type '" + type_name + "' has no '" + func + "' member function" };

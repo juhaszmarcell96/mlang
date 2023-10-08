@@ -46,10 +46,9 @@ public:
         m_value = "";
     }
 
-    std::shared_ptr<Object> binary_add (const std::vector<std::shared_ptr<Object>>& params) {
-        assert_params(params, 1, type_name, operators::binary_add);
-        assert_parameter(params[0], type_name, operators::binary_add);
-        const std::shared_ptr<String> str_ptr = assert_cast<String>(params[0], type_name);
+    std::shared_ptr<Object> operator_binary_add (const Object* param) override {
+        assert_parameter(param, type_name, "+");
+        const String* str_ptr = assert_cast<const String*>(param, type_name);
         return std::make_shared<String>(m_value + str_ptr->get(), false);
     }
 
@@ -59,17 +58,15 @@ public:
         m_value += str_ptr->get();
     }
 
-    std::shared_ptr<Object> comparison_equal (const std::vector<std::shared_ptr<Object>>& params) {
-        assert_params(params, 1, type_name, operators::binary_equality);
-        assert_parameter(params[0], type_name, operators::binary_equality);
-        const std::shared_ptr<String> str_ptr = assert_cast<String>(params[0], type_name);
+    std::shared_ptr<Object> operator_comparison_equal (const Object* param) override {
+        assert_parameter(param, type_name, "==");
+        const String* str_ptr = assert_cast<const String*>(param, type_name);
         return std::make_shared<Boolean>(m_value == str_ptr->get(), false);
     }
 
-    std::shared_ptr<Object> comparison_not_equal (const std::vector<std::shared_ptr<Object>>& params) {
-        assert_params(params, 1, type_name, operators::binary_inequality);
-        assert_parameter(params[0], type_name, operators::binary_inequality);
-        const std::shared_ptr<String> str_ptr = assert_cast<String>(params[0], type_name);
+    std::shared_ptr<Object> operator_comparison_not_equal (const Object* param) override {
+        assert_parameter(param, type_name, "!=");
+        const String* str_ptr = assert_cast<const String*>(param, type_name);
         return std::make_shared<Boolean>(m_value != str_ptr->get(), false);
     }
 
@@ -92,15 +89,6 @@ public:
         }
         else if (func.compare("reverse") == 0) {
             ret_val = reverse();
-        }
-        else if (func.compare(operators::binary_add) == 0) {
-            ret_val = binary_add(params);
-        }
-        else if (func.compare(operators::binary_equality) == 0) {
-            ret_val = comparison_equal(params);
-        }
-        else if (func.compare(operators::binary_inequality) == 0) {
-            ret_val = comparison_not_equal(params);
         }
         else {
             throw RuntimeError { "string object has no " + func + " member function" };

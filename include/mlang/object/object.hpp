@@ -14,19 +14,7 @@ namespace operators {
 const std::string construct { "new" };
 const std::string destruct { "del" };
 const std::string assign { "=" };
-const std::string binary_add { "+" };
-const std::string binary_sub { "-" };
-const std::string binary_mul { "*" };
-const std::string binary_div { "/" };
-const std::string binary_equality { "==" };
-const std::string binary_inequality { "!=" };
-const std::string comparison_greater { ">" };
-const std::string comparison_less { "<" };
-const std::string comparison_greater_equal { ">=" };
-const std::string comparison_less_equal { "<=" };
 const std::string arr_indexing { "[]" };
-const std::string unary_not { "!" };
-const std::string unary_minus { "-a" };
 const std::string boolean_operator { "()" };
 
 } /* namespace operators */
@@ -123,6 +111,66 @@ public:
     /* /= */
     virtual void operator_div_equal (const Object* param) {
         throw RuntimeError { "object of type '" + get_typename() + "' has no '/=' operator" };
+    }
+    
+    /* + */
+    virtual std::shared_ptr<Object> operator_binary_add (const Object* param) {
+        throw RuntimeError { "object of type '" + get_typename() + "' has no '+' operator" };
+    }
+    
+    /* - */
+    virtual std::shared_ptr<Object> operator_binary_sub (const Object* param) {
+        throw RuntimeError { "object of type '" + get_typename() + "' has no '-' operator" };
+    }
+    
+    /* * */
+    virtual std::shared_ptr<Object> operator_binary_mul (const Object* param) {
+        throw RuntimeError { "object of type '" + get_typename() + "' has no '*' operator" };
+    }
+    
+    /* / */
+    virtual std::shared_ptr<Object> operator_binary_div (const Object* param) {
+        throw RuntimeError { "object of type '" + get_typename() + "' has no '/' operator" };
+    }
+
+    /* unary - */
+    virtual std::shared_ptr<Object> unary_minus () {
+        throw RuntimeError { "object of type '" + get_typename() + "' has no 'unary -' operator" };
+    }
+
+    /* unary ! */
+    virtual std::shared_ptr<Object> unary_not () {
+        throw RuntimeError { "object of type '" + get_typename() + "' has no 'unary !' operator" };
+    }
+
+    /* == */
+    virtual std::shared_ptr<Object> operator_comparison_equal (const Object* param) {
+        throw RuntimeError { "object of type '" + get_typename() + "' has no '==' operator" };
+    }
+
+    /* != */
+    virtual std::shared_ptr<Object> operator_comparison_not_equal (const Object* param) {
+        throw RuntimeError { "object of type '" + get_typename() + "' has no '!=' operator" };
+    }
+
+    /* > */
+    virtual std::shared_ptr<Object> operator_greater (const Object* param) {
+        throw RuntimeError { "object of type '" + get_typename() + "' has no '>' operator" };
+    }
+
+    /* < */
+    virtual std::shared_ptr<Object> operator_less (const Object* param) {
+        throw RuntimeError { "object of type '" + get_typename() + "' has no '<' operator" };
+    }
+
+    /* >= */
+    virtual std::shared_ptr<Object> operator_greater_equal (const Object* param) {
+        throw RuntimeError { "object of type '" + get_typename() + "' has no '>=' operator" };
+    }
+
+    /* <= */
+    virtual std::shared_ptr<Object> operator_less_equal (const Object* param) {
+        throw RuntimeError { "object of type '" + get_typename() + "' has no '<=' operator" };
     }
 };
 
