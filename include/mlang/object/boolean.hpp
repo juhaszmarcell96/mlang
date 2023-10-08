@@ -20,22 +20,22 @@ public:
     const bool get () const { return m_value; }
 
     /* construct */
-    void construct (const std::vector<Object*>& params) override {
+    void construct (const std::vector<std::shared_ptr<Object>>& params) override {
         if (params.size() == 0) { m_value = false; }
         assert_params(params, 1, type_name, operators::construct);
         assert_parameter(params[0], type_name, operators::construct);
-        const Boolean* bool_ptr = assert_cast<const Boolean*>(params[0], type_name);
+        const std::shared_ptr<Boolean> bool_ptr = assert_cast<Boolean>(params[0], type_name);
         m_value = bool_ptr->get();
     }
     /* assign */
-    void assign (const std::vector<Object*>& params) override {
+    void assign (const std::vector<std::shared_ptr<Object>>& params) override {
         assert_params(params, 1, type_name, operators::assign);
         assert_parameter(params[0], type_name, operators::assign);
-        const Boolean* bool_ptr = assert_cast<const Boolean*>(params[0], type_name);
+        const std::shared_ptr<Boolean> bool_ptr = assert_cast<Boolean>(params[0], type_name);
         m_value = bool_ptr->get();
     }
-    void assign (const Object* param) override {
-        const Boolean* bool_ptr = assert_cast<const Boolean*>(param, type_name);
+    void assign (const std::shared_ptr<Object> param) override {
+        const std::shared_ptr<Boolean> bool_ptr = assert_cast<Boolean>(param, type_name);
         m_value = bool_ptr->get();
     }
     /* destruct */
@@ -47,13 +47,13 @@ public:
         return m_value;
     }
 
-    std::shared_ptr<Object> comparison_equal (const std::vector<Object*>& params) {
+    std::shared_ptr<Object> comparison_equal (const std::vector<std::shared_ptr<Object>>& params) {
         assert_params(params, 1, type_name, operators::binary_equality);
         assert_parameter(params[0], type_name, operators::binary_equality);
         return std::make_shared<Boolean>(m_value == params[0]->is_true(), false);
     }
 
-    std::shared_ptr<Object> comparison_not_equal (const std::vector<Object*>& params) {
+    std::shared_ptr<Object> comparison_not_equal (const std::vector<std::shared_ptr<Object>>& params) {
         assert_params(params, 1, type_name, operators::binary_inequality);
         assert_parameter(params[0], type_name, operators::binary_inequality);
         return std::make_shared<Boolean>(m_value != params[0]->is_true(), false);
@@ -64,7 +64,7 @@ public:
     }
 
 
-    void call (const std::string& func, const std::vector<Object*>& params, std::shared_ptr<Object>& ret_val) override {
+    void call (const std::string& func, const std::vector<std::shared_ptr<Object>>& params, std::shared_ptr<Object>& ret_val) override {
         if (func.compare(operators::construct) == 0) {
             construct(params);
         }

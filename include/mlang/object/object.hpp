@@ -14,10 +14,6 @@ namespace operators {
 const std::string construct { "new" };
 const std::string destruct { "del" };
 const std::string assign { "=" };
-const std::string add_equal { "+=" };
-const std::string sub_equal { "-=" };
-const std::string mul_equal { "*=" };
-const std::string div_equal { "/=" };
 const std::string binary_add { "+" };
 const std::string binary_sub { "-" };
 const std::string binary_mul { "*" };
@@ -43,12 +39,26 @@ protected:
         if (!val) { throw RuntimeError { err_msg }; }
     }
 
+    //template<typename T>
+    //std::shared_ptr<T> assert_cast (std::shared_ptr<Object> obj, const std::string& type) {
+    //    std::shared_ptr<T> ptr = std::dynamic_pointer_cast<T>(obj);
+    //    if (!ptr) { throw RuntimeError { "parameter must be of type '" + type + "'" }; }
+    //    return ptr;
+    //}
+
     template<typename T>
-    T assert_cast (Object* obj, const std::string& type) {
-        T ptr = dynamic_cast<T>(obj);
+    const std::shared_ptr<T> assert_cast (const std::shared_ptr<Object> obj, const std::string& type) {
+        const std::shared_ptr<T> ptr = std::dynamic_pointer_cast<T>(obj);
         if (!ptr) { throw RuntimeError { "parameter must be of type '" + type + "'" }; }
         return ptr;
     }
+
+    //template<typename T>
+    //T assert_cast (Object* obj, const std::string& type) {
+    //    T ptr = dynamic_cast<T>(obj);
+    //    if (!ptr) { throw RuntimeError { "parameter must be of type '" + type + "'" }; }
+    //    return ptr;
+    //}
 
     template<typename T>
     T assert_cast (const Object* obj, const std::string& type) {
@@ -57,11 +67,15 @@ protected:
         return ptr;
     }
 
-    void assert_parameter (Object* obj, const std::string& type, const std::string& function) {
+    void assert_parameter (const std::shared_ptr<Object> obj, const std::string& type, const std::string& function) {
         if (!obj) { throw RuntimeError { "argument in member function '" + function + "' on object of type '" + type + "' is null" }; }
     }
 
-    void assert_params(const std::vector<Object*>& params, std::size_t N, const std::string& type, const std::string& func) {
+    void assert_parameter (const Object* obj, const std::string& type, const std::string& function) {
+        if (!obj) { throw RuntimeError { "argument in member function '" + function + "' on object of type '" + type + "' is null" }; }
+    }
+
+    void assert_params(const std::vector<std::shared_ptr<Object>>& params, std::size_t N, const std::string& type, const std::string& func) {
         if (params.size() != N) {
             throw RuntimeError { "invalid number of parameters for '" + type + "'::'" + func + "' function" };
         }
@@ -70,11 +84,11 @@ public:
     Object () = delete;
     Object (bool lvalue) : m_lvalue(lvalue) {};
     virtual ~Object () {};
-    virtual void call (const std::string& func, const std::vector<Object*>& params, std::shared_ptr<Object>& ret_val) = 0;
+    virtual void call (const std::string& func, const std::vector<std::shared_ptr<Object>>& params, std::shared_ptr<Object>& ret_val) = 0;
 
-    virtual void construct (const std::vector<Object*>& params) = 0;
-    virtual void assign (const std::vector<Object*>& params) = 0;
-    virtual void assign (const Object* param) = 0;
+    virtual void construct (const std::vector<std::shared_ptr<Object>>& params) = 0;
+    virtual void assign (const std::vector<std::shared_ptr<Object>>& params) = 0;
+    virtual void assign (const std::shared_ptr<Object> param) = 0;
     virtual void destruct () = 0;
     virtual std::string get_typename () const = 0;
 
@@ -89,6 +103,26 @@ public:
     }
     virtual std::string get_string () const {
         throw RuntimeError { "object of type '" + get_typename() + "' cannot be interpreted as string" };
+    }
+
+    /* += */
+    virtual void operator_add_equal (const Object* param) {
+        throw RuntimeError { "object of type '" + get_typename() + "' has no '+=' operator" };
+    }
+
+    /* -= */
+    virtual void operator_sub_equal (const Object* param) {
+        throw RuntimeError { "object of type '" + get_typename() + "' has no '-=' operator" };
+    }
+
+    /* *= */
+    virtual void operator_mul_equal (const Object* param) {
+        throw RuntimeError { "object of type '" + get_typename() + "' has no '*=' operator" };
+    }
+
+    /* /= */
+    virtual void operator_div_equal (const Object* param) {
+        throw RuntimeError { "object of type '" + get_typename() + "' has no '/=' operator" };
     }
 };
 

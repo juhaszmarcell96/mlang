@@ -87,7 +87,7 @@ public:
         }
     }
 
-    void set_variable (const std::string& variable_name, Object* value) {
+    void set_variable (const std::string& variable_name, std::shared_ptr<Object> value) {
         if (m_variables.count(variable_name) != 0) {
             std::string type_name = value->get_typename();
             if (!has_type(type_name)) {
@@ -159,7 +159,7 @@ public:
         return m_env_stack.top()->get_variable(variable_name);
     }
 
-    void set_variable (const std::string& variable_name, Object* value) {
+    void set_variable (const std::string& variable_name, std::shared_ptr<Object> value) {
         return m_env_stack.top()->set_variable(variable_name, value);
     }
 

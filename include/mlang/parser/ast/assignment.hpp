@@ -17,7 +17,7 @@ public:
         std::shared_ptr<Object> rhs;
         m_right->execute(env, rhs);
         if (!rhs) throw RuntimeError{"right hand side of assignment returned null"};
-        env.set_variable(m_var_name, rhs.get());
+        env.set_variable(m_var_name, rhs);
         //return_val = env.get_variable(m_var_name);
     }
     void print () const override {
@@ -38,8 +38,8 @@ public:
     void execute (EnvStack& env, std::shared_ptr<Object>& return_val) override {
         std::shared_ptr<Object> rhs;
         m_right->execute(env, rhs);
-        if (!rhs) throw RuntimeError{"right hand side of " + operators::add_equal + "' returned null"};
-        env.get_variable(m_var_name)->call(operators::add_equal, std::vector<Object*>{ rhs.get() }, return_val);
+        if (!rhs) throw RuntimeError{"right hand side of '+=' returned null"};
+        env.get_variable(m_var_name)->operator_add_equal(rhs.get());
     }
     void print () const override {
         std::cout << m_var_name << "+=";
@@ -59,8 +59,8 @@ public:
     void execute (EnvStack& env, std::shared_ptr<Object>& return_val) override {
         std::shared_ptr<Object> rhs;
         m_right->execute(env, rhs);
-        if (!rhs) throw RuntimeError{"right hand side of " + operators::sub_equal + "' returned null"};
-        env.get_variable(m_var_name)->call(operators::sub_equal, std::vector<Object*>{ rhs.get() }, return_val);
+        if (!rhs) throw RuntimeError{"right hand side of '-=' returned null"};
+        env.get_variable(m_var_name)->operator_sub_equal(rhs.get());
     }
     void print () const override {
         std::cout << m_var_name << "-=";
@@ -80,8 +80,8 @@ public:
     void execute (EnvStack& env, std::shared_ptr<Object>& return_val) override {
         std::shared_ptr<Object> rhs;
         m_right->execute(env, rhs);
-        if (!rhs) throw RuntimeError{"right hand side of " + operators::mul_equal + "' returned null"};
-        env.get_variable(m_var_name)->call(operators::mul_equal, std::vector<Object*>{ rhs.get() }, return_val);
+        if (!rhs) throw RuntimeError{"right hand side of '*=' returned null"};
+        env.get_variable(m_var_name)->operator_mul_equal(rhs.get());
     }
     void print () const override {
         std::cout << m_var_name << "*=";
@@ -101,8 +101,8 @@ public:
     void execute (EnvStack& env, std::shared_ptr<Object>& return_val) override {
         std::shared_ptr<Object> rhs;
         m_right->execute(env, rhs);
-        if (!rhs) throw RuntimeError{"right hand side of " + operators::div_equal + "' returned null"};
-        env.get_variable(m_var_name)->call(operators::div_equal, std::vector<Object*>{ rhs.get() }, return_val);
+        if (!rhs) throw RuntimeError{"right hand side of '/=' returned null"};
+        env.get_variable(m_var_name)->operator_div_equal(rhs.get());
     }
     void print () const override {
         std::cout << m_var_name << "/=";

@@ -41,7 +41,8 @@ enum class ast_node_types {
     return_node,
     func_decl,
     func_call,
-    indexing_node
+    indexing_node,
+    member_func
 };
 
 class Node;

@@ -41,7 +41,7 @@ public:
                 throw RuntimeError{ "parameter type is invalid for function " + m_name };
             }
             env.declare_variable(m_params[i].name, m_params[i].type);
-            env.set_variable(m_params[i].name, params[i].get());
+            env.set_variable(m_params[i].name, params[i]);
         }
         try {
             for (auto& node : m_nodes) {

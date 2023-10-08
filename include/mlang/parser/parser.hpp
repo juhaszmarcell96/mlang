@@ -585,6 +585,9 @@ private:
                 if (check_type(token_types::square_bracket_open)) {
                     return indexing(current_str);
                 }
+                if (check_type(token_types::dot)) {
+                    return member_function(current_str);
+                }
             }
             return std::make_unique<VariableNode>(current_str);
         }
@@ -604,7 +607,7 @@ private:
             if (consume(token_types::round_bracket_close)) { break; }
             assert_error("invalid function call syntax");
         }
-        assert_done();
+        //assert_done();
         return func_ptr;
     }
 
@@ -614,6 +617,25 @@ private:
         node_ptr index_expr = expression();
         consume(token_types::square_bracket_close, "missing ']' in function call");
         return std::make_unique<IndexingNode>(name, std::move(index_expr));
+    }
+
+    node_ptr member_function (const std::string& var_name) {
+        /* can be indexed first TODO ?? maybe it is already fine */
+        trace("member_function");
+        consume(token_types::dot, "missing '.' in member function call");
+        consume(token_types::identifier, "missing member function name");
+        std::string func_name = prev()->value_str;
+        consume(token_types::round_bracket_open, "missing '(' in function call");
+        std::unique_ptr<MemberFunctionNode> func_ptr = std::make_unique<MemberFunctionNode>(var_name, func_name);
+        while (true) {
+            if (consume(token_types::round_bracket_close)) { break; }
+            func_ptr->add_parameter(expression());
+            if (consume(token_types::comma)) { continue; }
+            if (consume(token_types::round_bracket_close)) { break; }
+            assert_error("invalid member function call syntax");
+        }
+        //assert_done();
+        return func_ptr;
     }
 
 public:

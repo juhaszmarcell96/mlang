@@ -27,7 +27,7 @@ public:
         if (!lhs) throw RuntimeError{"left hand side of " + operators::binary_add + "' returned null"};
         if (!rhs) throw RuntimeError{"right hand side of " + operators::binary_add + "' returned null"};
         return_val = env.create_value(lhs->get_typename());
-        lhs->call(operators::binary_add, std::vector<Object*>{ rhs.get() }, return_val);
+        lhs->call(operators::binary_add, std::vector<std::shared_ptr<Object>>{ rhs }, return_val);
     }
     void print () const override {
         std::cout << "( ";
@@ -50,7 +50,7 @@ public:
         if (!lhs) throw RuntimeError{"left hand side of " + operators::binary_sub + "' returned null"};
         if (!rhs) throw RuntimeError{"right hand side of " + operators::binary_sub + "' returned null"};
         return_val = env.create_value(lhs->get_typename());
-        lhs->call(operators::binary_sub, std::vector<Object*>{ rhs.get() }, return_val);
+        lhs->call(operators::binary_sub, std::vector<std::shared_ptr<Object>>{ rhs }, return_val);
     }
     void print () const override {
         std::cout << "( ";
@@ -73,7 +73,7 @@ public:
         if (!lhs) throw RuntimeError{"left hand side of " + operators::binary_mul + "' returned null"};
         if (!rhs) throw RuntimeError{"right hand side of " + operators::binary_mul + "' returned null"};
         return_val = env.create_value(lhs->get_typename());
-        lhs->call(operators::binary_mul, std::vector<Object*>{ rhs.get() }, return_val);
+        lhs->call(operators::binary_mul, std::vector<std::shared_ptr<Object>>{ rhs }, return_val);
     }
     void print () const override {
         std::cout << "( ";
@@ -96,7 +96,7 @@ public:
         if (!lhs) throw RuntimeError{"left hand side of " + operators::binary_div + "' returned null"};
         if (!rhs) throw RuntimeError{"right hand side of " + operators::binary_div + "' returned null"};
         return_val = env.create_value(lhs->get_typename());
-        lhs->call(operators::binary_div, std::vector<Object*>{ rhs.get() }, return_val);
+        lhs->call(operators::binary_div, std::vector<std::shared_ptr<Object>>{ rhs }, return_val);
     }
     void print () const override {
         std::cout << "( ";

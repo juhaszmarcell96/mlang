@@ -14,18 +14,18 @@ public:
     const static inline std::string type_name { "None" };
 
     /* construct */
-    void construct (const std::vector<Object*>& params) override { }
+    void construct (const std::vector<std::shared_ptr<Object>>& params) override { }
     /* assign */
-    void assign (const std::vector<Object*>& params) override { }
+    void assign (const std::vector<std::shared_ptr<Object>>& params) override { }
     /* destruct */
     void destruct () override { }
-    void assign (const Object* param) override { }
+    void assign (const std::shared_ptr<Object> param) override { }
 
     bool is_true () const override {
         return false;
     }
 
-    void call (const std::string& func, const std::vector<Object*>& params, std::shared_ptr<Object>& ret_val) override {
+    void call (const std::string& func, const std::vector<std::shared_ptr<Object>>& params, std::shared_ptr<Object>& ret_val) override {
         throw RuntimeError { "object of type '" + type_name + "' has no member functions" };
     }
 

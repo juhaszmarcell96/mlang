@@ -1,5 +1,11 @@
 var num;
 num = 2 + 3 - 4 * ( 8 + 9 ) / 2;
 print("%d", num);
+print("%f", num);
 num = "asd";
+print("%s", num);
+print("%s", num.reverse());
+print("%s", num);
+var str = num.reverse();
+print("%s", str);
 print("%s", num);

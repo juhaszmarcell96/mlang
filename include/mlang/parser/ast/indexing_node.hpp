@@ -20,7 +20,7 @@ public:
         }
         std::shared_ptr<Object> index;
         m_index->execute(env, index);
-        env.get_variable(m_var_name)->call(operators::arr_indexing, std::vector<Object*>{ index.get() }, return_val);
+        env.get_variable(m_var_name)->call(operators::arr_indexing, std::vector<std::shared_ptr<Object>>{ index }, return_val);
     }
     void print () const override {
         std::cout << m_var_name << "[";

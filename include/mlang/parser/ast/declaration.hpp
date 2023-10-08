@@ -37,7 +37,7 @@ public:
         m_right->execute(env, rhs);
         if (!rhs) throw RuntimeError{"right hand side of addition returned null"};
         env.declare_variable(m_var_name, None::type_name);
-        env.set_variable(m_var_name, rhs.get());
+        env.set_variable(m_var_name, rhs);
     }
     void print () const override {
         std::cout << "declare:" << m_var_name;

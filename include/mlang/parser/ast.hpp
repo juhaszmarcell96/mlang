@@ -18,6 +18,7 @@
 
 #include "mlang/parser/ast/func_decl_node.hpp"
 #include "mlang/parser/ast/func_call_node.hpp"
+#include "mlang/parser/ast/member_function.hpp"
 
 #include "mlang/parser/ast/end_node.hpp"
 #include "mlang/parser/ast/if_node.hpp"

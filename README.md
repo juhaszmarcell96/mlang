@@ -119,8 +119,9 @@ comparison  -> term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
 term        -> factor ( ( "-" | "+" ) factor )* ;
 factor      -> unary ( ( "/" | "*" ) unary )* ;
 unary       -> ( "-" | "!" ) unary | primary;
-primary     -> NUMBER | STRING | "true" | "false" | "(" expression ")" | lvalue | func_call;
+primary     -> NUMBER | STRING | "true" | "false" | "(" expression ")" | lvalue | func_call | member_call;
 lvalue      -> ( "++" | "--" )? IDENTIFIER ("[" expression "]")?
+member_call -> IDENTIFIER ("[" expression "]")? "." IDENTIFIER "(" ( expression ("," expression)* )? ")"
 func_call   -> IDENTIFIER "(" (expression)* ")"
 
 typename    -> "number" | "string" | "array" | "bool"
