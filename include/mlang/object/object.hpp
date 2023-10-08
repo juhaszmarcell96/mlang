@@ -15,7 +15,6 @@ const std::string construct { "new" };
 const std::string destruct { "del" };
 const std::string assign { "=" };
 const std::string arr_indexing { "[]" };
-const std::string boolean_operator { "()" };
 
 } /* namespace operators */
 
@@ -171,6 +170,11 @@ public:
     /* <= */
     virtual std::shared_ptr<Object> operator_less_equal (const Object* param) {
         throw RuntimeError { "object of type '" + get_typename() + "' has no '<=' operator" };
+    }
+
+    /* [] */
+    virtual std::shared_ptr<Object> operator_array_index (const Object* param) {
+        throw RuntimeError { "object of type '" + get_typename() + "' has no '[]' operator" };
     }
 };
 

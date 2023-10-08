@@ -9,3 +9,15 @@ print("%s", num);
 var str = num.reverse();
 print("%s", str);
 print("%s", num);
+
+var arr = { "fgh", 5 + 5, num, str };
+print("%s", arr);
+
+arr = { "why", "this" };
+print("%s", arr);
+arr += { "hey" };
+print("%s", arr);
+print("%s", arr[2]);
+
+arr[1] = "do";
+print("%s", arr);

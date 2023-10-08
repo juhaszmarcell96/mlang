@@ -207,17 +207,50 @@ private:
         }
         std::string variable_name = curr()->value_str;
         next();
+        bool indexing = false;
+        node_ptr index_expr;
+        if (consume(token_types::square_bracket_open)) {
+            index_expr = expression();
+            consume(token_types::square_bracket_close, "missing ']' in function call");
+        }
         if (done()) { throw syntax_error{ "assignment too shot", curr()->line, curr()->pos}; }
         switch (curr()->type) {
             case token_types::equal_sign : {
                 trace("simple assignment");
                 next();
+                if (curr()->type == token_types::curly_bracket_open) {
+                    consume(token_types::curly_bracket_open);
+                    std::unique_ptr<ArrayAssignmentOperationNode> arr_assign = std::make_unique<ArrayAssignmentOperationNode>(variable_name);
+                    while (true) {
+                        if (consume(token_types::curly_bracket_close)) { break; }
+                        arr_assign->add_arg(expression());
+                        if (consume(token_types::comma)) { continue; }
+                        if (consume(token_types::curly_bracket_close)) { break; }
+                        assert_error("invalid array initialization syntax");
+                    }
+                    return arr_assign;
+                }
                 node_ptr rhs = expression();
+                if (indexing) {
+                    return std::make_unique<ElemAssignmentOperationNode>(variable_name, std::move(rhs), std::move(index_expr));
+                }
                 return std::make_unique<AssignmentOperationNode>(variable_name, std::move(rhs));
             }
             case token_types::plus_equal : {
                 trace("plus assignment");
                 next();
+                if (curr()->type == token_types::curly_bracket_open) {
+                    consume(token_types::curly_bracket_open);
+                    std::unique_ptr<ArrayAddEqualOperationNode> arr_assign = std::make_unique<ArrayAddEqualOperationNode>(variable_name);
+                    while (true) {
+                        if (consume(token_types::curly_bracket_close)) { break; }
+                        arr_assign->add_arg(expression());
+                        if (consume(token_types::comma)) { continue; }
+                        if (consume(token_types::curly_bracket_close)) { break; }
+                        assert_error("invalid array initialization syntax");
+                    }
+                    return arr_assign;
+                }
                 node_ptr rhs = expression();
                 return std::make_unique<AddEqualOperationNode>(variable_name, std::move(rhs));
             }
@@ -250,17 +283,27 @@ private:
     node_ptr declaration () {
         // declaration -> "var" IDENTIFIER ( "=" expression )?
         trace("declaration");
-        assert_next(token_types::identifier, "missing variable name in declaration");
-        std::string variable_name = curr()->value_str;
-        next();
-        if (done()) {
-            return std::make_unique<DeclarationOperationNode>(variable_name);
-        }
-        if (curr()->type == token_types::equal_sign) {
-            assert_next("statement terminated unexpectedly");
-            node_ptr rhs = expression();
-            assert_done();
-            return std::make_unique<DeclAndInitOperationNode>(variable_name, std::move(rhs));
+        consume(token_types::kw_var, "not a variable declaration");
+        consume(token_types::identifier, "missing variable name in declaration");
+        std::string variable_name = prev()->value_str;
+        if (done()) { return std::make_unique<DeclarationOperationNode>(variable_name); }
+        if (consume(token_types::equal_sign)) {
+            if (consume(token_types::curly_bracket_open)) {
+                std::unique_ptr<DeclAndInitArrayOperationNode> arr_decl = std::make_unique<DeclAndInitArrayOperationNode>(variable_name);
+                while (true) {
+                    if (consume(token_types::curly_bracket_close)) { break; }
+                    arr_decl->add_arg(expression());
+                    if (consume(token_types::comma)) { continue; }
+                    if (consume(token_types::curly_bracket_close)) { break; }
+                    assert_error("invalid array initialization syntax");
+                }
+                return arr_decl;
+            }
+            else {
+                node_ptr rhs = expression();
+                assert_done();
+                return std::make_unique<DeclAndInitOperationNode>(variable_name, std::move(rhs));
+            }
         }
         throw syntax_error{ "invalid token found in declaration", curr()->line, curr()->pos };
         return nullptr;
