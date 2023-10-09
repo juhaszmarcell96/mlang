@@ -31,41 +31,40 @@ TEST(ASTTest, Test0) {
     ASSERT_EQ(env.get_variable(var_name)->get_typename(), mlang::Number::type_name);
     ASSERT_EQ(env.get_variable(var_name)->get_number(), 5);
 }
-/*
 TEST(ASTTest, Test1) {
     mlang::EnvStack env {};
-    mlang::Value ret_val {};
 
     ASSERT_EQ(env.has_variable("a"), false);
     ASSERT_EQ(env.has_variable("b"), false);
 
-    mlang::DeclarationOperationNode declaration_a {mlang::value_types::number, "a"};
-    mlang::DeclarationOperationNode declaration_b {mlang::value_types::number, "b"};
-    declaration_a.execute(env, ret_val);
-    declaration_b.execute(env, ret_val);
+    mlang::DeclarationOperationNode declaration_a {"a"};
+    mlang::DeclarationOperationNode declaration_b {"b"};
+    declaration_a.execute(env);
+    declaration_b.execute(env);
 
     ASSERT_EQ(env.has_variable("a"), true);
     ASSERT_EQ(env.has_variable("b"), true);
-    ASSERT_EQ(env.get_variable("a")->get_type(), mlang::value_types::number);
-    ASSERT_EQ(env.get_variable("b")->get_type(), mlang::value_types::number);
-    ASSERT_EQ(env.get_variable("a")->get_number(), 0);
-    ASSERT_EQ(env.get_variable("b")->get_number(), 0);
+    ASSERT_EQ(env.get_variable("a")->get_typename(), mlang::None::type_name);
+    ASSERT_EQ(env.get_variable("b")->get_typename(), mlang::None::type_name);
 
-    std::unique_ptr<mlang::ValueNode> rhs_a = std::make_unique<mlang::ValueNode>(mlang::Value { 5 });
-    std::unique_ptr<mlang::ValueNode> rhs_b = std::make_unique<mlang::ValueNode>(mlang::Value { 7 });
+    std::shared_ptr<mlang::Number> num_ptr_a = std::make_shared<mlang::Number>(5);
+    std::shared_ptr<mlang::Number> num_ptr_b = std::make_shared<mlang::Number>(7);
+    std::unique_ptr<mlang::ValueNode> rhs_a = std::make_unique<mlang::ValueNode>(num_ptr_a);
+    std::unique_ptr<mlang::ValueNode> rhs_b = std::make_unique<mlang::ValueNode>(num_ptr_b);
     mlang::AssignmentOperationNode assignment_a { "a", std::move(rhs_a) };
     mlang::AssignmentOperationNode assignment_b { "b", std::move(rhs_b) };
-    assignment_a.execute(env, ret_val);
-    assignment_b.execute(env, ret_val);
+    assignment_a.execute(env);
+    assignment_b.execute(env);
 
     ASSERT_EQ(env.has_variable("a"), true);
     ASSERT_EQ(env.has_variable("b"), true);
-    ASSERT_EQ(env.get_variable("a")->get_type(), mlang::value_types::number);
-    ASSERT_EQ(env.get_variable("b")->get_type(), mlang::value_types::number);
+    ASSERT_EQ(env.get_variable("a")->get_typename(), mlang::Number::type_name);
+    ASSERT_EQ(env.get_variable("b")->get_typename(), mlang::Number::type_name);
     ASSERT_EQ(env.get_variable("a")->get_number(), 5);
     ASSERT_EQ(env.get_variable("b")->get_number(), 7);
 }
 
+/*
 TEST(ASTTest, Test2) {
     mlang::EnvStack env {};
     mlang::Value ret_val {};

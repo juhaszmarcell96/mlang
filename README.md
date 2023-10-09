@@ -131,3 +131,70 @@ typename    -> "number" | "string" | "array" | "bool"
 
 
 
+
+
+
+program          -> declaration* EOF
+
+declaration      -> func_decl | var_decl | statement
+func_decl        -> "function" IDENTIFIER "(" ( IDENTIFIER ("," IDENTIFIER)* )? ")" block
+var_decl         -> "var" IDENTIFIER ( "=" expression )? ";"
+
+statement        -> exp_statement | if_statement | for_statement | while_statement | print_statement | control
+exp_statement    -> expression ";"
+if_statement     -> "if" "(" expression ")" block ( "elif" "(" expression ")" block )* ( "else" block )?
+for_statement    -> "for" "(" ( var_decl | exp_statement | ";" ) expression? ";" expression? ")" block
+while_statement  -> "while" "(" expression ")" block
+print_statement  -> "print" "(" STRING ( "," expression )* ")" ";"
+control          -> "break" | "continue" | ("return" expression?) | ("exit" expression ) ";"
+
+expression       -> assignment
+assignment       -> ( IDENTIFIER ( ( "[" expression "]" ) | ( "." IDENTIFIER ) )* ( "=" | "+=" | "-=" | "*=" | "/=" ) )? logic_or
+logic_or         -> logic_and ( "||" logic_and )*
+logic_and        -> equality ( "&&" equality )*
+equality         -> comparison ( ( "!=" | "==" ) comparison )*
+comparison       -> term ( ( ">" | ">=" | "<" | "<=" ) term )*
+term             -> factor ( ( "-" | "+" ) factor )*
+factor           -> pre_op ( ( "/" | "*" ) pre_op )*
+pre_op           -> ( "-" | "!" | "++" | "--" )? post_op;
+post_op          -> primary ( "++" | "--" | ( "(" arguments? ")" ) | ( ("[" expression "]") | ("." IDENTIFIER ( "(" arguments? ")" )) )* )?
+primary          -> NUMBER | STRING | "true" | "false" | "none" | "(" expression ")" | IDENTIFIER | ( "new" IDENTIFIER "(" arguments? ")" );
+
+arguments        -> logic_or ( "," logic_or )* 
+block            -> "{" statement* "}"
+
+
+
+
+
+
+program          -> declaration* EOF
+
+declaration      -> func_decl | var_decl | statement
+func_decl        -> "function" IDENTIFIER "(" ( IDENTIFIER ("," IDENTIFIER)* )? ")" block
+var_decl         -> "var" IDENTIFIER ( "=" expression )? ";"
+
+statement        -> exp_statement | if_statement | for_statement | while_statement | print_statement | control
+exp_statement    -> expression ";"
+if_statement     -> "if" "(" expression ")" block ( "elif" "(" expression ")" block )* ( "else" block )?
+for_statement    -> "for" "(" ( var_decl | exp_statement | ";" ) expression? ";" expression? ")" block
+while_statement  -> "while" "(" expression ")" block
+print_statement  -> "print" "(" STRING ( "," expression )* ")" ";"
+control          -> "break" | "continue" | ("return" expression?) | ("exit" expression ) ";"
+
+expression       -> assignment
+assignment       -> ( IDENTIFIER ( ( "[" expression "]" ) | ( "." IDENTIFIER ) )* ( "=" | "+=" | "-=" | "*=" | "/=" ) )? logic_or
+logic_or         -> logic_and ( "||" logic_and )*
+logic_and        -> equality ( "&&" equality )*
+equality         -> comparison ( ( "!=" | "==" ) comparison )*
+comparison       -> term ( ( ">" | ">=" | "<" | "<=" ) term )*
+term             -> factor ( ( "-" | "+" ) factor )*
+factor           -> pre_op ( ( "/" | "*" ) pre_op )*
+pre_op           -> ( "-" | "!" | "++" | "--" )? post_op;
+post_op          -> primary ( "++" | "--" | ( "(" arguments? ")" ) | ( ("[" expression "]") | ("." IDENTIFIER ( "(" arguments? ")" )) )* )?
+rvalue           -> NUMBER | STRING | "true" | "false" | "none"
+lvalue           -> IDENTIFIER ???
+primary          -> NUMBER | STRING | "true" | "false" | "none" | "(" expression ")" | IDENTIFIER | ( "new" IDENTIFIER "(" arguments? ")" );
+
+arguments        -> logic_or ( "," logic_or )* 
+block            -> "{" statement* "}"
