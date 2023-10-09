@@ -85,7 +85,7 @@ public:
 
 class BooleanFactory : public ObjectFactory {
 public:
-    std::shared_ptr<Object> create () override {
+    std::shared_ptr<Object> create () const override {
         return std::make_shared<Boolean>();
     }
 };

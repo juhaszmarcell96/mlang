@@ -134,67 +134,84 @@ typename    -> "number" | "string" | "array" | "bool"
 
 
 
-program          -> declaration* EOF
+program            -> declaration* EOF
 
-declaration      -> func_decl | var_decl | statement
-func_decl        -> "function" IDENTIFIER "(" ( IDENTIFIER ("," IDENTIFIER)* )? ")" block
-var_decl         -> "var" IDENTIFIER ( "=" expression )? ";"
+declaration        -> func_decl | var_decl | statement
+func_decl          -> "function" IDENTIFIER "(" ( IDENTIFIER ("," IDENTIFIER)* )? ")" block
+var_decl           -> "var" IDENTIFIER ( "=" expression )? ";"
 
-statement        -> exp_statement | if_statement | for_statement | while_statement | print_statement | control
-exp_statement    -> expression ";"
-if_statement     -> "if" "(" expression ")" block ( "elif" "(" expression ")" block )* ( "else" block )?
-for_statement    -> "for" "(" ( var_decl | exp_statement | ";" ) expression? ";" expression? ")" block
-while_statement  -> "while" "(" expression ")" block
-print_statement  -> "print" "(" STRING ( "," expression )* ")" ";"
-control          -> "break" | "continue" | ("return" expression?) | ("exit" expression ) ";"
+statement          -> exp_statement | if_statement | for_statement | while_statement | print_statement | control
+exp_statement      -> expression ";"
+if_statement       -> "if" "(" expression ")" block ( "elif" "(" expression ")" block )* ( "else" block )?
+for_statement      -> "for" "(" ( var_decl | exp_statement | ";" ) expression? ";" expression? ")" block
+while_statement    -> "while" "(" expression ")" block
+print_statement    -> "print" "(" STRING ( "," expression )* ")" ";"
+control            -> break_statement | continue_statement | return_statement | exit_statement
+break_statement    -> "break" ";"
+continue_statement -> "continue" ";"
+return_statement   -> "return" expression? ";"
+exit_statement     -> "exit" expression ";"
 
-expression       -> assignment
-assignment       -> ( IDENTIFIER ( ( "[" expression "]" ) | ( "." IDENTIFIER ) )* ( "=" | "+=" | "-=" | "*=" | "/=" ) )? logic_or
-logic_or         -> logic_and ( "||" logic_and )*
-logic_and        -> equality ( "&&" equality )*
-equality         -> comparison ( ( "!=" | "==" ) comparison )*
-comparison       -> term ( ( ">" | ">=" | "<" | "<=" ) term )*
-term             -> factor ( ( "-" | "+" ) factor )*
-factor           -> pre_op ( ( "/" | "*" ) pre_op )*
-pre_op           -> ( "-" | "!" | "++" | "--" )? post_op;
-post_op          -> primary ( "++" | "--" | ( "(" arguments? ")" ) | ( ("[" expression "]") | ("." IDENTIFIER ( "(" arguments? ")" )) )* )?
-primary          -> NUMBER | STRING | "true" | "false" | "none" | "(" expression ")" | IDENTIFIER | ( "new" IDENTIFIER "(" arguments? ")" );
+expression         -> assignment
+assignment         -> logic_or ( "=" | "+=" | "-=" | "*=" | "/=" logic_or )?
+logic_or           -> logic_and ( "||" logic_and )*
+logic_and          -> equality ( "&&" equality )*
+equality           -> comparison ( ( "!=" | "==" ) comparison )*
+comparison         -> term ( ( ">" | ">=" | "<" | "<=" ) term )*
+term               -> factor ( ( "-" | "+" ) factor )*
+factor             -> pre_op ( ( "/" | "*" ) pre_op )*
+pre_op             -> ( "-" | "!" | "++" | "--" )? post_op;
+post_op            -> postfix_increment | postfix_decrement | ( func_call | subscript | member_access | member_call )*
+postfix_increment  -> primary "++"
+postfix_decrement  -> primary "--"
+func_call          -> primary "(" arguments? ")"
+subscript          -> primary "[" logic_or "]"
+member_access      -> primary "." IDENTIFIER
+member_call        -> primary "." IDENTIFIER "(" arguments? ")"
+primary            -> NUMBER | STRING | "true" | "false" | "none" | "(" expression ")" | IDENTIFIER | ( "new" IDENTIFIER "(" arguments? ")" ) | ( "{" arguments "}" )
 
-arguments        -> logic_or ( "," logic_or )* 
-block            -> "{" statement* "}"
+arguments          -> logic_or ( "," logic_or )* 
+block              -> "{" statement* "}"
 
 
 
 
 
 
-program          -> declaration* EOF
 
-declaration      -> func_decl | var_decl | statement
-func_decl        -> "function" IDENTIFIER "(" ( IDENTIFIER ("," IDENTIFIER)* )? ")" block
-var_decl         -> "var" IDENTIFIER ( "=" expression )? ";"
 
-statement        -> exp_statement | if_statement | for_statement | while_statement | print_statement | control
-exp_statement    -> expression ";"
-if_statement     -> "if" "(" expression ")" block ( "elif" "(" expression ")" block )* ( "else" block )?
-for_statement    -> "for" "(" ( var_decl | exp_statement | ";" ) expression? ";" expression? ")" block
-while_statement  -> "while" "(" expression ")" block
-print_statement  -> "print" "(" STRING ( "," expression )* ")" ";"
-control          -> "break" | "continue" | ("return" expression?) | ("exit" expression ) ";"
+program            -> declaration* EOF
 
-expression       -> assignment
-assignment       -> ( IDENTIFIER ( ( "[" expression "]" ) | ( "." IDENTIFIER ) )* ( "=" | "+=" | "-=" | "*=" | "/=" ) )? logic_or
-logic_or         -> logic_and ( "||" logic_and )*
-logic_and        -> equality ( "&&" equality )*
-equality         -> comparison ( ( "!=" | "==" ) comparison )*
-comparison       -> term ( ( ">" | ">=" | "<" | "<=" ) term )*
-term             -> factor ( ( "-" | "+" ) factor )*
-factor           -> pre_op ( ( "/" | "*" ) pre_op )*
-pre_op           -> ( "-" | "!" | "++" | "--" )? post_op;
-post_op          -> primary ( "++" | "--" | ( "(" arguments? ")" ) | ( ("[" expression "]") | ("." IDENTIFIER ( "(" arguments? ")" )) )* )?
-rvalue           -> NUMBER | STRING | "true" | "false" | "none"
-lvalue           -> IDENTIFIER ???
-primary          -> NUMBER | STRING | "true" | "false" | "none" | "(" expression ")" | IDENTIFIER | ( "new" IDENTIFIER "(" arguments? ")" );
+declaration        -> func_decl | var_decl | statement
+func_decl          -> "function" IDENTIFIER "(" ( IDENTIFIER ("," IDENTIFIER)* )? ")" block
+var_decl           -> "var" IDENTIFIER ( "=" expression )? ";"
 
-arguments        -> logic_or ( "," logic_or )* 
-block            -> "{" statement* "}"
+statement          -> exp_statement | if_statement | for_statement | while_statement | print_statement | control
+exp_statement      -> expression ";"
+if_statement       -> "if" "(" expression ")" block ( "elif" "(" expression ")" block )* ( "else" block )?
+for_statement      -> "for" "(" ( var_decl | exp_statement | ";" ) expression? ";" expression? ")" block
+while_statement    -> "while" "(" expression ")" block
+print_statement    -> "print" "(" STRING ( "," expression )* ")" ";"
+control            -> break_statement | continue_statement | return_statement | exit_statement
+break_statement    -> "break" ";"
+continue_statement -> "continue" ";"
+return_statement   -> "return" expression? ";"
+exit_statement     -> "exit" expression ";"
+
+expression         -> assignment
+assignment         -> ( lvalue ( "=" | "+=" | "-=" | "*=" | "/=" ) )? logic_or
+logic_or           -> logic_and ( "||" logic_and )*
+logic_and          -> equality ( "&&" equality )*
+equality           -> comparison ( ( "!=" | "==" ) comparison )*
+comparison         -> term ( ( ">" | ">=" | "<" | "<=" ) term )*
+term               -> factor ( ( "-" | "+" ) factor )*
+factor             -> pre_op ( ( "/" | "*" ) pre_op )*
+pre_op             -> ( "-" | "!" | "++" | "--" )? post_op;
+post_op            -> primary ( "++" | "--" | ( "(" arguments? ")" ) | ( ("[" expression "]") | ("." IDENTIFIER ( "(" arguments? ")" )) )* )?
+primary            -> NUMBER | STRING | "true" | "false" | "none" | "(" expression ")" | IDENTIFIER | ( "new" IDENTIFIER "(" arguments? ")" ) | ( "{" arguments "}" )
+lvalue             -> IDENTIFIER ( subscript | member_access )*
+subscript          -> "[" expression "]"
+member_access      -> "." IDENTIFIER
+
+arguments          -> logic_or ( "," logic_or )* 
+block              -> "{" statement* "}"

@@ -74,613 +74,429 @@ private:
         next();
     }
 
-    void assert_current (token_types type, const std::string& err_msg) const {
-        if (done()) { throw syntax_error{ err_msg, prev()->line, prev()->pos}; }
-        if (curr()->type != type) {
-            throw syntax_error{ err_msg, curr()->line, curr()->pos};
+    // primary            -> NUMBER | STRING | "true" | "false" | "none" | "(" expression ")" | IDENTIFIER | ( "new" IDENTIFIER "(" arguments? ")" ) | ( "{" arguments "}" )
+    node_ptr primary () {
+        trace("primary");
+        if (consume(token_types::number)) { return std::make_unique<ValueNode>(std::make_shared<Number>(prev()->value_num, false)); }
+        if (consume(token_types::string)) { return std::make_unique<ValueNode>(std::make_shared<String>(prev()->value_str, false)); }
+        if (consume(token_types::kw_true)) { return std::make_unique<ValueNode>(std::make_shared<Boolean>(true, false)); }
+        if (consume(token_types::kw_false)) { return std::make_unique<ValueNode>(std::make_shared<Boolean>(false, false)); }
+        if (consume(token_types::round_bracket_open)) {
+            node_ptr expr = expression();
+            consume(token_types::round_bracket_close, "missing ')'");
+            return expr;
         }
-    }
-
-    void assert_next (const std::string& err_msg) {
-        next();
-        if (done()) { throw syntax_error{ err_msg, prev()->line, prev()->pos}; }
-    }
-
-    void assert_next (token_types type, const std::string& err_msg) {
-        next();
-        if (done()) { throw syntax_error{ err_msg, prev()->line, prev()->pos}; }
-        if (curr()->type != type) {
-            throw syntax_error{ err_msg, curr()->line, curr()->pos};
-        }
-    }
-
-    void assert_next_done () {
-        next();
-        if (!done()) {
-            const Token* token_ptr = prev();
-            if (token_ptr) {
-                throw syntax_error{ "expression not terminated properly", token_ptr->line, token_ptr->pos};
-            }
-            else {
-                throw syntax_error{ "expression not terminated properly", curr()->line, curr()->pos};
-            }
-        }
-    }
-
-    void assert_done () {
-        if (!done()) {
-            const Token* token_ptr = prev();
-            if (token_ptr) {
-                throw syntax_error{ "expression not terminated properly", token_ptr->line, token_ptr->pos};
-            }
-            else {
-                throw syntax_error{ "expression not terminated properly", curr()->line, curr()->pos};
-            }
-        }
-    }
-
-    void assert_not_done () {
-        if (done()) { throw syntax_error{ "expression terminated unexpectedly", prev()->line, prev()->pos}; }
-    }
-
-    bool check_type (token_types type) {
-        if (done()) { throw syntax_error{ "expression terminated unexpectedly", prev()->line, prev()->pos}; }
-        return curr()->type == type;
-    }
-
-    void assert_error (const std::string& err_msg) {
-        throw syntax_error{ err_msg, curr()->line, curr()->pos};
-    }
-
-    node_ptr statement () {
-        trace("statement");
-        token_types current_type = curr()->type;
-        switch (current_type) {
-            case token_types::kw_var: {
-                return declaration();
-            }
-            case token_types::kw_if: {
-                return if_statement();
-            }
-            case token_types::kw_elif: {
-                elif_statement();
-                return nullptr;
-            }
-            case token_types::kw_else: {
-                else_statement();
-                return nullptr;
-            }
-            case token_types::kw_for: {
-                return for_statement();
-            }
-            case token_types::kw_while: {
-                return while_statement();
-            }
-            case token_types::kw_break: {
-                return break_statement();
-            }
-            case token_types::kw_return: {
-                return return_statement();
-            }
-            case token_types::kw_end: {
-                return end_statement(); /* can return nullptr as well if it does not do anything */
-            }
-            case token_types::kw_function: {
-                /* function declaration is added to the current scope, the AST node execute adds the function to the environment */
-                /* and it does nothing else, does not execute the body. The function object in the environment has a pointer to  */
-                /* the function AST node and it calls a distinct "call" function to execute the body in a given context */
-                return function_declaration();
-            }
-            case token_types::identifier: {
-                if (!peekable()) return primary();
-                token_types next_type = peek()->type;
-                switch (next_type) {
-                    case token_types::asterisk_equal:
-                    case token_types::slash_equal:
-                    case token_types::dash_equal:
-                    case token_types::plus_equal:
-                    case token_types::equal_sign: {
-                        return assignment();
-                    }
-                    case token_types::round_bracket_open: {
-                        std::string current_str = curr()->value_str;
-                        next();
-                        return function_call(current_str);
-                    }
-                    default: {
-                        return expression();
+        if (consume(token_types::identifier)) { return std::make_unique<VariableNode>(prev()->value_str); }
+        //if (consume(token_types::kw_new)) { return std::make_unique<VariableNode>(prev()->value_str); }
+        if (consume(token_types::curly_bracket_open)) {
+            std::unique_ptr<ArrayNode> arr_ptr = std::make_unique<ArrayNode>();
+            while (!consume(token_types::curly_bracket_close)) {
+                arr_ptr->add_element(logic_or());
+                if (consume(token_types::comma)) {
+                    if (consume(token_types::curly_bracket_close)) {
+                        throw syntax_error{ "',' is followed by '}', which is invalid", prev()->line, prev()->pos};
                     }
                 }
-                break;
             }
-            case token_types::kw_print: {
-                return print_expr();
-            }
-            default : {
-                return expression();
-            }
+            return arr_ptr;
         }
-    }
-
-    node_ptr assignment () {
-        trace("assignment");
-        if (curr()->type != token_types::identifier) {
-            throw unexpected_error{"statement not an assignment"};
-        }
-        std::string variable_name = curr()->value_str;
-        next();
-        bool indexing = false;
-        node_ptr index_expr;
-        if (consume(token_types::square_bracket_open)) {
-            index_expr = expression();
-            consume(token_types::square_bracket_close, "missing ']' in function call");
-        }
-        if (done()) { throw syntax_error{ "assignment too shot", curr()->line, curr()->pos}; }
-        switch (curr()->type) {
-            case token_types::equal_sign : {
-                trace("simple assignment");
-                next();
-                if (curr()->type == token_types::curly_bracket_open) {
-                    consume(token_types::curly_bracket_open);
-                    std::unique_ptr<ArrayAssignmentOperationNode> arr_assign = std::make_unique<ArrayAssignmentOperationNode>(variable_name);
-                    while (true) {
-                        if (consume(token_types::curly_bracket_close)) { break; }
-                        arr_assign->add_arg(expression());
-                        if (consume(token_types::comma)) { continue; }
-                        if (consume(token_types::curly_bracket_close)) { break; }
-                        assert_error("invalid array initialization syntax");
-                    }
-                    return arr_assign;
-                }
-                node_ptr rhs = expression();
-                if (indexing) {
-                    return std::make_unique<ElemAssignmentOperationNode>(variable_name, std::move(rhs), std::move(index_expr));
-                }
-                return std::make_unique<AssignmentOperationNode>(variable_name, std::move(rhs));
-            }
-            case token_types::plus_equal : {
-                trace("plus assignment");
-                next();
-                if (curr()->type == token_types::curly_bracket_open) {
-                    consume(token_types::curly_bracket_open);
-                    std::unique_ptr<ArrayAddEqualOperationNode> arr_assign = std::make_unique<ArrayAddEqualOperationNode>(variable_name);
-                    while (true) {
-                        if (consume(token_types::curly_bracket_close)) { break; }
-                        arr_assign->add_arg(expression());
-                        if (consume(token_types::comma)) { continue; }
-                        if (consume(token_types::curly_bracket_close)) { break; }
-                        assert_error("invalid array initialization syntax");
-                    }
-                    return arr_assign;
-                }
-                node_ptr rhs = expression();
-                return std::make_unique<AddEqualOperationNode>(variable_name, std::move(rhs));
-            }
-            case token_types::dash_equal : {
-                trace("minus assignment");
-                next();
-                node_ptr rhs = expression();
-                return std::make_unique<SubEqualOperationNode>(variable_name, std::move(rhs));
-            }
-            case token_types::asterisk_equal : {
-                trace("multiply assignment");
-                next();
-                node_ptr rhs = expression();
-                return std::make_unique<MulEqualOperationNode>(variable_name, std::move(rhs));
-            }
-            case token_types::slash_equal : {
-                trace("divide assignment");
-                next();
-                node_ptr rhs = expression();
-                return std::make_unique<DivEqualOperationNode>(variable_name, std::move(rhs));
-            }
-            default : {
-                throw unexpected_error{"statement not an assignment, no assignment operator found"};
-            }
-        }
-        throw unexpected_error{"unexpected error in assignment"};
+        throw syntax_error{ "unexpected primary token", prev()->line, prev()->pos};
         return nullptr;
     }
 
-    node_ptr declaration () {
-        // declaration -> "var" IDENTIFIER ( "=" expression )?
-        trace("declaration");
-        consume(token_types::kw_var, "not a variable declaration");
-        consume(token_types::identifier, "missing variable name in declaration");
-        std::string variable_name = prev()->value_str;
-        if (done()) { return std::make_unique<DeclarationOperationNode>(variable_name); }
-        if (consume(token_types::equal_sign)) {
-            if (consume(token_types::curly_bracket_open)) {
-                std::unique_ptr<DeclAndInitArrayOperationNode> arr_decl = std::make_unique<DeclAndInitArrayOperationNode>(variable_name);
-                while (true) {
-                    if (consume(token_types::curly_bracket_close)) { break; }
-                    arr_decl->add_arg(expression());
-                    if (consume(token_types::comma)) { continue; }
-                    if (consume(token_types::curly_bracket_close)) { break; }
-                    assert_error("invalid array initialization syntax");
-                }
-                return arr_decl;
-            }
-            else {
-                node_ptr rhs = expression();
-                assert_done();
-                return std::make_unique<DeclAndInitOperationNode>(variable_name, std::move(rhs));
-            }
-        }
-        throw syntax_error{ "invalid token found in declaration", curr()->line, curr()->pos };
-        return nullptr;
-    }
-
-    node_ptr print_expr () {
-        // print       -> "print" "(" expression ")"
-        trace("print_expr");
-        assert_current(token_types::kw_print, "statement not a 'print' statement");
-        assert_next(token_types::round_bracket_open, "missing '(' after 'print'");
-        assert_next(token_types::string, "first parameter of 'print' must be a string");
-        std::string rule = curr()->value_str;
-        next();
-        std::vector<node_ptr> args;
+    // post_op            -> postfix_increment | postfix_decrement | ( func_call | subscript | member_access | member_call )*
+    // postfix_increment  -> primary "++"
+    // postfix_decrement  -> primary "--"
+    // func_call          -> primary "(" arguments? ")"
+    // subscript          -> primary "[" logic_or "]"
+    // member_access      -> primary "." IDENTIFIER
+    // member_call        -> primary "." IDENTIFIER "(" arguments? ")"
+    node_ptr post_op () {
+        trace("post_op");
+        node_ptr expr = primary();
         while (true) {
-            if (done()) { throw syntax_error{ "missing ')'", curr()->line, curr()->pos}; }
-            if (curr()->type == token_types::round_bracket_close) {
+            if (consume(token_types::plus_plus)) {
+                expr = std::make_unique<PostfixIncrementNode>(std::move(expr));
                 break;
             }
-            else if (curr()->type == token_types::comma) {
-                next();
-                args.push_back(expression());
+            else if (consume(token_types::dash_dash)) {
+                expr = std::make_unique<PostfixDecrementNode>(std::move(expr));
+                break;
+            }
+            else if (consume(token_types::round_bracket_open)) {
+                std::unique_ptr<FunctionCallNode> func_call_ptr = std::make_unique<FunctionCallNode>(std::move(expr));
+                while (!consume(token_types::round_bracket_close)) {
+                    func_call_ptr->add_argument(logic_or());
+                }
+                expr.swap(func_call_ptr);
+            }
+            else if (consume(token_types::square_bracket_open)) {
+                std::unique_ptr<SubscriptNode> subscript_ptr = std::make_unique<SubscriptNode>(std::move(expr));
+                subscript_ptr->set_index(logic_or());
+                consume(token_types::square_bracket_close, "missing ']' as subscript termination");
+                expr.swap(subscript_ptr);
+            }
+            else if (consume(token_types::dot)) {
+                consume(token_types::identifier, "missing identifier in member access");
+                std::string member_name = prev()->value_str;
+                if (consume(token_types::round_bracket_open)) {
+                    std::unique_ptr<MemberFunctionNode> member_func_ptr = std::make_unique<MemberFunctionNode>(std::move(expr), member_name);
+                    while (!consume(token_types::round_bracket_close)) {
+                        member_func_ptr->add_argument(logic_or());
+                    }
+                    expr.swap(member_func_ptr);
+                }
+                else {
+                    std::unique_ptr<MemberAccessNode> member_access_ptr = std::make_unique<MemberAccessNode>(std::move(expr), member_name);
+                    expr.swap(member_access_ptr);
+                }
             }
             else {
-                throw syntax_error{ "unexpected token in 'print'", curr()->line, curr()->pos};
+                break;
             }
         }
-        return std::make_unique<PrintNode>(rule, std::move(args));
+        return expr;
     }
 
-    node_ptr function_declaration () {
-        // func_decl   -> "function" IDENTIFIER "(" ( IDENTIFIER IDENTIFIER ("," IDENTIFIER IDENTIFIER)* )? ")" "-" ">" IDENTIFIER;
-        trace("function_declaration");
-        consume(token_types::kw_function, "statement not a function declaration");
-        consume(token_types::identifier, "missing function name");
-        std::unique_ptr<FunctionDeclNode> func_ptr = std::make_unique<FunctionDeclNode>(prev()->value_str, m_current_scope);
-        consume(token_types::round_bracket_open, "missing '(' after keyword 'function'");
+    // pre_op             -> ( "-" | "!" | "++" | "--" )? post_op;
+    node_ptr pre_op () {
+        trace("pre_op");
         while (true) {
-            if (consume(token_types::identifier)) {
-                std::string type_name = prev()->value_str;
-                consume(token_types::identifier, "missing identifier after typename '" + type_name + "'");
-                func_ptr->add_parameter(type_name, prev()->value_str);
+            if (consume(token_types::dash)) {
+                node_ptr rhs = post_op();
+                return expr = std::make_unique<BinaryMulOperationNode>(std::move(expr), std::move(rhs));
             }
-
-            if (consume(token_types::comma)) { continue; }
-            
-            consume(token_types::round_bracket_close, "missing ')' after function declaration");
-            break;
+            else if (consume(token_types::exclamation_mark)) {
+                node_ptr rhs = post_op();
+                return std::make_unique<BinaryDivOperationNode>(std::move(expr), std::move(rhs));
+            }
+            else if (consume(token_types::plus_plus)) {
+                node_ptr rhs = post_op();
+                return std::make_unique<PrefixIncrementNode>(std::move(expr), std::move(rhs));
+            }
+            else if (consume(token_types::dash_dash)) {
+                node_ptr rhs = post_op();
+                return std::make_unique<PrefixDecrementNode>(std::move(expr), std::move(rhs));
+            }
+            else {
+                break;
+            }
         }
-        consume(token_types::dash, "missing return type after function declaration");
-        consume(token_types::greater, "missing return type after function declaration");
-        consume(token_types::identifier, "invalid return type");
-        func_ptr->define_ret_type(prev()->value_str);
-        assert_done();
-        m_next_scope = func_ptr.get();
-        return func_ptr;
+        return post_op();
     }
 
-    node_ptr if_statement () {
-        // if          -> "if" "(" expression ")"
-        trace("if_statement");
-        assert_current(token_types::kw_if, "statement not an 'if' statement");
-        assert_next(token_types::round_bracket_open, "missing '(' after 'if'");
-        assert_next("condition not found for 'if'");
-        node_ptr condition = expression();
-        assert_current(token_types::round_bracket_close, "unmatched parentheses");
-        assert_next_done();
-        std::unique_ptr<IfStatementNode> if_node_ptr = std::make_unique<IfStatementNode>(std::move(condition), m_current_scope);
-        m_next_scope = if_node_ptr.get();
-        return if_node_ptr;
-    }
-
-    void elif_statement () {
-        // elif        -> "elif" "(" expression ")"
-        trace("elif_statement");
-        assert_current(token_types::kw_elif, "statement not an 'elif' statement");
-        assert_next(token_types::round_bracket_open, "missing '(' after 'elif'");
-        assert_next("condition not found for 'elif'");
-        node_ptr condition = expression();
-        assert_current(token_types::round_bracket_close, "unmatched parentheses");
-        assert_next_done();
-        m_current_scope->add_elif(std::move(condition));
-    }
-
-    void else_statement () {
-        // else        -> "else"
-        trace("else_statement");
-        assert_current(token_types::kw_else, "statement not an 'else' statement");
-        assert_next_done();
-        m_current_scope->add_else();
-    }
-
-    node_ptr for_statement () {
-        // for         -> "for" "(" assignment ( "," assignment )* ";" expression ( "," expression )* ";" expression ( "," expression )* ")"
-        trace("for_statement");
-        assert_current(token_types::kw_for, "statement not a 'for' statement");
-        assert_next(token_types::round_bracket_open, "missing '(' after 'for'");
-        std::unique_ptr<ForStatementNode> for_node_ptr = std::make_unique<ForStatementNode>(m_current_scope);
-        /* processing assignments */
-        assert_next("assignments not found for 'for'");
+    // factor             -> pre_op ( ( "/" | "*" ) pre_op )*
+    node_ptr factor () {
+        trace("factor");
+        node_ptr expr = pre_op();
         while (true) {
-            if (check_type(token_types::semicolon)) { break; }
-            for_node_ptr->add_assignment(std::move(assignment()));
-            if (check_type(token_types::semicolon)) { break; }
-            else if (check_type(token_types::comma)) { continue; }
-            assert_error("unexpected token in 'for' initialization");
+            if (consume(token_types::asterisk)) {
+                node_ptr rhs = pre_op();
+                expr = std::make_unique<BinaryMulOperationNode>(std::move(expr), std::move(rhs));
+            }
+            else if (consume(token_types::slash)) {
+                node_ptr rhs = pre_op();
+                expr = std::make_unique<BinaryDivOperationNode>(std::move(expr), std::move(rhs));
+            }
+            else {
+                break;
+            }
         }
-        /* processing tests */
-        assert_next("tests not found for 'for'");
+        return expr;
+    }
+
+    // term               -> factor ( ( "-" | "+" ) factor )*
+    node_ptr term () {
+        trace("term");
+        node_ptr expr = factor();
         while (true) {
-            if (check_type(token_types::semicolon)) { break; }
-            for_node_ptr->add_test(std::move(expression()));
-            if (check_type(token_types::semicolon)) { break; }
-            else if (check_type(token_types::comma)) { continue; }
-            assert_error("unexpected token in 'for' tests");
+            if (consume(token_types::plus)) {
+                node_ptr rhs = comparison();
+                expr = std::make_unique<BinaryAddOperationNode>(std::move(expr), std::move(rhs));
+            }
+            else if (consume(token_types::dash)) {
+                node_ptr rhs = comparison();
+                expr = std::make_unique<BinarySubOperationNode>(std::move(expr), std::move(rhs));
+            }
+            else {
+                break;
+            }
         }
-        /* processing updates */
-        assert_next("updates not found for 'for'");
+        return expr;
+    }
+
+    // comparison         -> term ( ( ">" | ">=" | "<" | "<=" ) term )*
+    node_ptr comparison () {
+        trace("comparison");
+        node_ptr expr = term();
         while (true) {
-            if (check_type(token_types::round_bracket_close)) { break; }
-            for_node_ptr->add_update(std::move(assignment()));
-            if (check_type(token_types::round_bracket_close)) { break; }
-            else if (check_type(token_types::comma)) { continue; }
-            assert_error("unexpected token in 'for' updates");
+            if (consume(token_types::greater)) {
+                node_ptr rhs = term();
+                expr = std::make_unique<ComparisonGreaterNode>(std::move(expr), std::move(rhs));
+            }
+            else if (consume(token_types::less)) {
+                node_ptr rhs = term();
+                expr = std::make_unique<ComparisonLessNode>(std::move(expr), std::move(rhs));
+            }
+            else if (consume(token_types::greater_equal)) {
+                node_ptr rhs = term();
+                expr = std::make_unique<ComparisonGreaterEqualNode>(std::move(expr), std::move(rhs));
+            }
+            else if (consume(token_types::less_equal)) {
+                node_ptr rhs = term();
+                expr = std::make_unique<ComparisonLessEqualNode>(std::move(expr), std::move(rhs));
+            }
+            else {
+                break;
+            }
         }
-        assert_next_done();
-        m_next_scope = for_node_ptr.get();
-        return for_node_ptr;
+        return expr;
     }
 
-    node_ptr while_statement () {
-        // while       -> "while" "(" expression ")"
-        trace("while_statement");
-        assert_current(token_types::kw_while, "statement not a 'while' statement");
-        assert_next(token_types::round_bracket_open, "missing '(' after 'while'");
-        assert_next("condition not found for 'while'");
-        node_ptr condition = expression();
-        assert_current(token_types::round_bracket_close, "unmatched parentheses");
-        assert_next_done();
-        std::unique_ptr<WhileStatementNode> while_node_ptr = std::make_unique<WhileStatementNode>(std::move(condition), m_current_scope);
-        m_next_scope = while_node_ptr.get();
-        return while_node_ptr;
-    }
-
-    node_ptr end_statement () {
-        /* endif       -> "endif" */
-        trace("end_statement");
-        assert_current(token_types::kw_end, "statement not an 'end' statement");
-        assert_next_done();
-        m_next_scope = m_current_scope->get_parent();
-        return std::make_unique<EndStatementNode>();
-    }
-
-    node_ptr break_statement () {
-        trace("break_statement");
-        assert_current(token_types::kw_break, "statement not a 'break' statement");
-        assert_next_done();
-        return std::make_unique<BreakNode>();
-    }
-
-    node_ptr return_statement () {
-        trace("return_statement");
-        consume(token_types::kw_return, "not a return statement");
-        node_ptr value = expression();
-        assert_done();
-        return std::make_unique<ReturnNode>(std::move(value));
-    }
-
-    node_ptr expression () {
-        // expression -> equality
-        trace("expression");
-        return equality();
-    }
-
+    // equality           -> comparison ( ( "!=" | "==" ) comparison )*
     node_ptr equality () {
-        // equality   -> comparison ( ( "!=" | "==" ) comparison )* ;
         trace("equality");
         node_ptr expr = comparison();
-        if (done()) return expr;
-        while (check_type(token_types::double_equal) || check_type(token_types::exclamation_equal)) {
-            token_types current_type = curr()->type;
-            assert_next("statement terminated unexpectedly");
-            node_ptr rhs = comparison();
-            if (current_type == token_types::double_equal) {
+        while (true) {
+            if (consume(token_types::exclamation_equal)) {
+                node_ptr rhs = comparison();
+                expr = std::make_unique<BinaryInequalityOperationNode>(std::move(expr), std::move(rhs));
+            }
+            else if (consume(token_types::double_equal)) {
+                node_ptr rhs = comparison();
                 expr = std::make_unique<BinaryEqualityOperationNode>(std::move(expr), std::move(rhs));
             }
             else {
-                expr = std::make_unique<BinaryInequalityOperationNode>(std::move(expr), std::move(rhs));
+                break;
             }
-            if (done()) return expr;
         }
         return expr;
     }
 
-    node_ptr comparison () {
-        // comparison -> term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
-        trace("comparison");
-        node_ptr expr = term();
-        if (done()) return expr;
-        while (check_type(token_types::greater) || check_type(token_types::less) ||
-               check_type(token_types::greater_equal) || check_type(token_types::less_equal)) {
-            token_types current_type = curr()->type;
-            assert_next("statement terminated unexpectedly");
-            node_ptr rhs = term();
-            if (current_type == token_types::greater) {
-                expr = std::make_unique<ComparisonGreaterNode>(std::move(expr), std::move(rhs));
-            }
-            else if (current_type == token_types::less) {
-                expr = std::make_unique<ComparisonLessNode>(std::move(expr), std::move(rhs));
-            }
-            else if (current_type == token_types::greater_equal) {
-                expr = std::make_unique<ComparisonGreaterEqualNode>(std::move(expr), std::move(rhs));
-            }
-            else {
-                expr = std::make_unique<ComparisonLessEqualNode>(std::move(expr), std::move(rhs));
-            }
-            if (done()) return expr;
+    // logic_and          -> equality ( "&&" equality )*
+    node_ptr logic_and () {
+        trace("logic_and");
+        node_ptr expr = equality();
+        while (consume(token_types::double_ampersand)) {
+            node_ptr rhs = equality();
+            expr = std::make_unique<BinaryAndOperationNode>(std::move(expr), std::move(rhs));
         }
         return expr;
     }
 
-    node_ptr term () {
-        // term       -> factor ( ( "-" | "+" ) factor )* ;
-        trace("term");
-        node_ptr expr = factor();
-        if (done()) return expr;
-        while (check_type(token_types::plus) || check_type(token_types::dash)) {
-            token_types current_type = curr()->type;
-            assert_next("statement terminated unexpectedly");
-            node_ptr rhs = factor();
-            if (current_type == token_types::plus) {
-                expr = std::make_unique<BinaryAddOperationNode>(std::move(expr), std::move(rhs));
-            }
-            else {
-                expr = std::make_unique<BinarySubOperationNode>(std::move(expr), std::move(rhs));
-            }
-            if (done()) return expr;
+    // logic_or           -> logic_and ( "||" logic_and )*
+    node_ptr logic_or () {
+        trace("logic_or");
+        node_ptr expr = logic_and();
+        while (consume(token_types::double_pipe)) {
+            node_ptr rhs = logic_and();
+            expr = std::make_unique<BinaryOrOperationNode>(std::move(expr), std::move(rhs));
         }
         return expr;
     }
 
-    node_ptr factor () {
-        // factor     -> unary ( ( "/" | "*" ) unary )* ;
-        trace("factor");
-        node_ptr expr = unary();
-        if (done()) return expr;
-        while (check_type(token_types::asterisk) || check_type(token_types::slash)) {
-            token_types current_type = curr()->type;
-            assert_next("statement terminated unexpectedly");
-            node_ptr rhs = unary();
-            if (current_type == token_types::asterisk) {
-                expr = std::make_unique<BinaryMulOperationNode>(std::move(expr), std::move(rhs));
-            }
-            else {
-                expr = std::make_unique<BinaryDivOperationNode>(std::move(expr), std::move(rhs));
-            }
-            if (done()) return expr;
+    // assignment         -> logic_or ( "=" | "+=" | "-=" | "*=" | "/=" logic_or )?
+    node_ptr assignment () {
+        trace("assignment");
+        node_ptr expr = logic_or();
+        if (consume(token_types::equal_sign)) {
+            node_ptr rhs = logic_or();
+            return std::make_unique<AssignmentOperationNode>(std::move(expr), std::move(rhs));
+        }
+        if (consume(token_types::plus_equal)) {
+            node_ptr rhs = logic_or();
+            return std::make_unique<AddEqualOperationNode>(std::move(expr), std::move(rhs));
+        }
+        if (consume(token_types::dash_equal)) {
+            node_ptr rhs = logic_or();
+            return std::make_unique<SubEqualOperationNode>(std::move(expr), std::move(rhs));
+        }
+        if (consume(token_types::asterisk_equal)) {
+            node_ptr rhs = logic_or();
+            return std::make_unique<MulEqualOperationNode>(std::move(expr), std::move(rhs));
+        }
+        if (consume(token_types::slash_equal)) {
+            node_ptr rhs = logic_or();
+            return std::make_unique<DivEqualOperationNode>(std::move(expr), std::move(rhs));
         }
         return expr;
     }
 
-    node_ptr unary () {
-        // unary      -> ( "-" | "!" ) unary | primary;
-        trace("unary");
-        assert_not_done();
-        if (check_type(token_types::dash) || check_type(token_types::exclamation_mark)) {
-            token_types current_type = curr()->type;
-            assert_next("statement terminated unexpectedly");
-            node_ptr rhs = unary();
-            if (current_type == token_types::exclamation_mark) {
-                return std::make_unique<UnaryNotOperationNode>(std::move(rhs));
-            }
-            else {
-                return std::make_unique<UnaryMinusOperationNode>(std::move(rhs));
-            }
-        }
-        return primary();
+    // expression         -> assignment
+    node_ptr expression () {
+        trace("expression");
+        return assignment();
     }
 
-    node_ptr primary () {
-        // primary    -> NUMBER | STRING | "true" | "false" | "(" expression ")" | IDENTIFIER;
-        trace("primary");
-        assert_not_done();
-        if (check_type(token_types::number)) {
-            trace("primary number");
-            double current_value = curr()->value_num;
-            next();
-            return std::make_unique<ValueNode>(std::make_shared<Number>(current_value));
-        }
-        if (check_type(token_types::string)) {
-            trace("primary string");
-            std::string current_value = curr()->value_str;
-            next();
-            return std::make_unique<ValueNode>(std::make_shared<String>(current_value));
-        }
-        if (check_type(token_types::kw_true)) {
-            trace("primary true");
-            next();
-            return std::make_unique<ValueNode>(std::make_shared<Boolean>(true));
-        }
-        if (check_type(token_types::kw_false)) {
-            trace("primary false");
-            next();
-            return std::make_unique<ValueNode>(std::make_shared<Boolean>(false));
-        }
-        if (check_type(token_types::round_bracket_open)) {
-            trace("primary '('");
-            assert_next("statement terminated unexpectedly");
-            node_ptr expr = expression();
-            assert_current(token_types::round_bracket_close, "unmatched parentheses");
-            next();
-            return expr;
-        }
-        if (check_type(token_types::identifier)) {
-            trace("primary identifier");
-            std::string current_str = curr()->value_str;
-            next();
-            if (!done()) {
-                if (check_type(token_types::round_bracket_open)) {
-                    return function_call(current_str);
-                }
-                if (check_type(token_types::square_bracket_open)) {
-                    return indexing(current_str);
-                }
-                if (check_type(token_types::dot)) {
-                    return member_function(current_str);
-                }
-            }
-            return std::make_unique<VariableNode>(current_str);
-        }
-        throw syntax_error{ "unexpected primary token", curr()->line, curr()->pos};
-        return nullptr;
+    // break_statement    -> "break" ";"
+    node_ptr break_statement () {
+        trace("break_statement");
+        consume(token_types::semicolon, "missing ';' as 'break' statement termination");
+        return std::make_unique<BreakNode>();
     }
 
-    node_ptr function_call (const std::string& name) {
-        // func_call   -> IDENTIFIER "(" (expression)* ")"
-        trace("function_call");
-        consume(token_types::round_bracket_open, "missing '(' in function call");
-        std::unique_ptr<FunctionCallNode> func_ptr = std::make_unique<FunctionCallNode>(name);
-        while (true) {
-            if (consume(token_types::round_bracket_close)) { break; }
-            func_ptr->add_parameter(expression());
+    // continue_statement -> "continue" ";"
+    node_ptr continue_statement () {
+        trace("continue_statement");
+        consume(token_types::semicolon, "missing ';' as 'continue' statement termination");
+        return std::make_unique<ContinueNode>();
+    }
+
+    // return_statement   -> "return" expression? ";"
+    node_ptr return_statement () {
+        trace("return_statement");
+        node_ptr value = expression();
+        /* TODO : optional return value */
+        consume(token_types::semicolon, "missing ';' as 'return' statement termination");
+        return std::make_unique<ReturnNode>(std::move(value));
+    }
+
+    // exit_statement     -> "exit" expression ";"
+    node_ptr exit_statement () {
+        trace("exit_statement");
+        node_ptr value = expression();
+        consume(token_types::semicolon, "missing ';' as 'exit' statement termination");
+        return std::make_unique<ExitNode>(std::move(value));
+    }
+
+    // print_statement  -> "print" "(" STRING ( "," expression )* ")" ";"
+    node_ptr print_statement () {
+        trace("print_statement");
+        std::unique_ptr<PrintNode> print_node_ptr = std::make_unique<PrintNode>();
+        consume(token_types::round_bracket_open, "missing '(' after 'print'");
+        consume(token_types::string, "first parameter of 'print' must be a string");
+        print_node_ptr->set_rule(prev()->value_str);
+        while (!consume(token_types::round_bracket_close)) {
+            consume(token_types::comma, "missing ',' delimiter in 'print' statement");
+            print_node_ptr->add_argument(expression());
+        }
+        consume(token_types::semicolon, "missing ';' as 'print' statement termination");
+        return print_node_ptr;
+    }
+
+    // while_statement  -> "while" "(" expression ")" block
+    node_ptr while_statement () {
+        trace("while_statement");
+        std::unique_ptr<WhileStatementNode> while_node_ptr = std::make_unique<WhileStatementNode>();
+        consume(token_types::round_bracket_open, "missing '(' after 'while'");
+        while_node_ptr->set_condition(expression());
+        consume(token_types::round_bracket_close, "missing ')' after 'while' statement condition");
+        while_node_ptr->set_body(block());
+        return while_node_ptr;
+    }
+
+    // for_statement    -> "for" "(" ( var_decl | exp_statement | ";" ) expression? ";" expression? ")" block
+    node_ptr for_statement () {
+        trace("for_statement");
+        std::unique_ptr<ForStatementNode> for_node_ptr = std::make_unique<ForStatementNode>();
+        consume(token_types::round_bracket_open, "missing '(' after 'for'");
+        /* processing initialization (no multiple initializations supported) */
+        if (consume(token_types::kw_var)) { for_node_ptr->set_initialization(var_decl()); }
+        else if (consume(token_types::semicolon)) { /* nothing to do, no initialization found */ }
+        else { for_node_ptr->set_initialization(exp_statement()); }
+        /* processing tests (again, && and || are OK, but ',' is not) */
+        if (consume(token_types::semicolon)) { /* nothing to do, no test found */ }
+        else { for_node_ptr->set_test(expression()); }
+        consume(token_types::semicolon, "missing ';' after 'for' loop test");
+        /* processing update (again, no multiple updates supported) */
+        if (consume(token_types::semicolon)) { /* nothing to do, no update found */ }
+        else { for_node_ptr->set_update(expression()); }
+        consume(token_types::round_bracket_close, "missing ')' after 'for' loop specification");
+        for_node_ptr->set_body(block());
+        return for_node_ptr();
+    }
+
+    // if_statement     -> "if" "(" expression ")" block ( "elif" "(" expression ")" block )* ( "else" block )?
+    node_ptr if_statement () {
+        trace("if_statement");
+        std::unique_ptr<IfStatementNode> if_node_ptr = std::make_unique<IfStatementNode>();
+        consume(token_types::round_bracket_open, "missing '(' after 'if'");
+        if_node_ptr->set_if_condition(expression());
+        consume(token_types::round_bracket_close, "missing ')' after 'if' statement condition");
+        if_node_ptr->add_block(block());
+        while (consume(token_types::kw_elif)) {
+            consume(token_types::round_bracket_open, "missing '(' after 'elif'");
+            if_node_ptr->add_elif_condition(expression());
+            consume(token_types::round_bracket_close, "missing ')' after 'elif' statement condition");
+            if_node_ptr->add_block(block());
+        }
+        if (consume(token_types::kw_else)) {
+            if_node_ptr->add_else();
+            if_node_ptr->add_block(block());
+        }
+        return if_node_ptr;
+    }
+
+    // exp_statement    -> expression ";"
+    node_ptr exp_statement () {
+        trace("exp_statement");
+        node_ptr exp = expression();
+        consume(token_types::semicolon, "missing ';' at expression termination");
+        return exp;
+    }
+
+    // statement        -> exp_statement | if_statement | for_statement | while_statement | print_statement | control
+    node_ptr statement () {
+        trace("statement");
+        if (consume(token_types::kw_if)) { return if_statement(); }
+        if (consume(token_types::kw_for)) { return for_statement(); }
+        if (consume(token_types::kw_while)) { return while_statement(); }
+        if (consume(token_types::kw_print)) { return print_statement(); }
+        if (consume(token_types::kw_break)) { return break_statement(); }
+        if (consume(token_types::kw_continue)) { return continue_statement(); }
+        if (consume(token_types::kw_return)) { return return_statement(); }
+        if (consume(token_types::kw_exit)) { return exit_statement(); }
+        return exp_statement();
+    }
+
+    // block            -> "{" statement* "}"
+    node_ptr block () {
+        trace("block");
+        consume(token_types::curly_bracket_open, "missing scope opening '{' token");
+        std::unique_ptr<BlockNode> block_ptr = std::make_unique<BlockNode>();
+        while (!consume(token_types::curly_bracket_close)) {
+            block_ptr->add_node(statement());
+        }
+        return block_ptr;
+    }
+
+    // var_decl         -> "var" IDENTIFIER ( "=" expression )? ";"
+    node_ptr var_decl () {
+        trace("var_decl");
+        consume(token_types::identifier, "missing variable name in declaration");
+        std::string variable_name = prev()->value_str;
+        if (consume(token_types::equal_sign)) {
+            return std::make_unique<DeclAndInitOperationNode>(variable_name, expression());
+        }
+        return std::make_unique<DeclarationOperationNode>(variable_name);
+    }
+
+    // func_decl        -> "function" IDENTIFIER "(" ( IDENTIFIER ("," IDENTIFIER)* )? ")" block
+    node_ptr func_decl () {
+        trace("func_decl");
+        consume(token_types::identifier, "missing function name");
+        std::unique_ptr<FunctionDeclNode> func_ptr = std::make_unique<FunctionDeclNode>(prev()->value_str);
+        consume(token_types::round_bracket_open, "missing '(' after function name in function declaration");
+        while (consume(token_types::identifier)) {
+            func_ptr->add_parameter(prev()->value_str);
             if (consume(token_types::comma)) { continue; }
-            if (consume(token_types::round_bracket_close)) { break; }
-            assert_error("invalid function call syntax");
+            break;
         }
-        //assert_done();
+        consume(token_types::round_bracket_close, "missing ')' after function parameters");
+        func_ptr->set_body(block());
         return func_ptr;
     }
 
-    node_ptr indexing (const std::string& name) {
-        trace("indexing");
-        consume(token_types::square_bracket_open, "missing '[' in function call");
-        node_ptr index_expr = expression();
-        consume(token_types::square_bracket_close, "missing ']' in function call");
-        return std::make_unique<IndexingNode>(name, std::move(index_expr));
-    }
-
-    node_ptr member_function (const std::string& var_name) {
-        /* can be indexed first TODO ?? maybe it is already fine */
-        trace("member_function");
-        consume(token_types::dot, "missing '.' in member function call");
-        consume(token_types::identifier, "missing member function name");
-        std::string func_name = prev()->value_str;
-        consume(token_types::round_bracket_open, "missing '(' in function call");
-        std::unique_ptr<MemberFunctionNode> func_ptr = std::make_unique<MemberFunctionNode>(var_name, func_name);
-        while (true) {
-            if (consume(token_types::round_bracket_close)) { break; }
-            func_ptr->add_parameter(expression());
-            if (consume(token_types::comma)) { continue; }
-            if (consume(token_types::round_bracket_close)) { break; }
-            assert_error("invalid member function call syntax");
+    // declaration      -> func_decl | var_decl | statement
+    node_ptr declaration () {
+        trace("declaration");
+        if (consume(token_types::kw_function)) {
+            return func_decl();
         }
-        //assert_done();
-        return func_ptr;
+        if (consume(token_types::kw_var)) {
+            return var_decl();
+        }
+        return statement();
     }
 
 public:
@@ -689,32 +505,8 @@ public:
 
     node_ptr parse (const std::vector<Token>& tokens) {
         node_ptr main_node = std::make_unique<MainNode>();
-        m_current_scope = main_node.get();
-        m_next_scope = main_node.get();
-        int skip_semicolons { 0 };
-        for (std::size_t i = 0; i < tokens.size(); ++i) {
-            if (tokens[i].type != token_types::semicolon) {
-                m_tokens.push_back(&(tokens[i]));
-                if (tokens[i].type == token_types::kw_for) { skip_semicolons = 2; }
-            }
-            else if ((tokens[i].type == token_types::semicolon) && skip_semicolons != 0) {
-                m_tokens.push_back(&(tokens[i]));
-                --skip_semicolons;
-            }
-            else {
-                trace("###########################################");
-                node_ptr statement_ptr = statement();
-                if (statement_ptr != nullptr) { m_current_scope->add_node(std::move(statement_ptr)); }
-                if (m_current_scope != m_next_scope) {
-                    m_current_scope = m_next_scope;
-                }
-                m_tokens.clear();
-                m_index = 0;
-            }
-        }
-        if (m_tokens.size() != 0) {
-            /* TODO : last line is not terminated with ';' */
-            throw syntax_error{ "missing ';'", m_tokens.back()->line, m_tokens.back()->pos};
+        while (m_index < m_tokens.size()) {
+            main_node->add_node(std::move(declaration()));
         }
         return main_node;
     }

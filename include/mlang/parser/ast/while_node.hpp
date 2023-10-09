@@ -8,10 +8,9 @@ namespace mlang {
 class WhileStatementNode : public Node {
 private:
     node_ptr m_condition;
-    Node* m_parent_scope { nullptr };
-    std::vector<node_ptr> m_nodes;
+    node_ptr m_body;
 public:
-    WhileStatementNode(node_ptr condition, Node* parent_scope) : Node(ast_node_types::while_statement), m_condition(std::move(condition)), m_parent_scope(parent_scope) {}
+    WhileStatementNode() : Node(ast_node_types::while_statement) {}
     ~WhileStatementNode () = default;
     const std::vector<node_ptr>& get_nodes () const { return m_nodes; }
     std::shared_ptr<Object> execute (EnvStack& env) const override {
@@ -22,9 +21,7 @@ public:
             if (!cond_val->is_true()) { break; }
             try {
                 /* execute scope */
-                for (auto& node : m_nodes) {
-                    node->execute(env);
-                }
+                m_body->execute(env);
             }
             catch (const Break& e) {
                 /* handle break */
@@ -36,7 +33,6 @@ public:
             }
             catch (const Return& e) {
                 /* handle return -> exit the scope and throw it further, it is not ours to handle */
-                /* TODO : how about function returns? How will those be handled? By exception? Or rather by returning from the function as AST? */
                 env.exit_scope();
                 throw;
             }
@@ -44,12 +40,8 @@ public:
         env.exit_scope();
         return nullptr;
     }
-    Node* get_parent () override {
-        return m_parent_scope;
-    }
-    void add_node (node_ptr node) override {
-        m_nodes.push_back(std::move(node));
-    }
+    void set_condition (node_ptr condition) { m_condition = std::move(condition); }
+    void set_body (node_ptr body) { m_body = std::move(body); }
     void print () const override {
         /* if */
         std::cout << "while (";

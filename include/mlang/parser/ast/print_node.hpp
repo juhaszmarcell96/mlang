@@ -42,7 +42,7 @@ private:
         return (res->is_true() ? "true" : "false");
     }
 public:
-    PrintNode(const std::string& m_rule, std::vector<node_ptr> args) : Node(ast_node_types::print), m_rule(m_rule), m_args(std::move(args)) {}
+    PrintNode() : Node(ast_node_types::print) {}
     ~PrintNode () = default;
     std::shared_ptr<Object> execute (EnvStack& env) const override {
         m_index = 0;
@@ -92,6 +92,8 @@ public:
         std::cout << result << std::endl;
         return nullptr;
     }
+    void set_rule (const std::string& rule) { m_rule = rule; }
+    void add_argument (node_ptr arg) { m_args.push_back(std::move(arg)); }
     void print () const override {
         std::cout << "print(" + m_rule;
         for (const node_ptr& arg : m_args) {

@@ -68,9 +68,9 @@ public:
                         debug("token with type 'else'");
                         m_tokens.push_back(Token{token_types::kw_else, token.get_line(), token.get_pos()});
                     }
-                    else if (token.get_value().compare("end") == 0) {
-                        debug("token with type 'end'");
-                        m_tokens.push_back(Token{token_types::kw_end, token.get_line(), token.get_pos()});
+                    else if (token.get_value().compare("new") == 0) {
+                        debug("token with type 'new'");
+                        m_tokens.push_back(Token{token_types::kw_new, token.get_line(), token.get_pos()});
                     }
                     else if (token.get_value().compare("for") == 0) {
                         debug("token with type 'for'");

@@ -66,7 +66,7 @@ enum class token_types {
     kw_else,               /* else */
     kw_while,              /* while */
     kw_for,                /* for */
-    kw_end,                /* end */
+    kw_new,                /* new */
     kw_break,              /* break */
     kw_continue,           /* continue */
     kw_switch,             /* switch */
@@ -155,7 +155,7 @@ struct Token {
             case token_types::kw_else : { return 4; }
             case token_types::kw_for : { return 3; }
             case token_types::kw_while : { return 5; }
-            case token_types::kw_end : { return 3; }
+            case token_types::kw_new : { return 3; }
             case token_types::kw_break : { return 5; }
             case token_types::kw_continue : { return 8; }
             case token_types::kw_switch : { return 6; }
@@ -231,7 +231,7 @@ struct Token {
             case token_types::kw_else : { return "else"; }
             case token_types::kw_for : { return "for"; }
             case token_types::kw_while : { return "while"; }
-            case token_types::kw_end : { return "end"; }
+            case token_types::kw_new : { return "end"; }
             case token_types::kw_break : { return "break"; }
             case token_types::kw_continue : { return "continue"; }
             case token_types::kw_switch : { return "switch"; }

@@ -26,4 +26,6 @@
 #include "mlang/parser/ast/while_node.hpp"
 
 #include "mlang/parser/ast/break_node.hpp"
+#include "mlang/parser/ast/continue_node.hpp"
 #include "mlang/parser/ast/return_node.hpp"
+#include "mlang/parser/ast/exit_node.hpp"

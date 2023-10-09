@@ -34,4 +34,16 @@ public:
     const std::shared_ptr<Object> get_value () const { return m_val; }
 };
 
+class Exit : public std::exception {
+private:
+    std::shared_ptr<Object> m_val;
+public:
+    Exit (std::shared_ptr<Object> val) : m_val(val) {}
+    const char* what () const noexcept override {
+        return "exit";
+    }
+
+    const std::shared_ptr<Object> get_value () const { return m_val; }
+};
+
 } /* namespace mlang */

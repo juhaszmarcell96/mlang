@@ -40,7 +40,7 @@ enum class token_types {
     pipe,                  /* | */
     dot,                   /* . */
     at,                    /* @ */
-    hashtag                /* # */
+    hashtag,               /* # */
 };
 
 class Token {

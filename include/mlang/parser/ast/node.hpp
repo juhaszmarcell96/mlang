@@ -29,7 +29,7 @@ enum class ast_node_types {
     if_statement,
     for_statement,
     while_statement,
-    end_statement,
+    end_statement, /* TODO : remove */
     equality,
     inequality,
     greater,
@@ -38,11 +38,14 @@ enum class ast_node_types {
     less_equal,
     print,
     break_node,
+    continue_node,
     return_node,
+    exit_node,
     func_decl,
     func_call,
     indexing_node,
-    member_func
+    member_func,
+    block
 };
 
 class Node;
@@ -56,19 +59,6 @@ public:
     Node (ast_node_types type) : m_type(type) {}
     virtual ~Node () = default;
     virtual std::shared_ptr<Object> execute (EnvStack& env) const = 0;
-    virtual void add_node (node_ptr node) {
-        throw unexpected_error{"cannot add nodes this node"};
-    }
-    virtual Node* get_parent () {
-        throw unexpected_error{"this node has no parent"};
-        return nullptr;
-    }
-    virtual void add_elif (node_ptr condition) {
-        throw unexpected_error{"unexpected elif"};
-    }
-    virtual void add_else () {
-        throw unexpected_error{"unexpected else"};
-    }
     virtual void print () const = 0;
 
     ast_node_types get_type () const { return m_type; }
