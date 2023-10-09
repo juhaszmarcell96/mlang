@@ -11,7 +11,7 @@ public:
     UnaryNotOperationNode(node_ptr right) : Node(ast_node_types::unary_not), m_right(std::move(right)) {}
     ~UnaryNotOperationNode () = default;
     const Node* const get_right () const { return m_right.get(); }
-    std::shared_ptr<Object> execute (EnvStack& env) override {
+    std::shared_ptr<Object> execute (EnvStack& env) const override {
         std::shared_ptr<Object> rhs = m_right->execute(env);
         if (!rhs) throw RuntimeError{"right hand side of 'unary !' returned null"};
         return rhs->unary_not();
@@ -29,7 +29,7 @@ public:
     UnaryMinusOperationNode(node_ptr right) : Node(ast_node_types::unary_minus), m_right(std::move(right)) {}
     ~UnaryMinusOperationNode () = default;
     const Node* const get_right () const { return m_right.get(); }
-    std::shared_ptr<Object> execute (EnvStack& env) override {
+    std::shared_ptr<Object> execute (EnvStack& env) const override {
         std::shared_ptr<Object> rhs = m_right->execute(env);
         if (!rhs) throw RuntimeError{"right hand side of 'unary -' returned null"};
         return rhs->unary_minus();

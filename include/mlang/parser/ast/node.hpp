@@ -55,7 +55,7 @@ private:
 public:
     Node (ast_node_types type) : m_type(type) {}
     virtual ~Node () = default;
-    virtual std::shared_ptr<Object> execute (EnvStack& env) = 0;
+    virtual std::shared_ptr<Object> execute (EnvStack& env) const = 0;
     virtual void add_node (node_ptr node) {
         throw unexpected_error{"cannot add nodes this node"};
     }

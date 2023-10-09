@@ -22,11 +22,11 @@ public:
     FunctionDeclNode(const std::string& name, Node* parent_scope) : Node(ast_node_types::func_decl), m_name(name), m_parent_scope(parent_scope) {}
     ~FunctionDeclNode () = default;
     const std::vector<node_ptr>& get_nodes () const { return m_nodes; }
-    std::shared_ptr<Object> execute (EnvStack& env) override {
+    std::shared_ptr<Object> execute (EnvStack& env) const override {
         env.declare_function(m_name, this);
         return nullptr;
     }
-    std::shared_ptr<Object> call (std::vector<std::shared_ptr<Object>>& params) {
+    std::shared_ptr<Object> call (std::vector<std::shared_ptr<Object>>& params) const {
         // function should be able to call other function and use global variables
         /* check if the parameters have the same length, none of them are nullptr and have the same type */
         /* same with the return value */

@@ -16,7 +16,7 @@ public:
     ForStatementNode(Node* parent_scope) : Node(ast_node_types::for_statement), m_parent_scope(parent_scope) {}
     ~ForStatementNode () = default;
     const std::vector<node_ptr>& get_nodes () const { return m_nodes; }
-    std::shared_ptr<Object> execute (EnvStack& env) override {
+    std::shared_ptr<Object> execute (EnvStack& env) const override {
         env.enter_scope();
         /* assignments */
         for (auto& node : m_assignments) {

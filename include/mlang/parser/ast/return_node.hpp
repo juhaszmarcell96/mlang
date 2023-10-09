@@ -11,7 +11,7 @@ private:
 public:
     ReturnNode(node_ptr value) : Node(ast_node_types::return_node), m_value(std::move(value)) {}
     ~ReturnNode () = default;
-    std::shared_ptr<Object> execute (EnvStack& env) override {
+    std::shared_ptr<Object> execute (EnvStack& env) const override {
         std::shared_ptr<Object> val = m_value->execute(env);
         throw Return { val };
     }

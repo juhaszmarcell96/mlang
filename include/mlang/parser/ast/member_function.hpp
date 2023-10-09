@@ -15,9 +15,9 @@ public:
     MemberFunctionNode(const std::string& var_name, const std::string& func_name) : Node(ast_node_types::member_func), m_var_name(var_name), m_func_name(func_name) {}
     ~MemberFunctionNode () = default;
     const std::vector<node_ptr>& get_params () const { return m_params; }
-    std::shared_ptr<Object> execute (EnvStack& env) override {
+    std::shared_ptr<Object> execute (EnvStack& env) const override {
         std::vector<std::shared_ptr<Object>> params;
-        for (node_ptr& node : m_params) {
+        for (const node_ptr& node : m_params) {
             std::shared_ptr<Object> ret_val = node->execute(env);
             params.push_back(ret_val);
         }

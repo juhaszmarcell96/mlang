@@ -112,7 +112,7 @@ public:
         else { return false; }
     }
 
-    void declare_function (const std::string& function_name, FunctionDeclNode* function) {
+    void declare_function (const std::string& function_name, const FunctionDeclNode* function) {
         if (has_function(function_name)) {
             throw RuntimeError{"function " + function_name + " already exists"};
         }
@@ -169,7 +169,7 @@ public:
         return m_env_stack.top()->has_function(function_name);
     }
 
-    void declare_function (const std::string& function_name, FunctionDeclNode* function) {
+    void declare_function (const std::string& function_name, const FunctionDeclNode* function) {
         m_env_stack.top()->declare_function(function_name, function);
     }
 

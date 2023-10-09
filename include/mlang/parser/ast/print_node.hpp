@@ -8,9 +8,9 @@ class PrintNode : public Node {
 private:
     std::string m_rule;
     std::vector<node_ptr> m_args;
-    std::size_t m_index { 0 };
+    mutable std::size_t m_index { 0 };
 
-    std::string get_integer (EnvStack& env) {
+    std::string get_integer (EnvStack& env) const {
         if (m_index >= m_args.size()) { throw syntax_error{"mismatch in print arguments"}; }
         std::shared_ptr<Object> res = m_args[m_index]->execute(env);
         if (!res) { throw RuntimeError { "print expression returned null" }; }
@@ -18,7 +18,7 @@ private:
         return std::to_string(static_cast<int>(res->get_number()));
     }
 
-    std::string get_string (EnvStack& env) {
+    std::string get_string (EnvStack& env) const {
         if (m_index >= m_args.size()) { throw syntax_error{"mismatch in print arguments"}; }
         std::shared_ptr<Object> res = m_args[m_index]->execute(env);
         if (!res) { throw RuntimeError { "print expression returned null" }; }
@@ -26,7 +26,7 @@ private:
         return res->get_string();
     }
 
-    std::string get_float (EnvStack& env) {
+    std::string get_float (EnvStack& env) const {
         if (m_index >= m_args.size()) { throw syntax_error{"mismatch in print arguments"}; }
         std::shared_ptr<Object> res = m_args[m_index]->execute(env);
         if (!res) { throw RuntimeError { "print expression returned null" }; }
@@ -34,7 +34,7 @@ private:
         return std::to_string(res->get_number());
     }
 
-    std::string get_bool (EnvStack& env) {
+    std::string get_bool (EnvStack& env) const {
         if (m_index >= m_args.size()) { throw syntax_error{"mismatch in print arguments"}; }
         std::shared_ptr<Object> res = m_args[m_index]->execute(env);
         if (!res) { throw RuntimeError { "print expression returned null" }; }
@@ -44,7 +44,7 @@ private:
 public:
     PrintNode(const std::string& m_rule, std::vector<node_ptr> args) : Node(ast_node_types::print), m_rule(m_rule), m_args(std::move(args)) {}
     ~PrintNode () = default;
-    std::shared_ptr<Object> execute (EnvStack& env) override {
+    std::shared_ptr<Object> execute (EnvStack& env) const override {
         m_index = 0;
         std::string result;
         for  (std::size_t i = 0; i < m_rule.length(); ++i) {

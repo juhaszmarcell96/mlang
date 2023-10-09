@@ -25,7 +25,7 @@ public:
     ~IfStatementNode () = default;
     const std::vector<node_ptr>& get_nodes () const { return m_nodes; }
     const Node* const get_condition () const { return m_condition.get(); }
-    std::shared_ptr<Object> execute (EnvStack& env) override {
+    std::shared_ptr<Object> execute (EnvStack& env) const override {
         env.enter_scope();
         try {
             /* if */

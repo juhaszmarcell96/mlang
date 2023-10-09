@@ -8,7 +8,7 @@ class EndStatementNode : public Node {
 public:
     EndStatementNode() : Node(ast_node_types::end_statement) {}
     ~EndStatementNode () = default;
-    std::shared_ptr<Object> execute (EnvStack& env) override { return nullptr; }
+    std::shared_ptr<Object> execute (EnvStack& env) const override { return nullptr; }
     void print () const override {
         std::cout << "end";
     }

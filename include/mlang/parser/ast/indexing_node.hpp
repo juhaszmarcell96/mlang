@@ -14,7 +14,7 @@ public:
     ~IndexingNode () = default;
     const std::string& get_var_name () const { return m_var_name; }
     const Node* const get_index () const { return m_index.get(); }
-    std::shared_ptr<Object> execute (EnvStack& env) override {
+    std::shared_ptr<Object> execute (EnvStack& env) const override {
         if (!env.has_variable(m_var_name)) {
             throw undefined_var_error{m_var_name};
         }
