@@ -1,13 +1,11 @@
-#pragma once
-
 #include <string>
 #include <algorithm>
 
-#include "mlang/object/internal_object.hpp"
-#include "mlang/object/object.hpp"
-#include "mlang/object/boolean.hpp"
+#include "mlang/object/array.hpp"
+#include "mlang/object/assert.hpp"
 
 namespace mlang {
+namespace object {
 
 class Array : public InternalObject {
 private:
@@ -141,4 +139,5 @@ public:
     }
 };
 
+} /* namespace object */
 } /* namespace mlang */

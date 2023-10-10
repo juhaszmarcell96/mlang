@@ -1,80 +1,73 @@
-#pragma once
-
-#include <string>
-
-#include "mlang/object/internal_object.hpp"
+#include "mlang/object/boolean.hpp"
+#include "mlang/object/assert.hpp"
 
 namespace mlang {
+namespace object {
 
-class Boolean : public InternalObject {
-private:
-    bool m_value;
-public:
-    Boolean () = default;
-    Boolean (bool value) : m_value(value) {}
-    ~Boolean () = default;
+Boolean::Boolean (bool value) : m_value(value) {}
 
-    const static inline std::string type_name { "Boolean" };
+const bool Boolean::get () const { return m_value; }
 
-    const bool get () const { return m_value; }
+const ObjectFactory& Boolean::get_factory () const {
+    static BooleanFactory factory{};
+    return factory;
+}
 
-    /* construct */
-    /*void construct (const std::vector<std::shared_ptr<InternalObject>>& params) override {
-        if (params.size() == 0) { m_value = false; }
-        assert_params(params, 1, type_name, "constructor");
-        assert_parameter(params[0], type_name, "constructor");
-        m_value = params[0]->is_true();
-    }*/
-    /* assign */
-    /*void assign (const std::vector<std::shared_ptr<InternalObject>>& params) override {
-        assert_params(params, 1, type_name, operators::assign);
-        assert_parameter(params[0], type_name, operators::assign);
-        const std::shared_ptr<Boolean> bool_ptr = assert_cast<Boolean>(params[0], type_name);
-        m_value = bool_ptr->get();
-    }
-    void assign (const std::shared_ptr<InternalObject> param) override {
-        const std::shared_ptr<Boolean> bool_ptr = assert_cast<Boolean>(param, type_name);
-        m_value = bool_ptr->get();
-    }*/
-    /* destruct */
-    /*void destruct () override {
-        m_value = false;
-    }*/
+/* construct */
+/*void construct (const std::vector<std::shared_ptr<InternalObject>>& params) {
+    if (params.size() == 0) { m_value = false; }
+    assert_params(params, 1, type_name, "constructor");
+    assert_parameter(params[0], type_name, "constructor");
+    m_value = params[0]->is_true();
+}*/
+/* assign */
+/*void assign (const std::vector<std::shared_ptr<InternalObject>>& params) {
+    assert_params(params, 1, type_name, operators::assign);
+    assert_parameter(params[0], type_name, operators::assign);
+    const std::shared_ptr<Boolean> bool_ptr = assert_cast<Boolean>(params[0], type_name);
+    m_value = bool_ptr->get();
+}*/
+/* destruct */
+/*void destruct () {
+    m_value = false;
+}*/
+void Boolean::assign (const std::shared_ptr<InternalObject> param) {
+    const std::shared_ptr<Boolean> bool_ptr = assert_cast<Boolean>(param, type_name);
+    m_value = bool_ptr->get();
+}
 
-    bool is_true () const override {
-        return m_value;
-    }
+bool Boolean::is_true () const {
+    return m_value;
+}
 
-    std::shared_ptr<InternalObject> operator_comparison_equal (const InternalObject* param) override {
-        assert_parameter(param, type_name, "==");
-        return std::make_shared<Boolean>(m_value == param->is_true());
-    }
+std::shared_ptr<InternalObject> Boolean::operator_comparison_equal (const InternalObject* param) {
+    assert_parameter(param, type_name, "==");
+    return std::make_shared<Boolean>(m_value == param->is_true());
+}
 
-    std::shared_ptr<InternalObject> operator_comparison_not_equal (const InternalObject* param) {
-        assert_parameter(param, type_name, "!=");
-        return std::make_shared<Boolean>(m_value != param->is_true());
-    }
+std::shared_ptr<InternalObject> Boolean::operator_comparison_not_equal (const InternalObject* param) {
+    assert_parameter(param, type_name, "!=");
+    return std::make_shared<Boolean>(m_value != param->is_true());
+}
 
-    std::shared_ptr<InternalObject> unary_not () override {
-        return std::make_shared<Boolean>(!m_value);
-    }
+std::shared_ptr<InternalObject> Boolean::unary_not () {
+    return std::make_shared<Boolean>(!m_value);
+}
 
 
-    std::shared_ptr<InternalObject> call (const std::string& func, const std::vector<std::shared_ptr<InternalObject>>& params) override {
-        throw RuntimeError { "object of type '" + type_name + "' has no '" + func + "' member function" };
-        return nullptr;
-    }
+std::shared_ptr<InternalObject> Boolean::call (const std::string& func, const std::vector<std::shared_ptr<InternalObject>>& params) {
+    throw RuntimeError { "object of type '" + type_name + "' has no '" + func + "' member function" };
+    return nullptr;
+}
 
-    std::string get_string () const override { return (m_value ? "true" : "false"); }
-    std::string get_typename () const override { return type_name; }
-    double get_number () const override { return (m_value ? 1 : 0); }
-};
+std::string Boolean::get_string () const { return (m_value ? "true" : "false"); }
+std::string Boolean::get_typename () const { return type_name; }
+double Boolean::get_number () const { return (m_value ? 1 : 0); }
 
-class BooleanFactory : public ObjectFactory {
-public:
-    std::shared_ptr<InternalObject> create () const override {
-        return std::make_shared<Boolean>();
-    }
-};
 
+std::shared_ptr<InternalObject> BooleanFactory::create () const {
+    return std::make_shared<Boolean>();
+}
+
+} /* namespace object */
 } /* namespace mlang */

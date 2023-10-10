@@ -5,6 +5,7 @@
 #include "mlang/object/internal_object.hpp"
 
 namespace mlang {
+namespace object {
 
 class None : public InternalObject {
 public:
@@ -13,29 +14,27 @@ public:
     
     const static inline std::string type_name { "None" };
 
-    /* construct */
-    //void construct (const std::vector<std::shared_ptr<InternalObject>>& params) override { }
-    /* assign */
-    //void assign (const std::vector<std::shared_ptr<InternalObject>>& params) override { }
-    /* destruct */
-   // void destruct () override { }
-   // void assign (const std::shared_ptr<InternalObject> param) override { }
+    const ObjectFactory& get_factory () const override;
 
-    bool is_true () const override { return false; }
+    /*
+    void construct (const std::vector<std::shared_ptr<InternalObject>>& params) override;
+    void assign (const std::vector<std::shared_ptr<InternalObject>>& params) override;
+    void destruct () override;
+    */
+    void assign (const std::shared_ptr<InternalObject> param) override;
 
-    std::shared_ptr<InternalObject> call (const std::string& func, const std::vector<std::shared_ptr<InternalObject>>& params) override {
-        throw RuntimeError { "object of type '" + type_name + "' has no member functions" };
-    }
+    bool is_true () const override;
 
-    std::string get_string () const override { return type_name; }
-    std::string get_typename () const override { return type_name; }
+    std::shared_ptr<InternalObject> call (const std::string& func, const std::vector<std::shared_ptr<InternalObject>>& params) override;
+
+    std::string get_string () const override;
+    std::string get_typename () const override;
 };
 
 class NoneFactory : public ObjectFactory {
 public:
-    std::shared_ptr<InternalObject> create () const override {
-        return std::make_shared<None>();
-    }
+    std::shared_ptr<InternalObject> create () const override;
 };
 
+} /* namespace object */
 } /* namespace mlang */

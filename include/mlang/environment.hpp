@@ -21,12 +21,12 @@ class FunctionDeclNode;
 
 class Environment {
 private:
-    static inline std::map<std::string, std::shared_ptr<ObjectFactory>> m_types { { None::type_name, std::make_shared<NoneFactory>() },
-                                                                                  { Number::type_name, std::make_shared<NumberFactory>() },
-                                                                                  { Boolean::type_name, std::make_shared<BooleanFactory>() },
-                                                                                  //{ Array::type_name, std::make_shared<ArrayFactory>() },
-                                                                                  { String::type_name, std::make_shared<StringFactory>() }   };
-    std::map<std::string, Object> m_variables;
+    static inline std::map<std::string, std::shared_ptr<object::ObjectFactory>> m_types { { object::None::type_name, std::make_shared<object::NoneFactory>() },
+                                                                                          { object::Number::type_name, std::make_shared<object::NumberFactory>() },
+                                                                                          { object::Boolean::type_name, std::make_shared<object::BooleanFactory>() },
+                                                                                          //{ object::Array::type_name, std::make_shared<object::ArrayFactory>() },
+                                                                                          { object::String::type_name, std::make_shared<object::StringFactory>() }   };
+    std::map<std::string, object::Object> m_variables;
     std::map<std::string, std::shared_ptr<Function>> m_functions;
 
     Environment* m_parent { nullptr };
@@ -47,12 +47,12 @@ public:
         else { return false; }
     }
 
-    static void define_type (const std::string& type_name, std::shared_ptr<ObjectFactory> factory) {
+    static void define_type (const std::string& type_name, std::shared_ptr<object::ObjectFactory> factory) {
         if (has_type(type_name)) { throw RuntimeError{"type " + type_name + " already exists"}; }
         m_types[type_name] = factory;
     }
 
-    static const ObjectFactory& get_factory (const std::string& type) {
+    static const object::ObjectFactory& get_factory (const std::string& type) {
         if (m_types.count(type) == 0) { throw RuntimeError{"type " + type + " is unknown"}; }
         return *(m_types[type]);
     }
@@ -70,10 +70,10 @@ public:
         if (has_variable(variable_name)) {
             throw RuntimeError{"variable " + variable_name + " already exists"};
         }
-        m_variables[variable_name] = Object{m_types[type]->create()};
+        m_variables[variable_name] = object::Object{m_types[type]->create()};
     }
 
-    Object& get_variable (const std::string& variable_name) {
+    object::Object& get_variable (const std::string& variable_name) {
         if (m_variables.count(variable_name) != 0) {
             return m_variables[variable_name];
         }
@@ -155,7 +155,7 @@ public:
         m_env_stack.top()->declare_variable(variable_name, type);
     }
 
-    Object& get_variable (const std::string& variable_name) {
+    object::Object& get_variable (const std::string& variable_name) {
         return m_env_stack.top()->get_variable(variable_name);
     }
 

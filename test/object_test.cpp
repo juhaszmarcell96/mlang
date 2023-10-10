@@ -12,11 +12,45 @@
 TEST(ObjectTest, Test0) {
     mlang::EnvStack env {};
     
-    mlang::Object a {};
-    mlang::Object b { mlang::Environment::get_factory(mlang::Number::type_name) };
+    mlang::object::Object a {};
+    mlang::object::Object b { mlang::Environment::get_factory(mlang::object::Number::type_name) };
+    mlang::object::Object c { std::make_shared<mlang::object::Number>(5) };
 
-    ASSERT_EQ(a.get_typename(), mlang::None::type_name);
-    ASSERT_EQ(b.get_typename(), mlang::Number::type_name);
+    ASSERT_EQ(a.get_typename(), mlang::object::None::type_name);
+    ASSERT_EQ(b.get_typename(), mlang::object::Number::type_name);
+    ASSERT_EQ(b.get_number(), 0);
+    ASSERT_EQ(c.get_typename(), mlang::object::Number::type_name);
+    ASSERT_EQ(c.get_number(), 5);
 
-    a.assign()
+    a.assign(c);
+
+    ASSERT_EQ(a.get_typename(), mlang::object::Number::type_name);
+    ASSERT_EQ(b.get_typename(), mlang::object::Number::type_name);
+    ASSERT_EQ(c.get_typename(), mlang::object::Number::type_name);
+    ASSERT_EQ(a.get_number(), 5);
+    ASSERT_EQ(b.get_number(), 0);
+    ASSERT_EQ(c.get_number(), 5);
+}
+
+TEST(ObjectTest, Test1) {
+    mlang::EnvStack env {};
+    
+    mlang::object::Object a {};
+    mlang::object::Object b { std::make_shared<mlang::object::Number>(3) };
+    mlang::object::Object c { std::make_shared<mlang::object::Number>(5) };
+
+    ASSERT_EQ(a.get_typename(), mlang::object::None::type_name);
+    ASSERT_EQ(b.get_typename(), mlang::object::Number::type_name);
+    ASSERT_EQ(b.get_number(), 5);
+    ASSERT_EQ(c.get_typename(), mlang::object::Number::type_name);
+    ASSERT_EQ(c.get_number(), 5);
+
+    a.assign(c);
+
+    ASSERT_EQ(a.get_typename(), mlang::object::Number::type_name);
+    ASSERT_EQ(b.get_typename(), mlang::object::Number::type_name);
+    ASSERT_EQ(c.get_typename(), mlang::object::Number::type_name);
+    ASSERT_EQ(a.get_number(), 5);
+    ASSERT_EQ(b.get_number(), 0);
+    ASSERT_EQ(c.get_number(), 5);
 }

@@ -1,159 +1,103 @@
-#pragma once
-
-#include "mlang/exception.hpp"
-
-#include <string>
-#include <map>
-#include <memory>
-#include <vector>
+#include "mlang/object/internal_object.hpp"
+#include "mlang/object/assert.hpp"
 
 namespace mlang {
+namespace object {
 
-class InternalObject {
-protected:
-    
-    bool assert_true (bool val, const std::string& err_msg) {
-        if (!val) { throw RuntimeError { err_msg }; }
-    }
+bool InternalObject::is_true () const {
+    throw RuntimeError { "object of type '" + get_typename() + "' cannot be evaluated as boolean" };
+}
+double InternalObject::get_number () const {
+    throw RuntimeError { "object of type '" + get_typename() + "' cannot be interpreted as number" };
+}
+std::string InternalObject::get_string () const {
+    throw RuntimeError { "object of type '" + get_typename() + "' cannot be interpreted as string" };
+}
 
-    template<typename T>
-    const std::shared_ptr<T> assert_cast (const std::shared_ptr<InternalObject> obj, const std::string& type) {
-        const std::shared_ptr<T> ptr = std::dynamic_pointer_cast<T>(obj);
-        if (!ptr) { throw RuntimeError { "parameter must be of type '" + type + "'" }; }
-        return ptr;
-    }
+/* += */
+void InternalObject::operator_add_equal (const InternalObject* param) {
+    throw RuntimeError { "object of type '" + get_typename() + "' has no '+=' operator" };
+}
 
-    template<typename T>
-    T assert_cast (const InternalObject* obj, const std::string& type) {
-        T ptr = dynamic_cast<T>(obj);
-        if (!ptr) { throw RuntimeError { "parameter must be of type '" + type + "'" }; }
-        return ptr;
-    }
+/* -= */
+void InternalObject::operator_sub_equal (const InternalObject* param) {
+    throw RuntimeError { "object of type '" + get_typename() + "' has no '-=' operator" };
+}
 
-    void assert_parameter (const std::shared_ptr<InternalObject> obj, const std::string& type, const std::string& function) {
-        if (!obj) { throw RuntimeError { "argument in member function '" + function + "' on object of type '" + type + "' is null" }; }
-    }
+/* *= */
+void InternalObject::operator_mul_equal (const InternalObject* param) {
+    throw RuntimeError { "object of type '" + get_typename() + "' has no '*=' operator" };
+}
 
-    void assert_parameter (const InternalObject* obj, const std::string& type, const std::string& function) {
-        if (!obj) { throw RuntimeError { "argument in member function '" + function + "' on object of type '" + type + "' is null" }; }
-    }
+/* /= */
+void InternalObject::operator_div_equal (const InternalObject* param) {
+    throw RuntimeError { "object of type '" + get_typename() + "' has no '/=' operator" };
+}
 
-    void assert_params(const std::vector<std::shared_ptr<InternalObject>>& params, std::size_t N, const std::string& type, const std::string& func) {
-        if (params.size() != N) {
-            throw RuntimeError { "invalid number of parameters for '" + type + "'::'" + func + "' function" };
-        }
-    }
-public:
-    InternalObject () = default;
-    virtual ~InternalObject () = default;
+/* + */
+std::shared_ptr<InternalObject> InternalObject::operator_binary_add (const InternalObject* param) {
+    throw RuntimeError { "object of type '" + get_typename() + "' has no '+' operator" };
+}
 
-    virtual std::shared_ptr<InternalObject> call (const std::string& func, const std::vector<std::shared_ptr<InternalObject>>& params) = 0;
+/* - */
+std::shared_ptr<InternalObject> InternalObject::operator_binary_sub (const InternalObject* param) {
+    throw RuntimeError { "object of type '" + get_typename() + "' has no '-' operator" };
+}
 
-    //virtual void construct (const std::vector<std::shared_ptr<InternalObject>>& params) = 0;
-    //virtual void assign (const std::vector<std::shared_ptr<InternalObject>>& params) = 0;
-    //virtual void assign (const std::shared_ptr<InternalObject> param) = 0;
-    //virtual void destruct () = 0;
-    virtual std::string get_typename () const = 0;
+/* * */
+std::shared_ptr<InternalObject> InternalObject::operator_binary_mul (const InternalObject* param) {
+    throw RuntimeError { "object of type '" + get_typename() + "' has no '*' operator" };
+}
 
-    virtual bool is_true () const {
-        throw RuntimeError { "object of type '" + get_typename() + "' cannot be evaluated as boolean" };
-    }
-    virtual double get_number () const {
-        throw RuntimeError { "object of type '" + get_typename() + "' cannot be interpreted as number" };
-    }
-    virtual std::string get_string () const {
-        throw RuntimeError { "object of type '" + get_typename() + "' cannot be interpreted as string" };
-    }
+/* / */
+std::shared_ptr<InternalObject> InternalObject::operator_binary_div (const InternalObject* param) {
+    throw RuntimeError { "object of type '" + get_typename() + "' has no '/' operator" };
+}
 
-    /* += */
-    virtual void operator_add_equal (const InternalObject* param) {
-        throw RuntimeError { "object of type '" + get_typename() + "' has no '+=' operator" };
-    }
+/* unary - */
+std::shared_ptr<InternalObject> InternalObject::unary_minus () {
+    throw RuntimeError { "object of type '" + get_typename() + "' has no 'unary -' operator" };
+}
 
-    /* -= */
-    virtual void operator_sub_equal (const InternalObject* param) {
-        throw RuntimeError { "object of type '" + get_typename() + "' has no '-=' operator" };
-    }
+/* unary ! */
+std::shared_ptr<InternalObject> InternalObject::unary_not () {
+    throw RuntimeError { "object of type '" + get_typename() + "' has no 'unary !' operator" };
+}
 
-    /* *= */
-    virtual void operator_mul_equal (const InternalObject* param) {
-        throw RuntimeError { "object of type '" + get_typename() + "' has no '*=' operator" };
-    }
+/* == */
+std::shared_ptr<InternalObject> InternalObject::operator_comparison_equal (const InternalObject* param) {
+    throw RuntimeError { "object of type '" + get_typename() + "' has no '==' operator" };
+}
 
-    /* /= */
-    virtual void operator_div_equal (const InternalObject* param) {
-        throw RuntimeError { "object of type '" + get_typename() + "' has no '/=' operator" };
-    }
-    
-    /* + */
-    virtual std::shared_ptr<InternalObject> operator_binary_add (const InternalObject* param) {
-        throw RuntimeError { "object of type '" + get_typename() + "' has no '+' operator" };
-    }
-    
-    /* - */
-    virtual std::shared_ptr<InternalObject> operator_binary_sub (const InternalObject* param) {
-        throw RuntimeError { "object of type '" + get_typename() + "' has no '-' operator" };
-    }
-    
-    /* * */
-    virtual std::shared_ptr<InternalObject> operator_binary_mul (const InternalObject* param) {
-        throw RuntimeError { "object of type '" + get_typename() + "' has no '*' operator" };
-    }
-    
-    /* / */
-    virtual std::shared_ptr<InternalObject> operator_binary_div (const InternalObject* param) {
-        throw RuntimeError { "object of type '" + get_typename() + "' has no '/' operator" };
-    }
+/* != */
+std::shared_ptr<InternalObject> InternalObject::operator_comparison_not_equal (const InternalObject* param) {
+    throw RuntimeError { "object of type '" + get_typename() + "' has no '!=' operator" };
+}
 
-    /* unary - */
-    virtual std::shared_ptr<InternalObject> unary_minus () {
-        throw RuntimeError { "object of type '" + get_typename() + "' has no 'unary -' operator" };
-    }
+/* > */
+std::shared_ptr<InternalObject> InternalObject::operator_greater (const InternalObject* param) {
+    throw RuntimeError { "object of type '" + get_typename() + "' has no '>' operator" };
+}
 
-    /* unary ! */
-    virtual std::shared_ptr<InternalObject> unary_not () {
-        throw RuntimeError { "object of type '" + get_typename() + "' has no 'unary !' operator" };
-    }
+/* < */
+std::shared_ptr<InternalObject> InternalObject::operator_less (const InternalObject* param) {
+    throw RuntimeError { "object of type '" + get_typename() + "' has no '<' operator" };
+}
 
-    /* == */
-    virtual std::shared_ptr<InternalObject> operator_comparison_equal (const InternalObject* param) {
-        throw RuntimeError { "object of type '" + get_typename() + "' has no '==' operator" };
-    }
+/* >= */
+std::shared_ptr<InternalObject> InternalObject::operator_greater_equal (const InternalObject* param) {
+    throw RuntimeError { "object of type '" + get_typename() + "' has no '>=' operator" };
+}
 
-    /* != */
-    virtual std::shared_ptr<InternalObject> operator_comparison_not_equal (const InternalObject* param) {
-        throw RuntimeError { "object of type '" + get_typename() + "' has no '!=' operator" };
-    }
+/* <= */
+std::shared_ptr<InternalObject> InternalObject::operator_less_equal (const InternalObject* param) {
+    throw RuntimeError { "object of type '" + get_typename() + "' has no '<=' operator" };
+}
 
-    /* > */
-    virtual std::shared_ptr<InternalObject> operator_greater (const InternalObject* param) {
-        throw RuntimeError { "object of type '" + get_typename() + "' has no '>' operator" };
-    }
+/* [] */
+std::shared_ptr<InternalObject> InternalObject::operator_subscript (const InternalObject* param) {
+    throw RuntimeError { "object of type '" + get_typename() + "' has no '[]' operator" };
+}
 
-    /* < */
-    virtual std::shared_ptr<InternalObject> operator_less (const InternalObject* param) {
-        throw RuntimeError { "object of type '" + get_typename() + "' has no '<' operator" };
-    }
-
-    /* >= */
-    virtual std::shared_ptr<InternalObject> operator_greater_equal (const InternalObject* param) {
-        throw RuntimeError { "object of type '" + get_typename() + "' has no '>=' operator" };
-    }
-
-    /* <= */
-    virtual std::shared_ptr<InternalObject> operator_less_equal (const InternalObject* param) {
-        throw RuntimeError { "object of type '" + get_typename() + "' has no '<=' operator" };
-    }
-
-    /* [] */
-    virtual std::shared_ptr<InternalObject> operator_subscript (const InternalObject* param) {
-        throw RuntimeError { "object of type '" + get_typename() + "' has no '[]' operator" };
-    }
-};
-
-class ObjectFactory {
-public:
-    virtual std::shared_ptr<InternalObject> create () const = 0;
-};
-
+} /* namespace object */
 } /* namespace mlang */
