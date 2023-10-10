@@ -11,9 +11,8 @@ private:
 public:
     ExitNode(node_ptr value) : Node(ast_node_types::exit_node), m_value(std::move(value)) {}
     ~ExitNode () = default;
-    std::shared_ptr<Object> execute (EnvStack& env) const override {
-        std::shared_ptr<Object> val = m_value->execute(env);
-        throw Exit { val };
+    Object execute (EnvStack& env) const override {
+        throw Exit { m_value->execute(env) };
     }
     void print () const override {
         std::cout << "exit ";

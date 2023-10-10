@@ -3,137 +3,55 @@
 #include "mlang/parser/ast/node.hpp"
 
 namespace mlang {
+
+enum class assignment_mode {
+    simple,
+    add,
+    sub,
+    mul,
+    div
+};
     
-class AssignmentOperationNode : public Node {
+class AssignmentNode : public Node {
 private:
     node_ptr m_left;
     node_ptr m_right;
+    assignment_mode m_mode { assignment_mode::simple };
 public:
-    AssignmentOperationNode(node_ptr left, node_ptr right) : Node(ast_node_types::assignment), m_left(std::move(left)), m_right(std::move(right)) {}
-    ~AssignmentOperationNode () = default;
-    std::shared_ptr<Object> execute (EnvStack& env) const override {
-        std::shared_ptr<Object> lhs = m_left->execute(env);
-        if (!rhs) throw RuntimeError{"left hand side of assignment returned null"};
-        std::shared_ptr<Object> rhs = m_right->execute(env);
-        if (!rhs) throw RuntimeError{"right hand side of assignment returned null"};
-        /* will not work, i need to add a wrapper around the Object that can handle the assignment*/
-        lhs->assign(rhs);
-        return nullptr;
-    }
-    void print () const override {
-        std::cout << m_var_name << "=";
-        m_right->print();
-    }
-};
-
-class AddEqualOperationNode : public Node {
-private:
-    std::string m_var_name;
-    node_ptr m_right;
-public:
-    AddEqualOperationNode(const std::string& var_name, node_ptr right) : Node(ast_node_types::add_equal), m_var_name(var_name), m_right(std::move(right)) {}
-    ~AddEqualOperationNode () = default;
-    const std::string& get_var_name () const { return m_var_name; }
+    AssignmentNode(node_ptr left, node_ptr right, assignment_mode mode) : Node(ast_node_types::assignment),
+                                                                          m_left(std::move(left)),
+                                                                          m_right(std::move(right)),
+                                                                          m_mode(mode) {}
+    ~AssignmentNode () = default;
+    const Node* const get_left () const { return m_left.get(); }
     const Node* const get_right () const { return m_right.get(); }
-    std::shared_ptr<Object> execute (EnvStack& env) const override {
-        std::shared_ptr<Object> rhs = m_right->execute(env);
-        if (!rhs) throw RuntimeError{"right hand side of '+=' returned null"};
-        env.get_variable(m_var_name)->operator_add_equal(rhs.get());
-        return nullptr;
-    }
-    void print () const override {
-        std::cout << m_var_name << "+=";
-        m_right->print();
-    }
-};
-    
-class ArrayAddEqualOperationNode : public Node {
-private:
-    std::string m_var_name;
-    std::vector<node_ptr> m_args;
-public:
-    ArrayAddEqualOperationNode(const std::string& var_name) : Node(ast_node_types::add_equal), m_var_name(var_name) {}
-    ~ArrayAddEqualOperationNode () = default;
-    const std::string& get_var_name () const { return m_var_name; }
-    std::shared_ptr<Object> execute (EnvStack& env) const override {
-        std::vector<std::shared_ptr<Object>> args;
-        for (const node_ptr& arg : m_args) {
-            std::shared_ptr<Object> res = arg->execute(env);
-            args.push_back(res);
+    assignment_mode get_mode () const { return m_mode; }
+    Object execute (EnvStack& env) const override {
+        Object lhs = m_left->execute(env);
+        Object rhs = m_right->execute(env);
+        switch (m_mode) {
+            case assignment_mode::simple : { lhs.assign(rhs, *(env.get_factory(rhs.get_typename()))); }
+            case assignment_mode::add    : { lhs.operator_add_equal(rhs, *(env.get_factory(rhs.get_typename()))); }
+            case assignment_mode::sub    : { lhs.operator_sub_equal(rhs, *(env.get_factory(rhs.get_typename()))); }
+            case assignment_mode::mul    : { lhs.operator_mul_equal(rhs, *(env.get_factory(rhs.get_typename()))); }
+            case assignment_mode::div    : { lhs.operator_div_equal(rhs, *(env.get_factory(rhs.get_typename()))); }
+            default : { break; }
         }
-        std::shared_ptr<Object> var = env.create_value(Array::type_name);
-        var->assign(args);
-        env.get_variable(m_var_name)->operator_add_equal(var.get());
-        return nullptr;
-    }
-    void add_arg (node_ptr arg) {
-        m_args.push_back(std::move(arg));
+        throw RuntimeError{"invalid assignment operator type"};
     }
     void print () const override {
-        std::cout << m_var_name << " = {...}";
-    }
-};
-
-class SubEqualOperationNode : public Node {
-private:
-    std::string m_var_name;
-    node_ptr m_right;
-public:
-    SubEqualOperationNode(const std::string& var_name, node_ptr right) : Node(ast_node_types::sub_equal), m_var_name(var_name), m_right(std::move(right)) {}
-    ~SubEqualOperationNode () = default;
-    const std::string& get_var_name () const { return m_var_name; }
-    const Node* const get_right () const { return m_right.get(); }
-    std::shared_ptr<Object> execute (EnvStack& env) const override {
-        std::shared_ptr<Object> rhs = m_right->execute(env);
-        if (!rhs) throw RuntimeError{"right hand side of '-=' returned null"};
-        env.get_variable(m_var_name)->operator_sub_equal(rhs.get());
-        return nullptr;
-    }
-    void print () const override {
-        std::cout << m_var_name << "-=";
+        std::cout << "( ";
+        m_left->print();
+        switch (m_mode) {
+            case assignment_mode::simple : { std::cout << " = "; break; }
+            case assignment_mode::add    : { std::cout << " += "; break; }
+            case assignment_mode::sub    : { std::cout << " -= "; break; }
+            case assignment_mode::mul    : { std::cout << " *= "; break; }
+            case assignment_mode::div    : { std::cout << " /= "; break; }
+            default : { std::cout << " ? "; break; }
+        }
         m_right->print();
-    }
-};
-
-class MulEqualOperationNode : public Node {
-private:
-    std::string m_var_name;
-    node_ptr m_right;
-public:
-    MulEqualOperationNode(const std::string& var_name, node_ptr right) : Node(ast_node_types::mul_equal), m_var_name(var_name), m_right(std::move(right)) {}
-    ~MulEqualOperationNode () = default;
-    const std::string& get_var_name () const { return m_var_name; }
-    const Node* const get_right () const { return m_right.get(); }
-    std::shared_ptr<Object> execute (EnvStack& env) const override {
-        std::shared_ptr<Object> rhs = m_right->execute(env);
-        if (!rhs) throw RuntimeError{"right hand side of '*=' returned null"};
-        env.get_variable(m_var_name)->operator_mul_equal(rhs.get());
-        return nullptr;
-    }
-    void print () const override {
-        std::cout << m_var_name << "*=";
-        m_right->print();
-    }
-};
-
-class DivEqualOperationNode : public Node {
-private:
-    std::string m_var_name;
-    node_ptr m_right;
-public:
-    DivEqualOperationNode(const std::string& var_name, node_ptr right) : Node(ast_node_types::div_equal), m_var_name(var_name), m_right(std::move(right)) {}
-    ~DivEqualOperationNode () = default;
-    const std::string& get_var_name () const { return m_var_name; }
-    const Node* const get_right () const { return m_right.get(); }
-    std::shared_ptr<Object> execute (EnvStack& env) const override {
-        std::shared_ptr<Object> rhs = m_right->execute(env);
-        if (!rhs) throw RuntimeError{"right hand side of '/=' returned null"};
-        env.get_variable(m_var_name)->operator_div_equal(rhs.get());
-        return nullptr;
-    }
-    void print () const override {
-        std::cout << m_var_name << "/=";
-        m_right->print();
+        std::cout << " )";
     }
 };
 

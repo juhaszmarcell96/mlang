@@ -8,24 +8,22 @@ namespace mlang {
 
 class MemberFunctionNode : public Node {
 private:
-    std::string m_var_name;
+    node_ptr m_lhs;
     std::string m_func_name;
     std::vector<node_ptr> m_params;
 public:
-    MemberFunctionNode(const std::string& var_name, const std::string& func_name) : Node(ast_node_types::member_func), m_var_name(var_name), m_func_name(func_name) {}
+    MemberFunctionNode(node_ptr lhs, const std::string& func_name) : Node(ast_node_types::member_func), m_lhs(lhs), m_func_name(func_name) {}
     ~MemberFunctionNode () = default;
     const std::vector<node_ptr>& get_params () const { return m_params; }
-    std::shared_ptr<Object> execute (EnvStack& env) const override {
-        std::vector<std::shared_ptr<Object>> params;
+    Object execute (EnvStack& env) const override {
+        std::vector<Object> params;
         for (const node_ptr& node : m_params) {
-            std::shared_ptr<Object> ret_val = node->execute(env);
-            params.push_back(ret_val);
+            params.push_back(node->execute(env));
         }
-        return env.get_variable(m_var_name)->call(m_func_name, params);
+        Object lhs = m_lhs->execute(env);
+        return lhs.call(m_func_name, params);
     }
-    void add_parameter (node_ptr param) {
-        m_params.push_back(std::move(param));
-    }
+    void add_parameter (node_ptr param) { m_params.push_back(std::move(param)); }
     void print () const override {
         std::cout << m_var_name << "." << m_func_name << " ( ";
         for (std::size_t i = 0; i < m_params.size(); ++i) {

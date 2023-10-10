@@ -14,13 +14,13 @@ private:
 public:
     FunctionDeclNode (const std::string& name) : Node(ast_node_types::func_decl), m_name(name) {}
     ~FunctionDeclNode () = default;
-    void set_body (node_ptr body) { m_body = body; }
-    void add_parameter (const std::string& param) { m_param.push_back(param); }
-    std::shared_ptr<Object> execute (EnvStack& env) const override {
+    void set_body (node_ptr body) { m_body = std::move(body); }
+    void add_parameter (const std::string& param) { m_params.push_back(param); }
+    Object execute (EnvStack& env) const override {
         env.declare_function(m_name, this);
-        return nullptr;
+        return Object{};
     }
-    std::shared_ptr<Object> call (std::vector<std::shared_ptr<Object>>& params) const {
+    Object call (std::vector<Object>& params) const {
         // function should be able to call other function and use global variables
         /* check if the parameters have the same length, none of them are nullptr and have the same type */
         /* same with the return value */
@@ -29,14 +29,11 @@ public:
         }
         EnvStack env {};
         for (std::size_t i = 0; i < params.size(); ++i) {
-            if (params[i] == nullptr) { throw RuntimeError{ "parameter is null for function " + m_name }; }
-            env.declare_variable(m_params[i].name, params[i]->get_typename());
+            env.declare_variable(m_params[i].name, params[i].get_typename());
             env.set_variable(m_params[i].name, params[i]);
         }
         try {
-            for (auto& node : m_nodes) {
-                node->execute(env);
-            }
+            m_body->execute(env);
         }
         catch (const Break& e) {
             /* handle break */
@@ -51,13 +48,13 @@ public:
             /* handle  return */
             return e.get_value();
         }
-        return nullptr;
+        return Object {};
     }
     void print () const override {
         /* if */
         std::cout << "function " << m_name << " ( ";
         for (std::size_t i = 0; i < m_params.size(); ++i) {
-            std::cout << m_params;
+            std::cout << m_params[i];
             if (i < m_params.size() - 1) { std::cout << ", "; }
         }
         std::cout << " )" << std::endl;

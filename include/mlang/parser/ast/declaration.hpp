@@ -13,9 +13,9 @@ public:
     DeclarationOperationNode(const std::string& var_name) : Node(ast_node_types::declaration), m_var_name(var_name) {}
     ~DeclarationOperationNode () = default;
     const std::string& get_var_name () const { return m_var_name; }
-    std::shared_ptr<Object> execute (EnvStack& env) const override {
+    Object execute (EnvStack& env) const override {
         env.declare_variable(m_var_name, None::type_name);
-        return nullptr;
+        return Object{};
     }
     void print () const override {
         std::cout << "declare:" << m_var_name;
@@ -31,12 +31,11 @@ public:
     ~DeclAndInitOperationNode () = default;
     const std::string& get_var_name () const { return m_var_name; }
     const Node* const get_right () const { return m_right.get(); }
-    std::shared_ptr<Object> execute (EnvStack& env) const override {
-        std::shared_ptr<Object> rhs = m_right->execute(env);
-        if (!rhs) throw RuntimeError{"right hand side of addition returned null"};
+    Object execute (EnvStack& env) const override {
+        Object rhs = m_right->execute(env);
         env.declare_variable(m_var_name, None::type_name);
         env.set_variable(m_var_name, rhs);
-        return nullptr;
+        return Object{};
     }
     void print () const override {
         std::cout << "declare:" << m_var_name;

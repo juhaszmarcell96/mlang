@@ -13,12 +13,11 @@ public:
     WhileStatementNode() : Node(ast_node_types::while_statement) {}
     ~WhileStatementNode () = default;
     const std::vector<node_ptr>& get_nodes () const { return m_nodes; }
-    std::shared_ptr<Object> execute (EnvStack& env) const override {
+    Object execute (EnvStack& env) const override {
         env.enter_scope();
         while (true) {
-            std::shared_ptr<Object> cond_val = m_condition->execute(env);
-            if (!cond_val) throw RuntimeError{"if statement condition returned null"};
-            if (!cond_val->is_true()) { break; }
+            Object cond_val = m_condition->execute(env);
+            if (!cond_val.is_true()) { break; }
             try {
                 /* execute scope */
                 m_body->execute(env);
@@ -47,10 +46,7 @@ public:
         std::cout << "while (";
         m_condition->print();
         std::cout << ");" << std::endl;
-        for (auto& node : m_nodes) {
-            node->print();
-            std::cout << std::endl;
-        }
+        m_body->print();
     }
 };
 

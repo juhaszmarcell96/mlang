@@ -16,26 +16,13 @@ enum class ast_node_types {
     variable,
     unary_not,
     unary_minus,
-    binary_add,
-    binary_sub,
-    binary_mul,
-    binary_div,
+    binary_arith,
     assignment,
     declaration,
-    add_equal,
-    sub_equal,
-    div_equal,
-    mul_equal,
     if_statement,
     for_statement,
     while_statement,
-    end_statement, /* TODO : remove */
-    equality,
-    inequality,
-    greater,
-    less,
-    greater_equal,
-    less_equal,
+    comparison,
     print,
     break_node,
     continue_node,
@@ -43,7 +30,7 @@ enum class ast_node_types {
     exit_node,
     func_decl,
     func_call,
-    indexing_node,
+    subscript,
     member_func,
     block
 };
@@ -58,7 +45,7 @@ private:
 public:
     Node (ast_node_types type) : m_type(type) {}
     virtual ~Node () = default;
-    virtual std::shared_ptr<Object> execute (EnvStack& env) const = 0;
+    virtual Object execute (EnvStack& env) const = 0;
     virtual void print () const = 0;
 
     ast_node_types get_type () const { return m_type; }

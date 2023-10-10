@@ -24,26 +24,26 @@ public:
 /* return should probably hold the return value */
 class Return : public std::exception {
 private:
-    std::shared_ptr<Object> m_val;
+    Object m_val;
 public:
-    Return (std::shared_ptr<Object> val) : m_val(val) {}
+    Return (const Object& val) : m_val(val) {}
     const char* what () const noexcept override {
         return "return";
     }
 
-    const std::shared_ptr<Object> get_value () const { return m_val; }
+    const Object& get_value () const { return m_val; }
 };
 
 class Exit : public std::exception {
 private:
-    std::shared_ptr<Object> m_val;
+    Object m_val;
 public:
-    Exit (std::shared_ptr<Object> val) : m_val(val) {}
+    Exit (const Object& val) : m_val(val) {}
     const char* what () const noexcept override {
         return "exit";
     }
 
-    const std::shared_ptr<Object> get_value () const { return m_val; }
+    const Object& get_value () const { return m_val; }
 };
 
 } /* namespace mlang */

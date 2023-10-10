@@ -12,39 +12,35 @@ private:
 
     std::string get_integer (EnvStack& env) const {
         if (m_index >= m_args.size()) { throw syntax_error{"mismatch in print arguments"}; }
-        std::shared_ptr<Object> res = m_args[m_index]->execute(env);
-        if (!res) { throw RuntimeError { "print expression returned null" }; }
+        Object res = m_args[m_index]->execute(env);
         ++m_index;
-        return std::to_string(static_cast<int>(res->get_number()));
+        return std::to_string(static_cast<int>(res.get_number()));
     }
 
     std::string get_string (EnvStack& env) const {
         if (m_index >= m_args.size()) { throw syntax_error{"mismatch in print arguments"}; }
-        std::shared_ptr<Object> res = m_args[m_index]->execute(env);
-        if (!res) { throw RuntimeError { "print expression returned null" }; }
+        Object res = m_args[m_index]->execute(env);
         ++m_index;
-        return res->get_string();
+        return res.get_string();
     }
 
     std::string get_float (EnvStack& env) const {
         if (m_index >= m_args.size()) { throw syntax_error{"mismatch in print arguments"}; }
-        std::shared_ptr<Object> res = m_args[m_index]->execute(env);
-        if (!res) { throw RuntimeError { "print expression returned null" }; }
+        Object res = m_args[m_index]->execute(env);
         ++m_index;
-        return std::to_string(res->get_number());
+        return std::to_string(res.get_number());
     }
 
     std::string get_bool (EnvStack& env) const {
         if (m_index >= m_args.size()) { throw syntax_error{"mismatch in print arguments"}; }
-        std::shared_ptr<Object> res = m_args[m_index]->execute(env);
-        if (!res) { throw RuntimeError { "print expression returned null" }; }
+        Object res = m_args[m_index]->execute(env);
         ++m_index;
-        return (res->is_true() ? "true" : "false");
+        return (res.is_true() ? "true" : "false");
     }
 public:
     PrintNode() : Node(ast_node_types::print) {}
     ~PrintNode () = default;
-    std::shared_ptr<Object> execute (EnvStack& env) const override {
+    Object execute (EnvStack& env) const override {
         m_index = 0;
         std::string result;
         for  (std::size_t i = 0; i < m_rule.length(); ++i) {
@@ -90,7 +86,7 @@ public:
             }
         }
         std::cout << result << std::endl;
-        return nullptr;
+        return Object {};
     }
     void set_rule (const std::string& rule) { m_rule = rule; }
     void add_argument (node_ptr arg) { m_args.push_back(std::move(arg)); }

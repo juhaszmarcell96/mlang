@@ -4,151 +4,55 @@
 
 namespace mlang {
 
-class BinaryEqualityOperationNode : public Node {
-private:
-    node_ptr m_left;
-    node_ptr m_right;
-public:
-    BinaryEqualityOperationNode(node_ptr left, node_ptr right) : Node(ast_node_types::equality), m_left(std::move(left)), m_right(std::move(right)) {}
-    ~BinaryEqualityOperationNode () = default;
-    const Node* const get_left () const { return m_left.get(); }
-    const Node* const get_right () const { return m_right.get(); }
-    std::shared_ptr<Object> execute (EnvStack& env) const override {
-        std::shared_ptr<Object> lhs = m_left->execute(env);
-        std::shared_ptr<Object> rhs = m_right->execute(env);
-        if (!lhs) throw RuntimeError{"left hand side of '==' returned null"};
-        if (!rhs) throw RuntimeError{"right hand side of '==' returned null"};
-        return lhs->operator_comparison_equal(rhs.get());
-    }
-    void print () const override {
-        std::cout << "( ";
-        m_left->print();
-        std::cout << " == ";
-        m_right->print();
-        std::cout << " )";
-    }
+enum class comparison_mode {
+    equal,
+    not_equal,
+    greater,
+    less,
+    greater_equal,
+    less_equal
 };
 
-class BinaryInequalityOperationNode : public Node {
+class BinaryComparisonNode : public Node {
 private:
     node_ptr m_left;
     node_ptr m_right;
+    comparison_mode m_mode { comparison_mode::equal };
 public:
-    BinaryInequalityOperationNode(node_ptr left, node_ptr right) : Node(ast_node_types::inequality), m_left(std::move(left)), m_right(std::move(right)) {}
-    ~BinaryInequalityOperationNode () = default;
+    BinaryComparisonNode(node_ptr left, node_ptr right, comparison_mode mode) : Node(ast_node_types::comparison), 
+                                                                                m_left(std::move(left)),
+                                                                                m_right(std::move(right)),
+                                                                                m_mode(comparison_mode) {}
+    ~BinaryComparisonNode () = default;
     const Node* const get_left () const { return m_left.get(); }
     const Node* const get_right () const { return m_right.get(); }
-    std::shared_ptr<Object> execute (EnvStack& env) const override {
-        std::shared_ptr<Object> lhs = m_left->execute(env);
-        std::shared_ptr<Object> rhs = m_right->execute(env);
-        if (!lhs) throw RuntimeError{"left hand side of '!=' returned null"};
-        if (!rhs) throw RuntimeError{"right hand side of '!=' returned null"};
-        return lhs->operator_comparison_not_equal(rhs.get());
+    comparison_mode get_mode () const { return m_mode; }
+    Object execute (EnvStack& env) const override {
+        Object lhs = m_left->execute(env);
+        Object rhs = m_right->execute(env);
+        switch (m_mode) {
+            case comparison_mode::equal         : { return lhs.operator_comparison_equal(rhs); }
+            case comparison_mode::not_equal     : { return lhs.operator_comparison_not_equal(rhs); }
+            case comparison_mode::greater       : { return lhs.operator_greater(rhs); }
+            case comparison_mode::less          : { return lhs.operator_less(rhs); }
+            case comparison_mode::greater_equal : { return lhs.operator_greater_equal(rhs); }
+            case comparison_mode::less_equal    : { return lhs.operator_less_equal(rhs); }
+            default : { break; }
+        }
+        throw RuntimeError{"invalid comparison operator type"};
     }
     void print () const override {
         std::cout << "( ";
         m_left->print();
-        std::cout << " != ";
-        m_right->print();
-        std::cout << " )";
-    }
-};
-
-class ComparisonGreaterNode : public Node {
-private:
-    node_ptr m_left;
-    node_ptr m_right;
-public:
-    ComparisonGreaterNode(node_ptr left, node_ptr right) : Node(ast_node_types::greater), m_left(std::move(left)), m_right(std::move(right)) {}
-    ~ComparisonGreaterNode () = default;
-    const Node* const get_left () const { return m_left.get(); }
-    const Node* const get_right () const { return m_right.get(); }
-    std::shared_ptr<Object> execute (EnvStack& env) const override {
-        std::shared_ptr<Object> lhs = m_left->execute(env);
-        std::shared_ptr<Object> rhs = m_right->execute(env);
-        if (!lhs) throw RuntimeError{"left hand side of '>' returned null"};
-        if (!rhs) throw RuntimeError{"right hand side of '>' returned null"};
-        return lhs->operator_greater(rhs.get());
-    }
-    void print () const override {
-        std::cout << "( ";
-        m_left->print();
-        std::cout << " > ";
-        m_right->print();
-        std::cout << " )";
-    }
-};
-
-class ComparisonLessNode : public Node {
-private:
-    node_ptr m_left;
-    node_ptr m_right;
-public:
-    ComparisonLessNode(node_ptr left, node_ptr right) : Node(ast_node_types::less), m_left(std::move(left)), m_right(std::move(right)) {}
-    ~ComparisonLessNode () = default;
-    const Node* const get_left () const { return m_left.get(); }
-    const Node* const get_right () const { return m_right.get(); }
-    std::shared_ptr<Object> execute (EnvStack& env) const override {
-        std::shared_ptr<Object> lhs = m_left->execute(env);
-        std::shared_ptr<Object> rhs = m_right->execute(env);
-        if (!lhs) throw RuntimeError{"left hand side of '<' returned null"};
-        if (!rhs) throw RuntimeError{"right hand side of '<' returned null"};
-        return lhs->operator_less(rhs.get());
-    }
-    void print () const override {
-        std::cout << "( ";
-        m_left->print();
-        std::cout << " < ";
-        m_right->print();
-        std::cout << " )";
-    }
-};
-
-class ComparisonGreaterEqualNode : public Node {
-private:
-    node_ptr m_left;
-    node_ptr m_right;
-public:
-    ComparisonGreaterEqualNode(node_ptr left, node_ptr right) : Node(ast_node_types::greater_equal), m_left(std::move(left)), m_right(std::move(right)) {}
-    ~ComparisonGreaterEqualNode () = default;
-    const Node* const get_left () const { return m_left.get(); }
-    const Node* const get_right () const { return m_right.get(); }
-    std::shared_ptr<Object> execute (EnvStack& env) const override {
-        std::shared_ptr<Object> lhs = m_left->execute(env);
-        std::shared_ptr<Object> rhs = m_right->execute(env);
-        if (!lhs) throw RuntimeError{"left hand side of '>=' returned null"};
-        if (!rhs) throw RuntimeError{"right hand side of '>=' returned null"};
-        return lhs->operator_greater_equal(rhs.get());
-    }
-    void print () const override {
-        std::cout << "( ";
-        m_left->print();
-        std::cout << " >= ";
-        m_right->print();
-        std::cout << " )";
-    }
-};
-
-class ComparisonLessEqualNode : public Node {
-private:
-    node_ptr m_left;
-    node_ptr m_right;
-public:
-    ComparisonLessEqualNode(node_ptr left, node_ptr right) : Node(ast_node_types::less_equal), m_left(std::move(left)), m_right(std::move(right)) {}
-    ~ComparisonLessEqualNode () = default;
-    const Node* const get_left () const { return m_left.get(); }
-    const Node* const get_right () const { return m_right.get(); }
-    std::shared_ptr<Object> execute (EnvStack& env) const override {
-        std::shared_ptr<Object> lhs = m_left->execute(env);
-        std::shared_ptr<Object> rhs = m_right->execute(env);
-        if (!lhs) throw RuntimeError{"left hand side of '<=' returned null"};
-        if (!rhs) throw RuntimeError{"right hand side of '<=' returned null"};
-        return lhs->operator_less_equal(rhs.get());
-    }
-    void print () const override {
-        std::cout << "( ";
-        m_left->print();
-        std::cout << " <= ";
+        switch (m_mode) {
+            case comparison_mode::equal         : { std::cout << " == "; break; }
+            case comparison_mode::not_equal     : { std::cout << " != "; break; }
+            case comparison_mode::greater       : { std::cout << " > "; break; }
+            case comparison_mode::less          : { std::cout << " < "; break; }
+            case comparison_mode::greater_equal : { std::cout << " >= "; break; }
+            case comparison_mode::less_equal    : { std::cout << " <= "; break; }
+            default : { std::cout << " ?? "; break }
+        }
         m_right->print();
         std::cout << " )";
     }

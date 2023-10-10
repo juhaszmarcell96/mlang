@@ -5,7 +5,7 @@
 #include "mlang/object/number.hpp"
 #include "mlang/object/string.hpp"
 #include "mlang/object/boolean.hpp"
-#include "mlang/object/array.hpp"
+//#include "mlang/object/array.hpp"
 #include "mlang/function.hpp"
 #include "mlang/exception.hpp"
 
@@ -24,9 +24,9 @@ private:
     static inline std::map<std::string, std::shared_ptr<ObjectFactory>> m_types { { None::type_name, std::make_shared<NoneFactory>() },
                                                                                   { Number::type_name, std::make_shared<NumberFactory>() },
                                                                                   { Boolean::type_name, std::make_shared<BooleanFactory>() },
-                                                                                  { Array::type_name, std::make_shared<ArrayFactory>() },
+                                                                                  //{ Array::type_name, std::make_shared<ArrayFactory>() },
                                                                                   { String::type_name, std::make_shared<StringFactory>() }   };
-    std::map<std::string, std::shared_ptr<Object>> m_variables;
+    std::map<std::string, Object> m_variables;
     std::map<std::string, std::shared_ptr<Function>> m_functions;
 
     Environment* m_parent { nullptr };
@@ -36,29 +36,25 @@ public:
     ~Environment () = default;
 
     void reset () {
-        m_types.clear();
+        //m_types.clear();
         m_variables.clear();
         m_functions.clear();
         m_parent = nullptr;
     }
 
-    bool has_type (const std::string& type_name) const {
+    static bool has_type (const std::string& type_name) {
         if (m_types.count(type_name) != 0) { return true; }
         else { return false; }
     }
 
-    void define_type (const std::string& type_name, std::shared_ptr<ObjectFactory> factory) {
-        if (has_type(type_name)) {
-            throw RuntimeError{"type " + type_name + " already exists"};
-        }
+    static void define_type (const std::string& type_name, std::shared_ptr<ObjectFactory> factory) {
+        if (has_type(type_name)) { throw RuntimeError{"type " + type_name + " already exists"}; }
         m_types[type_name] = factory;
     }
 
-    std::shared_ptr<Object> create_value (const std::string& type) {
-        if (m_types.count(type) == 0) {
-            throw RuntimeError{"type " + type + " is unknown"};
-        }
-        return m_types[type]->create();
+    static const ObjectFactory& get_factory (const std::string& type) {
+        if (m_types.count(type) == 0) { throw RuntimeError{"type " + type + " is unknown"}; }
+        return *(m_types[type]);
     }
 
     bool has_variable (const std::string& variable_name) const {
@@ -74,10 +70,10 @@ public:
         if (has_variable(variable_name)) {
             throw RuntimeError{"variable " + variable_name + " already exists"};
         }
-        m_variables[variable_name] = m_types[type]->create();
+        m_variables[variable_name] = Object{m_types[type]->create()};
     }
 
-    std::shared_ptr<Object> get_variable (const std::string& variable_name) {
+    Object& get_variable (const std::string& variable_name) {
         if (m_variables.count(variable_name) != 0) {
             return m_variables[variable_name];
         }
@@ -89,7 +85,8 @@ public:
         }
     }
 
-    void set_variable (const std::string& variable_name, std::shared_ptr<Object> value) {
+    /*
+    void set_variable (const std::string& variable_name, Object value) {
         if (m_variables.count(variable_name) != 0) {
             std::string type_name = value->get_typename();
             if (!has_type(type_name)) {
@@ -105,6 +102,7 @@ public:
             throw RuntimeError{"variable " + variable_name + " does not exists"};
         }
     }
+    */
 
     bool has_function (const std::string& function_name) const {
         if (m_functions.count(function_name) != 0) { return true; }
@@ -157,13 +155,15 @@ public:
         m_env_stack.top()->declare_variable(variable_name, type);
     }
 
-    std::shared_ptr<Object> get_variable (const std::string& variable_name) {
+    Object& get_variable (const std::string& variable_name) {
         return m_env_stack.top()->get_variable(variable_name);
     }
 
+    /*
     void set_variable (const std::string& variable_name, std::shared_ptr<Object> value) {
         return m_env_stack.top()->set_variable(variable_name, value);
     }
+    */
 
     bool has_function (const std::string& function_name) const {
         return m_env_stack.top()->has_function(function_name);
@@ -175,10 +175,6 @@ public:
 
     Function* get_function (const std::string& function_name) {
         return m_env_stack.top()->get_function(function_name);
-    }
-
-    std::shared_ptr<Object> create_value (const std::string& type) {
-        return m_env_stack.top()->create_value(type);
     }
 };
 

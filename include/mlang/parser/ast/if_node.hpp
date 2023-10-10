@@ -22,32 +22,30 @@ public:
         m_active_branch = &m_if_body;
     }
     ~IfStatementNode () = default;
-    std::shared_ptr<Object> execute (EnvStack& env) const override {
+    Object execute (EnvStack& env) const override {
         env.enter_scope();
         try {
             /* if */
-            std::shared_ptr<Object> cond_val = m_condition->execute(env);
-            if (!cond_val) throw RuntimeError{"if statement condition returned null"};
-            if (cond_val->is_true()) {
+            Object cond_val = m_condition->execute(env);
+            if (cond_val.is_true()) {
                 m_if_body->execute(env);
                 env.exit_scope();
-                return nullptr;
+                return Object {};
             }
             /* elif */
             for (std::size_t i = 0; i < m_elif_conditions.size(); ++i) {
                 cond_val = m_elif_conditions[i]->execute(env);
-                if (!cond_val) throw RuntimeError{"elif statement condition returned null"};
-                if (cond_val->is_true()) {
+                if (cond_val.is_true()) {
                     m_elif_bodies[i]->execute(env);
                     env.exit_scope();
-                    return nullptr;
+                    return Object {};
                 }
             }
             /* else */
             if (m_else_defined) {
                 m_else_body->execute(env);
                 env.exit_scope();
-                return nullptr;
+                return Object {};
             }
         }
         catch (const Break& e) {
@@ -68,7 +66,7 @@ public:
             env.exit_scope();
             throw;
         }
-        return nullptr;
+        return Object {};
     }
     void set_if_condition (node_ptr condition) {
         m_if_condition = std::move(condition);

@@ -11,11 +11,11 @@ public:
     BlockNode() : Node(ast_node_types::main) {}
     ~BlockNode () = default;
     const std::vector<node_ptr>& get_nodes () const { return m_nodes; }
-    std::shared_ptr<Object> execute (EnvStack& env) const override {
+    Object execute (EnvStack& env) const override {
         for (const auto& node : m_nodes) {
             node->execute(env);
         }
-        return nullptr;
+        Object{};
     }
     void add_node (node_ptr node) {
         m_nodes.push_back(std::move(node));

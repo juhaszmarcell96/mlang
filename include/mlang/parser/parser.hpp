@@ -142,7 +142,7 @@ private:
                 if (consume(token_types::round_bracket_open)) {
                     std::unique_ptr<MemberFunctionNode> member_func_ptr = std::make_unique<MemberFunctionNode>(std::move(expr), member_name);
                     while (!consume(token_types::round_bracket_close)) {
-                        member_func_ptr->add_argument(logic_or());
+                        member_func_ptr->add_parameter(logic_or());
                     }
                     expr.swap(member_func_ptr);
                 }
@@ -161,26 +161,21 @@ private:
     // pre_op             -> ( "-" | "!" | "++" | "--" )? post_op;
     node_ptr pre_op () {
         trace("pre_op");
-        while (true) {
-            if (consume(token_types::dash)) {
-                node_ptr rhs = post_op();
-                return expr = std::make_unique<BinaryMulOperationNode>(std::move(expr), std::move(rhs));
-            }
-            else if (consume(token_types::exclamation_mark)) {
-                node_ptr rhs = post_op();
-                return std::make_unique<BinaryDivOperationNode>(std::move(expr), std::move(rhs));
-            }
-            else if (consume(token_types::plus_plus)) {
-                node_ptr rhs = post_op();
-                return std::make_unique<PrefixIncrementNode>(std::move(expr), std::move(rhs));
-            }
-            else if (consume(token_types::dash_dash)) {
-                node_ptr rhs = post_op();
-                return std::make_unique<PrefixDecrementNode>(std::move(expr), std::move(rhs));
-            }
-            else {
-                break;
-            }
+        if (consume(token_types::dash)) {
+            node_ptr rhs = post_op();
+            return std::make_unique<UnaryMinusOperationNode>(std::move(rhs));
+        }
+        else if (consume(token_types::exclamation_mark)) {
+            node_ptr rhs = post_op();
+            return std::make_unique<UnaryNotOperationNode>(std::move(rhs));
+        }
+        else if (consume(token_types::plus_plus)) {
+            node_ptr rhs = post_op();
+            return std::make_unique<PrefixIncrementNode>(std::move(rhs));
+        }
+        else if (consume(token_types::dash_dash)) {
+            node_ptr rhs = post_op();
+            return std::make_unique<PrefixDecrementNode>(std::move(rhs));
         }
         return post_op();
     }
@@ -192,11 +187,11 @@ private:
         while (true) {
             if (consume(token_types::asterisk)) {
                 node_ptr rhs = pre_op();
-                expr = std::make_unique<BinaryMulOperationNode>(std::move(expr), std::move(rhs));
+                expr = std::make_unique<BinaryArithmeticNode>(std::move(expr), std::move(rhs), arithmetic_mode::mul);
             }
             else if (consume(token_types::slash)) {
                 node_ptr rhs = pre_op();
-                expr = std::make_unique<BinaryDivOperationNode>(std::move(expr), std::move(rhs));
+                expr = std::make_unique<BinaryArithmeticNode>(std::move(expr), std::move(rhs), arithmetic_mode::div);
             }
             else {
                 break;
@@ -212,11 +207,11 @@ private:
         while (true) {
             if (consume(token_types::plus)) {
                 node_ptr rhs = comparison();
-                expr = std::make_unique<BinaryAddOperationNode>(std::move(expr), std::move(rhs));
+                expr = std::make_unique<BinaryArithmeticNode>(std::move(expr), std::move(rhs), arithmetic_mode::add);
             }
             else if (consume(token_types::dash)) {
                 node_ptr rhs = comparison();
-                expr = std::make_unique<BinarySubOperationNode>(std::move(expr), std::move(rhs));
+                expr = std::make_unique<BinaryArithmeticNode>(std::move(expr), std::move(rhs), arithmetic_mode::sub);
             }
             else {
                 break;
@@ -232,19 +227,19 @@ private:
         while (true) {
             if (consume(token_types::greater)) {
                 node_ptr rhs = term();
-                expr = std::make_unique<ComparisonGreaterNode>(std::move(expr), std::move(rhs));
+                expr = std::make_unique<BinaryComparisonNode>(std::move(expr), std::move(rhs), comparison_mode::greater);
             }
             else if (consume(token_types::less)) {
                 node_ptr rhs = term();
-                expr = std::make_unique<ComparisonLessNode>(std::move(expr), std::move(rhs));
+                expr = std::make_unique<BinaryComparisonNode>(std::move(expr), std::move(rhs), comparison_mode::less);
             }
             else if (consume(token_types::greater_equal)) {
                 node_ptr rhs = term();
-                expr = std::make_unique<ComparisonGreaterEqualNode>(std::move(expr), std::move(rhs));
+                expr = std::make_unique<BinaryComparisonNode>(std::move(expr), std::move(rhs), comparison_mode::greater_equal);
             }
             else if (consume(token_types::less_equal)) {
                 node_ptr rhs = term();
-                expr = std::make_unique<ComparisonLessEqualNode>(std::move(expr), std::move(rhs));
+                expr = std::make_unique<BinaryComparisonNode>(std::move(expr), std::move(rhs), comparison_mode::less_equal);
             }
             else {
                 break;
@@ -260,11 +255,11 @@ private:
         while (true) {
             if (consume(token_types::exclamation_equal)) {
                 node_ptr rhs = comparison();
-                expr = std::make_unique<BinaryInequalityOperationNode>(std::move(expr), std::move(rhs));
+                expr = std::make_unique<BinaryComparisonNode>(std::move(expr), std::move(rhs), comparison_mode::not_equal);
             }
             else if (consume(token_types::double_equal)) {
                 node_ptr rhs = comparison();
-                expr = std::make_unique<BinaryEqualityOperationNode>(std::move(expr), std::move(rhs));
+                expr = std::make_unique<BinaryComparisonNode>(std::move(expr), std::move(rhs), comparison_mode::equal);
             }
             else {
                 break;
@@ -301,23 +296,23 @@ private:
         node_ptr expr = logic_or();
         if (consume(token_types::equal_sign)) {
             node_ptr rhs = logic_or();
-            return std::make_unique<AssignmentOperationNode>(std::move(expr), std::move(rhs));
+            return std::make_unique<AssignmentNode>(std::move(expr), std::move(rhs), assignment_mode::simple);
         }
         if (consume(token_types::plus_equal)) {
             node_ptr rhs = logic_or();
-            return std::make_unique<AddEqualOperationNode>(std::move(expr), std::move(rhs));
+            return std::make_unique<AssignmentNode>(std::move(expr), std::move(rhs), assignment_mode::add);
         }
         if (consume(token_types::dash_equal)) {
             node_ptr rhs = logic_or();
-            return std::make_unique<SubEqualOperationNode>(std::move(expr), std::move(rhs));
+            return std::make_unique<AssignmentNode>(std::move(expr), std::move(rhs), assignment_mode::sub);
         }
         if (consume(token_types::asterisk_equal)) {
             node_ptr rhs = logic_or();
-            return std::make_unique<MulEqualOperationNode>(std::move(expr), std::move(rhs));
+            return std::make_unique<AssignmentNode>(std::move(expr), std::move(rhs), assignment_mode::mul);
         }
         if (consume(token_types::slash_equal)) {
             node_ptr rhs = logic_or();
-            return std::make_unique<DivEqualOperationNode>(std::move(expr), std::move(rhs));
+            return std::make_unique<AssignmentNode>(std::move(expr), std::move(rhs), assignment_mode::div);
         }
         return expr;
     }

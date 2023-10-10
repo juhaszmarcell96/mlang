@@ -15,7 +15,7 @@ public:
     ForStatementNode() : Node(ast_node_types::for_statement) {}
     ~ForStatementNode () = default;
     const std::vector<node_ptr>& get_nodes () const { return m_nodes; }
-    std::shared_ptr<Object> execute (EnvStack& env) const override {
+    Object execute (EnvStack& env) const override {
         env.enter_scope();
         /* assignments */
         if (m_initialization) { m_initialization->execute(env); }
@@ -26,7 +26,7 @@ public:
                 test_val = m_test->execute(env);
                 if (!test_val) throw RuntimeError{"for loop test returned null"};
                 if (!(test_val->is_true())) {
-                    return nullptr;
+                    return Object{};
                 }
             }
             try {
@@ -51,7 +51,7 @@ public:
             if (m_update) { m_update->execute(env); }
         }
         env.exit_scope();
-        return nullptr;
+        return Object{};
     }
     void set_initialization (node_ptr initialization) { m_initialization = std::move(initialization); }
     void set_test (node_ptr test) { m_test = std::move(test); }
