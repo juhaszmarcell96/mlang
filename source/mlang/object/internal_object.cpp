@@ -15,42 +15,42 @@ std::string InternalObject::get_string () const {
 }
 
 /* += */
-void InternalObject::operator_add_equal (const InternalObject* param) {
+void InternalObject::operator_add_equal (const std::shared_ptr<InternalObject> param) {
     throw RuntimeError { "object of type '" + get_typename() + "' has no '+=' operator" };
 }
 
 /* -= */
-void InternalObject::operator_sub_equal (const InternalObject* param) {
+void InternalObject::operator_sub_equal (const std::shared_ptr<InternalObject> param) {
     throw RuntimeError { "object of type '" + get_typename() + "' has no '-=' operator" };
 }
 
 /* *= */
-void InternalObject::operator_mul_equal (const InternalObject* param) {
+void InternalObject::operator_mul_equal (const std::shared_ptr<InternalObject> param) {
     throw RuntimeError { "object of type '" + get_typename() + "' has no '*=' operator" };
 }
 
 /* /= */
-void InternalObject::operator_div_equal (const InternalObject* param) {
+void InternalObject::operator_div_equal (const std::shared_ptr<InternalObject> param) {
     throw RuntimeError { "object of type '" + get_typename() + "' has no '/=' operator" };
 }
 
 /* + */
-std::shared_ptr<InternalObject> InternalObject::operator_binary_add (const InternalObject* param) {
+std::shared_ptr<InternalObject> InternalObject::operator_binary_add (const std::shared_ptr<InternalObject> param) {
     throw RuntimeError { "object of type '" + get_typename() + "' has no '+' operator" };
 }
 
 /* - */
-std::shared_ptr<InternalObject> InternalObject::operator_binary_sub (const InternalObject* param) {
+std::shared_ptr<InternalObject> InternalObject::operator_binary_sub (const std::shared_ptr<InternalObject> param) {
     throw RuntimeError { "object of type '" + get_typename() + "' has no '-' operator" };
 }
 
 /* * */
-std::shared_ptr<InternalObject> InternalObject::operator_binary_mul (const InternalObject* param) {
+std::shared_ptr<InternalObject> InternalObject::operator_binary_mul (const std::shared_ptr<InternalObject> param) {
     throw RuntimeError { "object of type '" + get_typename() + "' has no '*' operator" };
 }
 
 /* / */
-std::shared_ptr<InternalObject> InternalObject::operator_binary_div (const InternalObject* param) {
+std::shared_ptr<InternalObject> InternalObject::operator_binary_div (const std::shared_ptr<InternalObject> param) {
     throw RuntimeError { "object of type '" + get_typename() + "' has no '/' operator" };
 }
 
@@ -65,37 +65,37 @@ std::shared_ptr<InternalObject> InternalObject::unary_not () {
 }
 
 /* == */
-std::shared_ptr<InternalObject> InternalObject::operator_comparison_equal (const InternalObject* param) {
+std::shared_ptr<InternalObject> InternalObject::operator_comparison_equal (const std::shared_ptr<InternalObject> param) {
     throw RuntimeError { "object of type '" + get_typename() + "' has no '==' operator" };
 }
 
 /* != */
-std::shared_ptr<InternalObject> InternalObject::operator_comparison_not_equal (const InternalObject* param) {
+std::shared_ptr<InternalObject> InternalObject::operator_comparison_not_equal (const std::shared_ptr<InternalObject> param) {
     throw RuntimeError { "object of type '" + get_typename() + "' has no '!=' operator" };
 }
 
 /* > */
-std::shared_ptr<InternalObject> InternalObject::operator_greater (const InternalObject* param) {
+std::shared_ptr<InternalObject> InternalObject::operator_greater (const std::shared_ptr<InternalObject> param) {
     throw RuntimeError { "object of type '" + get_typename() + "' has no '>' operator" };
 }
 
 /* < */
-std::shared_ptr<InternalObject> InternalObject::operator_less (const InternalObject* param) {
+std::shared_ptr<InternalObject> InternalObject::operator_less (const std::shared_ptr<InternalObject> param) {
     throw RuntimeError { "object of type '" + get_typename() + "' has no '<' operator" };
 }
 
 /* >= */
-std::shared_ptr<InternalObject> InternalObject::operator_greater_equal (const InternalObject* param) {
+std::shared_ptr<InternalObject> InternalObject::operator_greater_equal (const std::shared_ptr<InternalObject> param) {
     throw RuntimeError { "object of type '" + get_typename() + "' has no '>=' operator" };
 }
 
 /* <= */
-std::shared_ptr<InternalObject> InternalObject::operator_less_equal (const InternalObject* param) {
+std::shared_ptr<InternalObject> InternalObject::operator_less_equal (const std::shared_ptr<InternalObject> param) {
     throw RuntimeError { "object of type '" + get_typename() + "' has no '<=' operator" };
 }
 
 /* [] */
-std::shared_ptr<InternalObject> InternalObject::operator_subscript (const InternalObject* param) {
+std::shared_ptr<InternalObject> InternalObject::operator_subscript (const std::shared_ptr<InternalObject> param) {
     throw RuntimeError { "object of type '" + get_typename() + "' has no '[]' operator" };
 }
 

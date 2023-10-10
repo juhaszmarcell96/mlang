@@ -40,12 +40,12 @@ bool Boolean::is_true () const {
     return m_value;
 }
 
-std::shared_ptr<InternalObject> Boolean::operator_comparison_equal (const InternalObject* param) {
+std::shared_ptr<InternalObject> Boolean::operator_comparison_equal (const std::shared_ptr<InternalObject> param) {
     assert_parameter(param, type_name, "==");
     return std::make_shared<Boolean>(m_value == param->is_true());
 }
 
-std::shared_ptr<InternalObject> Boolean::operator_comparison_not_equal (const InternalObject* param) {
+std::shared_ptr<InternalObject> Boolean::operator_comparison_not_equal (const std::shared_ptr<InternalObject> param) {
     assert_parameter(param, type_name, "!=");
     return std::make_shared<Boolean>(m_value != param->is_true());
 }

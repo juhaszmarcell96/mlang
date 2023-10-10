@@ -32,28 +32,28 @@ public:
     virtual const ObjectFactory& get_factory () const = 0;
 
     /* += */
-    virtual void operator_add_equal (const InternalObject* param);
+    virtual void operator_add_equal (const std::shared_ptr<InternalObject> param);
 
     /* -= */
-    virtual void operator_sub_equal (const InternalObject* param);
+    virtual void operator_sub_equal (const std::shared_ptr<InternalObject> param);
 
     /* *= */
-    virtual void operator_mul_equal (const InternalObject* param);
+    virtual void operator_mul_equal (const std::shared_ptr<InternalObject> param);
 
     /* /= */
-    virtual void operator_div_equal (const InternalObject* param);
+    virtual void operator_div_equal (const std::shared_ptr<InternalObject> param);
     
     /* + */
-    virtual std::shared_ptr<InternalObject> operator_binary_add (const InternalObject* param);
+    virtual std::shared_ptr<InternalObject> operator_binary_add (const std::shared_ptr<InternalObject> param);
     
     /* - */
-    virtual std::shared_ptr<InternalObject> operator_binary_sub (const InternalObject* param);
+    virtual std::shared_ptr<InternalObject> operator_binary_sub (const std::shared_ptr<InternalObject> param);
     
     /* * */
-    virtual std::shared_ptr<InternalObject> operator_binary_mul (const InternalObject* param);
+    virtual std::shared_ptr<InternalObject> operator_binary_mul (const std::shared_ptr<InternalObject> param);
     
     /* / */
-    virtual std::shared_ptr<InternalObject> operator_binary_div (const InternalObject* param);
+    virtual std::shared_ptr<InternalObject> operator_binary_div (const std::shared_ptr<InternalObject> param);
 
     /* unary - */
     virtual std::shared_ptr<InternalObject> unary_minus ();
@@ -62,25 +62,25 @@ public:
     virtual std::shared_ptr<InternalObject> unary_not ();
 
     /* == */
-    virtual std::shared_ptr<InternalObject> operator_comparison_equal (const InternalObject* param);
+    virtual std::shared_ptr<InternalObject> operator_comparison_equal (const std::shared_ptr<InternalObject> param);
 
     /* != */
-    virtual std::shared_ptr<InternalObject> operator_comparison_not_equal (const InternalObject* param);
+    virtual std::shared_ptr<InternalObject> operator_comparison_not_equal (const std::shared_ptr<InternalObject> param);
 
     /* > */
-    virtual std::shared_ptr<InternalObject> operator_greater (const InternalObject* param);
+    virtual std::shared_ptr<InternalObject> operator_greater (const std::shared_ptr<InternalObject> param);
 
     /* < */
-    virtual std::shared_ptr<InternalObject> operator_less (const InternalObject* param);
+    virtual std::shared_ptr<InternalObject> operator_less (const std::shared_ptr<InternalObject> param);
 
     /* >= */
-    virtual std::shared_ptr<InternalObject> operator_greater_equal (const InternalObject* param);
+    virtual std::shared_ptr<InternalObject> operator_greater_equal (const std::shared_ptr<InternalObject> param);
 
     /* <= */
-    virtual std::shared_ptr<InternalObject> operator_less_equal (const InternalObject* param);
+    virtual std::shared_ptr<InternalObject> operator_less_equal (const std::shared_ptr<InternalObject> param);
 
     /* [] */
-    virtual std::shared_ptr<InternalObject> operator_subscript (const InternalObject* param);
+    virtual std::shared_ptr<InternalObject> operator_subscript (const std::shared_ptr<InternalObject> param);
 };
 
 class ObjectFactory {

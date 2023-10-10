@@ -43,87 +43,87 @@ bool Number::is_true () const {
     return m_value != 0;
 }
 
-std::shared_ptr<InternalObject> Number::operator_binary_add (const InternalObject* param) {
+std::shared_ptr<InternalObject> Number::operator_binary_add (const std::shared_ptr<InternalObject> param) {
     assert_parameter(param, type_name, "+");
-    const Number* num_ptr = assert_cast<const Number*>(param, type_name);
+    const std::shared_ptr<Number> num_ptr = assert_cast<Number>(param, type_name);
     return std::make_shared<Number>(m_value + num_ptr->m_value);
 }
 
-std::shared_ptr<InternalObject> Number::operator_binary_sub (const InternalObject* param) {
+std::shared_ptr<InternalObject> Number::operator_binary_sub (const std::shared_ptr<InternalObject> param) {
     assert_parameter(param, type_name, "-");
-    const Number* num_ptr = assert_cast<const Number*>(param, type_name);
+    const std::shared_ptr<Number> num_ptr = assert_cast<Number>(param, type_name);
     return std::make_shared<Number>(m_value - num_ptr->m_value);
 }
 
-std::shared_ptr<InternalObject> Number::operator_binary_mul (const InternalObject* param) {
+std::shared_ptr<InternalObject> Number::operator_binary_mul (const std::shared_ptr<InternalObject> param) {
     assert_parameter(param, type_name, "*");
-    const Number* num_ptr = assert_cast<const Number*>(param, type_name);
+    const std::shared_ptr<Number> num_ptr = assert_cast<Number>(param, type_name);
     return std::make_shared<Number>(m_value * num_ptr->m_value);
 }
 
-std::shared_ptr<InternalObject> Number::operator_binary_div (const InternalObject* param) {
+std::shared_ptr<InternalObject> Number::operator_binary_div (const std::shared_ptr<InternalObject> param) {
     assert_parameter(param, type_name, "/");
-    const Number* num_ptr = assert_cast<const Number*>(param, type_name);
+    const std::shared_ptr<Number> num_ptr = assert_cast<Number>(param, type_name);
     return std::make_shared<Number>(m_value / num_ptr->m_value);
 }
 
-void Number::operator_add_equal (const InternalObject* param) {
+void Number::operator_add_equal (const std::shared_ptr<InternalObject> param) {
     assert_parameter(param, type_name, "+=");
-    const Number* num_ptr = assert_cast<const Number*>(param, type_name);
+    const std::shared_ptr<Number> num_ptr = assert_cast<Number>(param, type_name);
     m_value += num_ptr->m_value;
 }
 
-void Number::operator_sub_equal (const InternalObject* param) {
+void Number::operator_sub_equal (const std::shared_ptr<InternalObject> param) {
     assert_parameter(param, type_name, "-=");
-    const Number* num_ptr = assert_cast<const Number*>(param, type_name);
+    const std::shared_ptr<Number> num_ptr = assert_cast<Number>(param, type_name);
     m_value -= num_ptr->m_value;
 }
 
-void Number::operator_mul_equal (const InternalObject* param) {
+void Number::operator_mul_equal (const std::shared_ptr<InternalObject> param) {
     assert_parameter(param, type_name, "*=");
-    const Number* num_ptr = assert_cast<const Number*>(param, type_name);
+    const std::shared_ptr<Number> num_ptr = assert_cast<Number>(param, type_name);
     m_value *= num_ptr->m_value;
 }
 
-void Number::operator_div_equal (const InternalObject* param) {
+void Number::operator_div_equal (const std::shared_ptr<InternalObject> param) {
     assert_parameter(param, type_name, "/=");
-    const Number* num_ptr = assert_cast<const Number*>(param, type_name);
+    const std::shared_ptr<Number> num_ptr = assert_cast<Number>(param, type_name);
     m_value /= num_ptr->m_value;
 }
 
-std::shared_ptr<InternalObject> Number::operator_comparison_equal (const InternalObject* param) {
+std::shared_ptr<InternalObject> Number::operator_comparison_equal (const std::shared_ptr<InternalObject> param) {
     assert_parameter(param, type_name, "==");
-    const Number* num_ptr = assert_cast<const Number*>(param, type_name);
+    const std::shared_ptr<Number> num_ptr = assert_cast<Number>(param, type_name);
     return std::make_shared<Boolean>(m_value == num_ptr->m_value);
 }
 
-std::shared_ptr<InternalObject> Number::operator_comparison_not_equal (const InternalObject* param) {
+std::shared_ptr<InternalObject> Number::operator_comparison_not_equal (const std::shared_ptr<InternalObject> param) {
     assert_parameter(param, type_name, "!=");
-    const Number* num_ptr = assert_cast<const Number*>(param, type_name);
+    const std::shared_ptr<Number> num_ptr = assert_cast<Number>(param, type_name);
     return std::make_shared<Boolean>(m_value != num_ptr->m_value);
 }
 
-std::shared_ptr<InternalObject> Number::operator_greater (const InternalObject* param) {
+std::shared_ptr<InternalObject> Number::operator_greater (const std::shared_ptr<InternalObject> param) {
     assert_parameter(param, type_name, ">");
-    const Number* num_ptr = assert_cast<const Number*>(param, type_name);
+    const std::shared_ptr<Number> num_ptr = assert_cast<Number>(param, type_name);
     return std::make_shared<Boolean>(m_value > num_ptr->m_value);
 }
 
-std::shared_ptr<InternalObject> Number::operator_less (const InternalObject* param) {
+std::shared_ptr<InternalObject> Number::operator_less (const std::shared_ptr<InternalObject> param) {
     assert_parameter(param, type_name, "<");
-    const Number* num_ptr = assert_cast<const Number*>(param, type_name);
+    const std::shared_ptr<Number> num_ptr = assert_cast<Number>(param, type_name);
     return std::make_shared<Boolean>(m_value < num_ptr->m_value);
 }
 
-std::shared_ptr<InternalObject> Number::operator_greater_equal (const InternalObject* param) {
+std::shared_ptr<InternalObject> Number::operator_greater_equal (const std::shared_ptr<InternalObject> param) {
     assert_parameter(param, type_name, ">=");
-    const Number* num_ptr = assert_cast<const Number*>(param, type_name);
+    const std::shared_ptr<Number> num_ptr = assert_cast<Number>(param, type_name);
     return std::make_shared<Boolean>(m_value >= num_ptr->m_value);
 }
 
-std::shared_ptr<InternalObject> Number::operator_less_equal (const InternalObject* param) {
+std::shared_ptr<InternalObject> Number::operator_less_equal (const std::shared_ptr<InternalObject> param) {
     assert_parameter(param, type_name, "<=");
-    const Number* num_ptr = assert_cast<const Number*>(param, type_name);
+    const std::shared_ptr<Number> num_ptr = assert_cast<Number>(param, type_name);
     return std::make_shared<Boolean>(m_value <= num_ptr->m_value);
 }
 

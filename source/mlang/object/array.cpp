@@ -39,7 +39,7 @@ public:
         m_arr.clear();
     }*/
 
-    std::shared_ptr<InternalObject> operator_binary_add (const InternalObject* param) override {
+    std::shared_ptr<InternalObject> operator_binary_add (const std::shared_ptr<InternalObject> param) override {
         assert_parameter(param, type_name, "+");
         const Array* arr_ptr = assert_cast<const Array*>(param, type_name);
         std::vector<std::shared_ptr<Object>> new_arr = m_arr;
@@ -49,7 +49,7 @@ public:
         return std::make_shared<Array>(new_arr, false);
     }
 
-    void operator_add_equal (const InternalObject* param) override {
+    void operator_add_equal (const std::shared_ptr<InternalObject> param) override {
         assert_parameter(param, type_name, "+=");
         const Array* arr_ptr = assert_cast<const Array*>(param, type_name);
         for (const auto elem : arr_ptr->get()) {
@@ -57,7 +57,7 @@ public:
         }
     }
 
-    std::shared_ptr<InternalObject> operator_comparison_equal (const InternalObject* param) override {
+    std::shared_ptr<InternalObject> operator_comparison_equal (const std::shared_ptr<InternalObject> param) override {
         assert_parameter(param, type_name, "==");
         const Array* arr_ptr = assert_cast<const Array*>(param, type_name);
         const std::vector<std::shared_ptr<Object>>& other_arr = arr_ptr->get();
@@ -72,7 +72,7 @@ public:
         return std::make_shared<Boolean>(true, false);
     }
 
-    std::shared_ptr<InternalObject> operator_comparison_not_equal (const InternalObject* param) override {
+    std::shared_ptr<InternalObject> operator_comparison_not_equal (const std::shared_ptr<InternalObject> param) override {
         assert_parameter(param, type_name, "!=");
         const Array* arr_ptr = assert_cast<const Array*>(param, type_name);
         const std::vector<std::shared_ptr<Object>>& other_arr = arr_ptr->get();
@@ -87,7 +87,7 @@ public:
         return std::make_shared<Boolean>(false, false);
     }
 
-    std::shared_ptr<InternalObject> operator_subscript (const InternalObject* param) override {
+    std::shared_ptr<InternalObject> operator_subscript (const std::shared_ptr<InternalObject> param) override {
         assert_parameter(param, type_name, "[]");
         std::size_t index = static_cast<std::size_t>(param->get_number());
         return m_arr[index];

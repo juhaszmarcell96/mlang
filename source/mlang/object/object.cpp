@@ -37,76 +37,76 @@ std::string Object::get_string () const { return m_object->get_string(); }
 /* += */
 Object& Object::operator_add_equal (const Object& rhs, const ObjectFactory& factory) {
     m_object = factory.create();
-    m_object->operator_add_equal(rhs.m_object.get());
+    m_object->operator_add_equal(rhs.m_object);
     return *this;
 }
 
 /* -= */
 Object& Object::operator_sub_equal (const Object& rhs, const ObjectFactory& factory) {
     m_object = factory.create();
-    m_object->operator_sub_equal(rhs.m_object.get());
+    m_object->operator_sub_equal(rhs.m_object);
     return *this;
 }
 
 /* *= */
 Object& Object::operator_mul_equal (const Object& rhs, const ObjectFactory& factory) {
     m_object = factory.create();
-    m_object->operator_mul_equal(rhs.m_object.get());
+    m_object->operator_mul_equal(rhs.m_object);
     return *this;
 }
 
 /* /= */
 Object& Object::operator_div_equal (const Object& rhs, const ObjectFactory& factory) {
     m_object = factory.create();
-    m_object->operator_div_equal(rhs.m_object.get());
+    m_object->operator_div_equal(rhs.m_object);
     return *this;
 }
 
 /* + */
 Object Object::operator_binary_add (const Object& rhs) {
     Object ret { false };
-    ret.m_object = m_object->operator_binary_add(rhs.m_object.get());
+    ret.m_object = m_object->operator_binary_add(rhs.m_object);
     return ret;
 }
 Object Object::operator+(const Object& rhs) const {
     Object ret { false };
-    ret.m_object = m_object->operator_binary_add(rhs.m_object.get());
+    ret.m_object = m_object->operator_binary_add(rhs.m_object);
     return ret;
 }
 
 /* - */
 Object Object::operator_binary_sub (const Object& rhs) {
     Object ret { false };
-    ret.m_object = m_object->operator_binary_sub(rhs.m_object.get());
+    ret.m_object = m_object->operator_binary_sub(rhs.m_object);
     return ret;
 }
 Object Object::operator-(const Object& rhs) const {
     Object ret { false };
-    ret.m_object = m_object->operator_binary_sub(rhs.m_object.get());
+    ret.m_object = m_object->operator_binary_sub(rhs.m_object);
     return ret;
 }
 
 /* * */
 Object Object::operator_binary_mul (const Object& rhs) {
     Object ret { false };
-    ret.m_object = m_object->operator_binary_mul(rhs.m_object.get());
+    ret.m_object = m_object->operator_binary_mul(rhs.m_object);
     return ret;
 }
 Object Object::operator*(const Object& rhs) const {
     Object ret { false };
-    ret.m_object = m_object->operator_binary_mul(rhs.m_object.get());
+    ret.m_object = m_object->operator_binary_mul(rhs.m_object);
     return ret;
 }
 
 /* / */
 Object Object::operator_binary_div (const Object& rhs) {
     Object ret { false };
-    ret.m_object = m_object->operator_binary_div(rhs.m_object.get());
+    ret.m_object = m_object->operator_binary_div(rhs.m_object);
     return ret;
 }
 Object Object::operator/(const Object& rhs) const {
     Object ret { false };
-    ret.m_object = m_object->operator_binary_div(rhs.m_object.get());
+    ret.m_object = m_object->operator_binary_div(rhs.m_object);
     return ret;
 }
 
@@ -126,46 +126,46 @@ Object Object::unary_not () {
 
 /* == */
 bool operator==(const Object& lhs, const Object& rhs) {
-    return lhs.m_object->operator_comparison_equal(rhs.m_object.get())->is_true();
+    return lhs.m_object->operator_comparison_equal(rhs.m_object)->is_true();
 }
 Object Object::operator_comparison_equal (const Object& rhs) {
     Object ret { false };
-    ret.m_object = m_object->operator_comparison_equal(rhs.m_object.get());
+    ret.m_object = m_object->operator_comparison_equal(rhs.m_object);
     return ret;
 }
 
 /* != */
 Object Object::operator_comparison_not_equal (const Object& rhs) {
     Object ret { false };
-    ret.m_object = m_object->operator_comparison_not_equal(rhs.m_object.get());
+    ret.m_object = m_object->operator_comparison_not_equal(rhs.m_object);
     return ret;
 }
 
 /* > */
 Object Object::operator_greater (const Object& rhs) {
     Object ret { false };
-    ret.m_object = m_object->operator_greater(rhs.m_object.get());
+    ret.m_object = m_object->operator_greater(rhs.m_object);
     return ret;
 }
 
 /* < */
 Object Object::operator_less (const Object& rhs) {
     Object ret { false };
-    ret.m_object = m_object->operator_less(rhs.m_object.get());
+    ret.m_object = m_object->operator_less(rhs.m_object);
     return ret;
 }
 
 /* >= */
 Object Object::operator_greater_equal (const Object& rhs) {
     Object ret { false };
-    ret.m_object = m_object->operator_greater_equal(rhs.m_object.get());
+    ret.m_object = m_object->operator_greater_equal(rhs.m_object);
     return ret;
 }
 
 /* <= */
 Object Object::operator_less_equal (const Object& rhs) {
     Object ret { false };
-    ret.m_object = m_object->operator_less_equal(rhs.m_object.get());
+    ret.m_object = m_object->operator_less_equal(rhs.m_object);
     return ret;
 }
 

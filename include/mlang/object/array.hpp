@@ -31,15 +31,15 @@ public:
     void destruct () override;
     */
 
-    std::shared_ptr<InternalObject> operator_binary_add (const InternalObject* param) override;
+    std::shared_ptr<InternalObject> operator_binary_add (const std::shared_ptr<InternalObject> param) override;
 
-    void operator_add_equal (const InternalObject* param) override;
+    void operator_add_equal (const std::shared_ptr<InternalObject> param) override;
 
-    std::shared_ptr<InternalObject> operator_comparison_equal (const InternalObject* param) override;
+    std::shared_ptr<InternalObject> operator_comparison_equal (const std::shared_ptr<InternalObject> param) override;
 
-    std::shared_ptr<InternalObject> operator_comparison_not_equal (const InternalObject* param) override;
+    std::shared_ptr<InternalObject> operator_comparison_not_equal (const std::shared_ptr<InternalObject> param) override;
 
-    std::shared_ptr<InternalObject> operator_subscript (const InternalObject* param) override;
+    std::shared_ptr<InternalObject> operator_subscript (const std::shared_ptr<InternalObject> param) override;
 
     std::shared_ptr<InternalObject> reverse ();
 

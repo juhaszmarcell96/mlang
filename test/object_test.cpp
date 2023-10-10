@@ -41,16 +41,34 @@ TEST(ObjectTest, Test1) {
 
     ASSERT_EQ(a.get_typename(), mlang::object::None::type_name);
     ASSERT_EQ(b.get_typename(), mlang::object::Number::type_name);
-    ASSERT_EQ(b.get_number(), 5);
+    ASSERT_EQ(b.get_number(), 3);
     ASSERT_EQ(c.get_typename(), mlang::object::Number::type_name);
     ASSERT_EQ(c.get_number(), 5);
 
-    a.assign(c);
+    a.assign(c.operator_binary_add(b));
 
     ASSERT_EQ(a.get_typename(), mlang::object::Number::type_name);
     ASSERT_EQ(b.get_typename(), mlang::object::Number::type_name);
     ASSERT_EQ(c.get_typename(), mlang::object::Number::type_name);
-    ASSERT_EQ(a.get_number(), 5);
-    ASSERT_EQ(b.get_number(), 0);
+    ASSERT_EQ(a.get_number(), 8);
+    ASSERT_EQ(b.get_number(), 3);
+    ASSERT_EQ(c.get_number(), 5);
+
+    a.assign(c.operator_comparison_equal(b));
+
+    ASSERT_EQ(a.get_typename(), mlang::object::Boolean::type_name);
+    ASSERT_EQ(b.get_typename(), mlang::object::Number::type_name);
+    ASSERT_EQ(c.get_typename(), mlang::object::Number::type_name);
+    ASSERT_EQ(a.is_true(), false);
+    ASSERT_EQ(b.get_number(), 3);
+    ASSERT_EQ(c.get_number(), 5);
+
+    a.assign(c.operator_comparison_not_equal(b));
+
+    ASSERT_EQ(a.get_typename(), mlang::object::Boolean::type_name);
+    ASSERT_EQ(b.get_typename(), mlang::object::Number::type_name);
+    ASSERT_EQ(c.get_typename(), mlang::object::Number::type_name);
+    ASSERT_EQ(a.is_true(), true);
+    ASSERT_EQ(b.get_number(), 3);
     ASSERT_EQ(c.get_number(), 5);
 }

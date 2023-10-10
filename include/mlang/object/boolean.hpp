@@ -30,8 +30,8 @@ public:
 
     bool is_true () const override;
 
-    std::shared_ptr<InternalObject> operator_comparison_equal (const InternalObject* param) override;
-    std::shared_ptr<InternalObject> operator_comparison_not_equal (const InternalObject* param);
+    std::shared_ptr<InternalObject> operator_comparison_equal (const std::shared_ptr<InternalObject> param) override;
+    std::shared_ptr<InternalObject> operator_comparison_not_equal (const std::shared_ptr<InternalObject> param);
     std::shared_ptr<InternalObject> unary_not () override;
 
     std::shared_ptr<InternalObject> call (const std::string& func, const std::vector<std::shared_ptr<InternalObject>>& params) override;

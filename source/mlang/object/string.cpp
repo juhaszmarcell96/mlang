@@ -38,27 +38,27 @@ void String::assign (const std::shared_ptr<InternalObject> param) {
     m_value = str_ptr->get();
 }
 
-std::shared_ptr<InternalObject> String::operator_binary_add (const InternalObject* param) {
+std::shared_ptr<InternalObject> String::operator_binary_add (const std::shared_ptr<InternalObject> param) {
     assert_parameter(param, type_name, "+");
-    const String* str_ptr = assert_cast<const String*>(param, type_name);
+    const std::shared_ptr<String> str_ptr = assert_cast<String>(param, type_name);
     return std::make_shared<String>(m_value + str_ptr->get());
 }
 
-void String::operator_add_equal (const InternalObject* param) {
+void String::operator_add_equal (const std::shared_ptr<InternalObject> param) {
     assert_parameter(param, type_name, "+=");
-    const String* str_ptr = assert_cast<const String*>(param, type_name);
+    const std::shared_ptr<String> str_ptr = assert_cast<String>(param, type_name);
     m_value += str_ptr->get();
 }
 
-std::shared_ptr<InternalObject> String::operator_comparison_equal (const InternalObject* param) {
+std::shared_ptr<InternalObject> String::operator_comparison_equal (const std::shared_ptr<InternalObject> param) {
     assert_parameter(param, type_name, "==");
-    const String* str_ptr = assert_cast<const String*>(param, type_name);
+    const std::shared_ptr<String> str_ptr = assert_cast<String>(param, type_name);
     return std::make_shared<Boolean>(m_value == str_ptr->get());
 }
 
-std::shared_ptr<InternalObject> String::operator_comparison_not_equal (const InternalObject* param) {
+std::shared_ptr<InternalObject> String::operator_comparison_not_equal (const std::shared_ptr<InternalObject> param) {
     assert_parameter(param, type_name, "!=");
-    const String* str_ptr = assert_cast<const String*>(param, type_name);
+    const std::shared_ptr<String> str_ptr = assert_cast<String>(param, type_name);
     return std::make_shared<Boolean>(m_value != str_ptr->get());
 }
 

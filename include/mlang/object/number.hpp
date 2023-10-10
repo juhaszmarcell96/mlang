@@ -30,22 +30,22 @@ public:
 
     bool is_true () const override;
 
-    std::shared_ptr<InternalObject> operator_binary_add (const InternalObject* param) override;
-    std::shared_ptr<InternalObject> operator_binary_sub (const InternalObject* param) override;
-    std::shared_ptr<InternalObject> operator_binary_mul (const InternalObject* param) override;
-    std::shared_ptr<InternalObject> operator_binary_div (const InternalObject* param) override;
+    std::shared_ptr<InternalObject> operator_binary_add (const std::shared_ptr<InternalObject> param) override;
+    std::shared_ptr<InternalObject> operator_binary_sub (const std::shared_ptr<InternalObject> param) override;
+    std::shared_ptr<InternalObject> operator_binary_mul (const std::shared_ptr<InternalObject> param) override;
+    std::shared_ptr<InternalObject> operator_binary_div (const std::shared_ptr<InternalObject> param) override;
 
-    void operator_add_equal (const InternalObject* param) override;
-    void operator_sub_equal (const InternalObject* param) override;
-    void operator_mul_equal (const InternalObject* param) override;
-    void operator_div_equal (const InternalObject* param) override;
+    void operator_add_equal (const std::shared_ptr<InternalObject> param) override;
+    void operator_sub_equal (const std::shared_ptr<InternalObject> param) override;
+    void operator_mul_equal (const std::shared_ptr<InternalObject> param) override;
+    void operator_div_equal (const std::shared_ptr<InternalObject> param) override;
 
-    std::shared_ptr<InternalObject> operator_comparison_equal (const InternalObject* param) override;
-    std::shared_ptr<InternalObject> operator_comparison_not_equal (const InternalObject* param) override;
-    std::shared_ptr<InternalObject> operator_greater (const InternalObject* param) override;
-    std::shared_ptr<InternalObject> operator_less (const InternalObject* param) override;
-    std::shared_ptr<InternalObject> operator_greater_equal (const InternalObject* param) override;
-    std::shared_ptr<InternalObject> operator_less_equal (const InternalObject* param) override;
+    std::shared_ptr<InternalObject> operator_comparison_equal (const std::shared_ptr<InternalObject> param) override;
+    std::shared_ptr<InternalObject> operator_comparison_not_equal (const std::shared_ptr<InternalObject> param) override;
+    std::shared_ptr<InternalObject> operator_greater (const std::shared_ptr<InternalObject> param) override;
+    std::shared_ptr<InternalObject> operator_less (const std::shared_ptr<InternalObject> param) override;
+    std::shared_ptr<InternalObject> operator_greater_equal (const std::shared_ptr<InternalObject> param) override;
+    std::shared_ptr<InternalObject> operator_less_equal (const std::shared_ptr<InternalObject> param) override;
 
     std::shared_ptr<InternalObject> unary_minus () override;
     std::shared_ptr<InternalObject> unary_not () override;

@@ -24,18 +24,7 @@ const std::shared_ptr<T> assert_cast (const std::shared_ptr<InternalObject> obj,
     return ptr;
 }
 
-template<typename T>
-T assert_cast (const InternalObject* obj, const std::string& type) {
-    T ptr = dynamic_cast<T>(obj);
-    if (!ptr) { throw RuntimeError { "parameter must be of type '" + type + "'" }; }
-    return ptr;
-}
-
 inline void assert_parameter (const std::shared_ptr<InternalObject> obj, const std::string& type, const std::string& function) {
-    if (!obj) { throw RuntimeError { "argument in member function '" + function + "' on object of type '" + type + "' is null" }; }
-}
-
-inline void assert_parameter (const InternalObject* obj, const std::string& type, const std::string& function) {
     if (!obj) { throw RuntimeError { "argument in member function '" + function + "' on object of type '" + type + "' is null" }; }
 }
 
