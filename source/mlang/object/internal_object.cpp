@@ -95,7 +95,7 @@ std::shared_ptr<InternalObject> InternalObject::operator_less_equal (const std::
 }
 
 /* [] */
-std::shared_ptr<InternalObject> InternalObject::operator_subscript (const std::shared_ptr<InternalObject> param) {
+Object& InternalObject::operator_subscript (const std::shared_ptr<InternalObject> param) {
     throw RuntimeError { "object of type '" + get_typename() + "' has no '[]' operator" };
 }
 

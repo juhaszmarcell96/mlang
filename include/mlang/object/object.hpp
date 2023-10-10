@@ -40,16 +40,16 @@ public:
     std::string get_string () const;
 
     /* += */
-    Object& operator_add_equal (const Object& rhs, const ObjectFactory& factory);
+    Object& operator_add_equal (const Object& rhs);
 
     /* -= */
-    Object& operator_sub_equal (const Object& rhs, const ObjectFactory& factory);
+    Object& operator_sub_equal (const Object& rhs);
 
     /* *= */
-    Object& operator_mul_equal (const Object& rhs, const ObjectFactory& factory);
+    Object& operator_mul_equal (const Object& rhs);
 
     /* /= */
-    Object& operator_div_equal (const Object& rhs, const ObjectFactory& factory);
+    Object& operator_div_equal (const Object& rhs);
     
     /* + */
     Object operator_binary_add (const Object& rhs);
@@ -93,7 +93,7 @@ public:
     Object operator_less_equal (const Object& rhs);
 
     /* [] */
-    Object operator_subscript (const Object& param);
+    Object& operator_subscript (const Object& param);
 };
 
 } /* namespace object */

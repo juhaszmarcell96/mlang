@@ -14,7 +14,7 @@ const ObjectFactory& Object::get_factory () const {
 }
 
 Object Object::call (const std::string& func, const std::vector<Object>& params) {
-    
+    /* TODO */
 }
 
 void Object::construct (const std::vector<Object>& params) {
@@ -35,29 +35,29 @@ double Object::get_number () const { return m_object->get_number(); }
 std::string Object::get_string () const { return m_object->get_string(); }
 
 /* += */
-Object& Object::operator_add_equal (const Object& rhs, const ObjectFactory& factory) {
-    m_object = factory.create();
+Object& Object::operator_add_equal (const Object& rhs) {
+    m_object = rhs.get_factory().create();
     m_object->operator_add_equal(rhs.m_object);
     return *this;
 }
 
 /* -= */
-Object& Object::operator_sub_equal (const Object& rhs, const ObjectFactory& factory) {
-    m_object = factory.create();
+Object& Object::operator_sub_equal (const Object& rhs) {
+    m_object = rhs.get_factory().create();
     m_object->operator_sub_equal(rhs.m_object);
     return *this;
 }
 
 /* *= */
-Object& Object::operator_mul_equal (const Object& rhs, const ObjectFactory& factory) {
-    m_object = factory.create();
+Object& Object::operator_mul_equal (const Object& rhs) {
+    m_object = rhs.get_factory().create();
     m_object->operator_mul_equal(rhs.m_object);
     return *this;
 }
 
 /* /= */
-Object& Object::operator_div_equal (const Object& rhs, const ObjectFactory& factory) {
-    m_object = factory.create();
+Object& Object::operator_div_equal (const Object& rhs) {
+    m_object = rhs.get_factory().create();
     m_object->operator_div_equal(rhs.m_object);
     return *this;
 }
@@ -170,10 +170,8 @@ Object Object::operator_less_equal (const Object& rhs) {
 }
 
 /* [] */
-Object Object::operator_subscript (const Object& param) {
-    /* TODO */
-    return Object {};
-    //return m_object->operator_subscript(param);
+Object& Object::operator_subscript (const Object& param) {
+    return m_object->operator_subscript(param.m_object);
 }
 
 } /* namespace object */

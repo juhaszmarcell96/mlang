@@ -6,11 +6,11 @@
 #include "mlang/object/number.hpp"
 #include "mlang/object/string.hpp"
 #include "mlang/object/boolean.hpp"
+#include "mlang/object/array.hpp"
 #include "mlang/object/none.hpp"
 #include "mlang/environment.hpp"
 
 TEST(ObjectTest, Test0) {
-    mlang::EnvStack env {};
     
     mlang::object::Object a {};
     mlang::object::Object b { mlang::Environment::get_factory(mlang::object::Number::type_name) };
@@ -33,7 +33,6 @@ TEST(ObjectTest, Test0) {
 }
 
 TEST(ObjectTest, Test1) {
-    mlang::EnvStack env {};
     
     mlang::object::Object a {};
     mlang::object::Object b { std::make_shared<mlang::object::Number>(3) };
@@ -71,4 +70,40 @@ TEST(ObjectTest, Test1) {
     ASSERT_EQ(a.is_true(), true);
     ASSERT_EQ(b.get_number(), 3);
     ASSERT_EQ(c.get_number(), 5);
+}
+
+TEST(ObjectTest, Test2) {
+    mlang::EnvStack env {};
+    env.declare_variable("a", mlang::object::None::type_name);
+    mlang::object::Object b { std::make_shared<mlang::object::Number>(3) };
+
+    ASSERT_EQ(env.has_variable("a"), true);
+    ASSERT_EQ(env.get_variable("a").get_typename(), mlang::object::None::type_name);
+    ASSERT_EQ(b.get_typename(), mlang::object::Number::type_name);
+    ASSERT_EQ(b.get_number(), 3);
+
+    env.get_variable("a").assign(b);
+
+    ASSERT_EQ(env.has_variable("a"), true);
+    ASSERT_EQ(env.get_variable("a").get_typename(), mlang::object::Number::type_name);
+    ASSERT_EQ(env.get_variable("a").get_number(), 3);
+    ASSERT_EQ(b.get_typename(), mlang::object::Number::type_name);
+    ASSERT_EQ(b.get_number(), 3);
+}
+
+TEST(ObjectTest, Test3) {
+    mlang::object::Object a {};
+    mlang::object::Object b { std::make_shared<mlang::object::Number>(3) };
+    mlang::object::Object c { std::make_shared<mlang::object::Number>(5) };
+    mlang::object::Object arr { std::make_shared<mlang::object::Array>(std::vector<mlang::object::Object>{a, b, c}) };
+
+    mlang::object::Object one { std::make_shared<mlang::object::Number>(1) };
+    mlang::object::Object index { std::make_shared<mlang::object::Number>(0) };
+
+    ASSERT_EQ(arr.get_typename(), mlang::object::Array::type_name);
+    ASSERT_EQ(arr.operator_subscript(index).get_typename(), mlang::object::None::type_name);
+    index.operator_add_equal(one);
+    ASSERT_EQ(arr.operator_subscript(index).get_typename(), mlang::object::Number::type_name);
+    index.operator_add_equal(one);
+    ASSERT_EQ(arr.operator_subscript(index).get_typename(), mlang::object::Number::type_name);
 }

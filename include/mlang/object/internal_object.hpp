@@ -11,6 +11,7 @@ namespace mlang {
 namespace object {
 
 class ObjectFactory;
+class Object;
 
 class InternalObject {
 public:
@@ -80,7 +81,7 @@ public:
     virtual std::shared_ptr<InternalObject> operator_less_equal (const std::shared_ptr<InternalObject> param);
 
     /* [] */
-    virtual std::shared_ptr<InternalObject> operator_subscript (const std::shared_ptr<InternalObject> param);
+    virtual Object& operator_subscript (const std::shared_ptr<InternalObject> param);
 };
 
 class ObjectFactory {

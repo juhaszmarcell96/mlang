@@ -33,7 +33,7 @@ const ObjectFactory& Boolean::get_factory () const {
 }*/
 void Boolean::assign (const std::shared_ptr<InternalObject> param) {
     const std::shared_ptr<Boolean> bool_ptr = assert_cast<Boolean>(param, type_name);
-    m_value = bool_ptr->get();
+    m_value = bool_ptr->m_value;
 }
 
 bool Boolean::is_true () const {

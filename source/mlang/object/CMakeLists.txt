@@ -11,7 +11,7 @@ add_library(
     boolean.cpp
     number.cpp
     string.cpp
-    #array.cpp
+    array.cpp
 )
 
 target_include_directories(
@@ -33,6 +33,7 @@ set(
     mlang/object/boolean.hpp
     mlang/object/number.hpp
     mlang/object/string.hpp
+    mlang/object/array.hpp
     mlang/object/assert.hpp
 )
 
