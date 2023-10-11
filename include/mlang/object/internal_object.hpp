@@ -62,6 +62,12 @@ public:
     /* unary ! */
     virtual std::shared_ptr<InternalObject> unary_not ();
 
+    /* ++ */
+    virtual void increment ();
+
+    /* -- */
+    virtual void decrement ();
+
     /* == */
     virtual std::shared_ptr<InternalObject> operator_comparison_equal (const std::shared_ptr<InternalObject> param);
 

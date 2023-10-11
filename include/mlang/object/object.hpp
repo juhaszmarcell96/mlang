@@ -73,6 +73,18 @@ public:
     /* unary ! */
     Object unary_not ();
 
+    /* postfix ++ */
+    Object postfix_increment ();
+
+    /* postfix -- */
+    Object postfix_decrement ();
+
+    /* prefix ++ */
+    Object& prefix_increment ();
+    
+    /* prefix -- */
+    Object& prefix_decrement ();
+
     /* == */
     friend bool operator==(const Object& lhs, const Object& rhs);
     Object operator_comparison_equal (const Object& rhs);

@@ -64,6 +64,16 @@ std::shared_ptr<InternalObject> InternalObject::unary_not () {
     throw RuntimeError { "object of type '" + get_typename() + "' has no 'unary !' operator" };
 }
 
+/* postfix ++ */
+void InternalObject::increment () {
+    throw RuntimeError { "object of type '" + get_typename() + "' has no 'increment' operator" };
+}
+
+/* postfix -- */
+void InternalObject::decrement () {
+    throw RuntimeError { "object of type '" + get_typename() + "' has no 'decrement' operator" };
+}
+
 /* == */
 std::shared_ptr<InternalObject> InternalObject::operator_comparison_equal (const std::shared_ptr<InternalObject> param) {
     throw RuntimeError { "object of type '" + get_typename() + "' has no '==' operator" };

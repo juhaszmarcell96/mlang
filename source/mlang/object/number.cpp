@@ -135,6 +135,9 @@ std::shared_ptr<InternalObject> Number::unary_not () {
     return std::make_shared<Boolean>(!m_value);
 }
 
+void Number::increment () { ++m_value; }
+
+void Number::decrement () { --m_value; }
 
 std::shared_ptr<InternalObject> Number::call (const std::string& func, const std::vector<std::shared_ptr<InternalObject>>& params) {
     throw RuntimeError { "object of type '" + type_name + "' has no '" + func + "' member function" };

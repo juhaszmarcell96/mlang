@@ -104,6 +104,43 @@ TEST(ObjectTest, Test3) {
     ASSERT_EQ(arr.operator_subscript(index).get_typename(), mlang::object::None::type_name);
     index.operator_add_equal(one);
     ASSERT_EQ(arr.operator_subscript(index).get_typename(), mlang::object::Number::type_name);
-    index.operator_add_equal(one);
+    index.postfix_increment();
     ASSERT_EQ(arr.operator_subscript(index).get_typename(), mlang::object::Number::type_name);
+}
+
+TEST(ObjectTest, Test4) {
+    mlang::object::Object a { std::make_shared<mlang::object::Number>(1) };
+    mlang::object::Object b { std::make_shared<mlang::object::Number>(3) };
+    mlang::object::Object c { std::make_shared<mlang::object::Number>(5) };
+    mlang::object::Object arr { std::make_shared<mlang::object::Array>(std::vector<mlang::object::Object>{a, b, c}) };
+
+    mlang::object::Object index { std::make_shared<mlang::object::Number>(0) };
+
+    ASSERT_EQ(arr.get_typename(), mlang::object::Array::type_name);
+    ASSERT_EQ(arr.operator_subscript(index).get_typename(), mlang::object::Number::type_name);
+    ASSERT_EQ(arr.operator_subscript(index).get_number(), 1);
+    ASSERT_EQ(arr.operator_subscript(index.postfix_increment()).get_typename(), mlang::object::Number::type_name);
+    ASSERT_EQ(arr.operator_subscript(index).get_number(), 3);
+    ASSERT_EQ(arr.operator_subscript(index).get_typename(), mlang::object::Number::type_name);
+    ASSERT_EQ(arr.operator_subscript(index).get_number(), 3);
+    ASSERT_EQ(arr.operator_subscript(index.prefix_increment()).get_typename(), mlang::object::Number::type_name);
+    ASSERT_EQ(arr.operator_subscript(index).get_number(), 5);
+
+    arr.operator_subscript(index).postfix_increment();
+    ASSERT_EQ(arr.operator_subscript(index).get_number(), 6);
+}
+
+TEST(ObjectTest, Test5) {
+    mlang::object::Object a { std::make_shared<mlang::object::Number>(1) };
+
+    ASSERT_EQ(a.get_typename(), mlang::object::Number::type_name);
+    ASSERT_EQ(a.get_number(), 1);
+    ASSERT_EQ(a.postfix_increment().get_number(), 1);
+    ASSERT_EQ(a.get_number(), 2);
+    ASSERT_EQ(a.prefix_increment().get_number(), 3);
+    ASSERT_EQ(a.get_number(), 3);
+    ASSERT_EQ(a.prefix_decrement().get_number(), 2);
+    ASSERT_EQ(a.get_number(), 2);
+    ASSERT_EQ(a.postfix_decrement().get_number(), 2);
+    ASSERT_EQ(a.get_number(), 1);
 }

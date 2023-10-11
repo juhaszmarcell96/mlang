@@ -124,6 +124,34 @@ Object Object::unary_not () {
     return ret;
 }
 
+/* postfix ++ */
+Object Object::postfix_increment () {
+    Object ret { false };
+    ret.assign(*this);
+    m_object->increment();
+    return ret;
+}
+
+/* postfix -- */
+Object Object::postfix_decrement () {
+    Object ret { false };
+    ret.assign(*this);
+    m_object->decrement();
+    return ret;
+}
+
+/* prefix ++ */
+Object& Object::prefix_increment () {
+    m_object->increment();
+    return *this;
+}
+
+/* prefix -- */
+Object& Object::prefix_decrement () {
+    m_object->decrement();
+    return *this;
+}
+
 /* == */
 bool operator==(const Object& lhs, const Object& rhs) {
     return lhs.m_object->operator_comparison_equal(rhs.m_object)->is_true();

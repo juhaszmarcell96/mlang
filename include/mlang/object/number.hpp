@@ -50,6 +50,8 @@ public:
     std::shared_ptr<InternalObject> unary_minus () override;
     std::shared_ptr<InternalObject> unary_not () override;
 
+    virtual void increment () override;
+    virtual void decrement () override;
 
     std::shared_ptr<InternalObject> call (const std::string& func, const std::vector<std::shared_ptr<InternalObject>>& params) override;
 
