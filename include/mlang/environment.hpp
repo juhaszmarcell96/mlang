@@ -6,8 +6,9 @@
 #include "mlang/object/string.hpp"
 #include "mlang/object/boolean.hpp"
 //#include "mlang/object/array.hpp"
-#include "mlang/function.hpp"
+//#include "mlang/function.hpp"
 #include "mlang/exception.hpp"
+#include "mlang/ast/function.hpp"
 
 #include <map>
 #include <stack>
@@ -27,7 +28,7 @@ private:
                                                                                           //{ object::Array::type_name, std::make_shared<object::ArrayFactory>() },
                                                                                           { object::String::type_name, std::make_shared<object::StringFactory>() }   };
     std::map<std::string, object::Object> m_variables;
-    std::map<std::string, std::shared_ptr<Function>> m_functions;
+    std::map<std::string, const ast::Function*> m_functions;
 
     Environment* m_parent { nullptr };
 public:
@@ -110,16 +111,16 @@ public:
         else { return false; }
     }
 
-    void declare_function (const std::string& function_name, const FunctionDeclNode* function) {
+    void declare_function (const std::string& function_name, const ast::Function* function) {
         if (has_function(function_name)) {
             throw RuntimeError{"function " + function_name + " already exists"};
         }
-        m_functions[function_name] = std::make_shared<Function>(function);
+        m_functions[function_name] = function;
     }
 
-    Function* get_function (const std::string& function_name) {
+    const ast::Function* get_function (const std::string& function_name) {
         if (m_functions.count(function_name) != 0) {
-            return m_functions[function_name].get();
+            return m_functions[function_name];
         }
         else if (m_parent != nullptr) {
             return m_parent->get_function(function_name);
@@ -169,11 +170,11 @@ public:
         return m_env_stack.top()->has_function(function_name);
     }
 
-    void declare_function (const std::string& function_name, const FunctionDeclNode* function) {
+    void declare_function (const std::string& function_name, const ast::Function* function) {
         m_env_stack.top()->declare_function(function_name, function);
     }
 
-    Function* get_function (const std::string& function_name) {
+    const ast::Function* get_function (const std::string& function_name) {
         return m_env_stack.top()->get_function(function_name);
     }
 };

@@ -144,3 +144,18 @@ TEST(ObjectTest, Test5) {
     ASSERT_EQ(a.postfix_decrement().get_number(), 2);
     ASSERT_EQ(a.get_number(), 1);
 }
+
+TEST(ObjectTest, Test6) {
+    mlang::object::Object a { std::make_shared<mlang::object::String>("asdfgh") };
+    mlang::object::Object b { std::make_shared<mlang::object::String>("jkl") };
+
+    ASSERT_EQ(a.get_typename(), mlang::object::String::type_name);
+    ASSERT_EQ(a.get_string(), "asdfgh");
+    ASSERT_EQ(a.call("length", std::vector<mlang::object::Object>{}).get_number(), 6);
+
+    a.operator_add_equal(b);
+
+    ASSERT_EQ(a.get_typename(), mlang::object::String::type_name);
+    ASSERT_EQ(a.get_string(), "asdfghjkl");
+    ASSERT_EQ(a.call("length", std::vector<mlang::object::Object>{}).get_number(), 9);
+}

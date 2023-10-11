@@ -1,4 +1,5 @@
 #include "mlang/object/string.hpp"
+#include "mlang/object/number.hpp"
 #include "mlang/object/assert.hpp"
 
 namespace mlang {
@@ -68,10 +69,17 @@ std::shared_ptr<InternalObject> String::reverse () {
     return std::make_shared<String>(reversed);
 }
 
+std::shared_ptr<InternalObject> String::length () {
+    return std::make_shared<Number>(m_value.length());
+}
+
 
 std::shared_ptr<InternalObject> String::call (const std::string& func, const std::vector<std::shared_ptr<InternalObject>>& params) {
     if (func.compare("reverse") == 0) {
         return reverse();
+    }
+    else if (func.compare("length") == 0) {
+        return length();
     }
     else {
         throw RuntimeError { "string object has no " + func + " member function" };

@@ -7,7 +7,7 @@ namespace mlang {
 namespace object {
 
 Number::Number (const double value) : m_value(value) {}
-Number::Number (const int value) : m_value(value) {}
+//Number::Number (const int value) : m_value(value) {}
 
 const ObjectFactory& Number::get_factory () const {
     static NumberFactory factory{};

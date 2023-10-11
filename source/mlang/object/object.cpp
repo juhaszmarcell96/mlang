@@ -14,7 +14,11 @@ const ObjectFactory& Object::get_factory () const {
 }
 
 Object Object::call (const std::string& func, const std::vector<Object>& params) {
-    /* TODO */
+    std::vector<std::shared_ptr<InternalObject>> internal_params;
+    for (const Object& o : params) {
+        internal_params.push_back(o.m_object);
+    }
+    return Object { m_object->call(func, internal_params) };
 }
 
 void Object::construct (const std::vector<Object>& params) {
@@ -36,28 +40,24 @@ std::string Object::get_string () const { return m_object->get_string(); }
 
 /* += */
 Object& Object::operator_add_equal (const Object& rhs) {
-    m_object = rhs.get_factory().create();
     m_object->operator_add_equal(rhs.m_object);
     return *this;
 }
 
 /* -= */
 Object& Object::operator_sub_equal (const Object& rhs) {
-    m_object = rhs.get_factory().create();
     m_object->operator_sub_equal(rhs.m_object);
     return *this;
 }
 
 /* *= */
 Object& Object::operator_mul_equal (const Object& rhs) {
-    m_object = rhs.get_factory().create();
     m_object->operator_mul_equal(rhs.m_object);
     return *this;
 }
 
 /* /= */
 Object& Object::operator_div_equal (const Object& rhs) {
-    m_object = rhs.get_factory().create();
     m_object->operator_div_equal(rhs.m_object);
     return *this;
 }

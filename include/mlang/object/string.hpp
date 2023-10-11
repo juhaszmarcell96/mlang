@@ -38,7 +38,7 @@ public:
     std::shared_ptr<InternalObject> operator_comparison_not_equal (const std::shared_ptr<InternalObject> param) override;
 
     std::shared_ptr<InternalObject> reverse ();
-
+    std::shared_ptr<InternalObject> length ();
 
     std::shared_ptr<InternalObject> call (const std::string& func, const std::vector<std::shared_ptr<InternalObject>>& params) override;
 

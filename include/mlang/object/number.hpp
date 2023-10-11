@@ -14,7 +14,7 @@ private:
 public:
     Number () = default;
     Number (const double value);
-    Number (const int value);
+    //Number (const int value);
     ~Number () = default;
     
     const static inline std::string type_name { "Number" };
