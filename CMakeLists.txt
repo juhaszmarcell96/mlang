@@ -16,4 +16,4 @@ add_subdirectory(source bin)
 link_directories(${CMAKE_CURRENT_SOURCE_DIR}/bin)
 
 add_subdirectory (test)
-#add_subdirectory (examples)
+add_subdirectory (examples)

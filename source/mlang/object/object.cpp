@@ -1,5 +1,6 @@
 #include "mlang/object/object.hpp"
 #include "mlang/object/assert.hpp"
+#include "mlang/object/boolean.hpp"
 
 namespace mlang {
 namespace object {
@@ -200,6 +201,18 @@ Object Object::operator_less_equal (const Object& rhs) {
 /* [] */
 Object& Object::operator_subscript (const Object& param) {
     return m_object->operator_subscript(param.m_object);
+}
+
+/* && */
+Object Object::operator_binary_and (const Object& rhs) {
+    bool value = is_true() && rhs.is_true();
+    return Object { std::make_shared<Boolean>(value) };
+}
+
+/* || */
+Object Object::operator_binary_or (const Object& rhs) {
+    bool value = is_true() || rhs.is_true();
+    return Object { std::make_shared<Boolean>(value) };
 }
 
 } /* namespace object */

@@ -5,6 +5,7 @@ set (CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_library(
     ast_obj OBJECT
+    array_node.cpp
     assignment.cpp
     binary_operations.cpp
     block_node.cpp
@@ -17,6 +18,7 @@ add_library(
     func_call_node.cpp
     func_decl_node.cpp
     if_node.cpp
+    logic_operations.cpp
     main_node.cpp
     member_function.cpp
     print_node.cpp
@@ -41,6 +43,7 @@ target_include_directories(
 
 set(
     AST_INCLUDE_FILES
+    mlang/ast/array_node.hpp
     mlang/ast/assignment.hpp
     mlang/ast/binary_operations.hpp
     mlang/ast/block_node.hpp
@@ -54,6 +57,7 @@ set(
     mlang/ast/func_call_node.hpp
     mlang/ast/func_decl_node.hpp
     mlang/ast/if_node.hpp
+    mlang/ast/logic_operations.hpp
     mlang/ast/main_node.hpp
     mlang/ast/member_function.hpp
     mlang/ast/node.hpp

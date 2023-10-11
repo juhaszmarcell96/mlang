@@ -18,14 +18,14 @@ object::Object AssignmentNode::execute (EnvStack& env) const {
     object::Object lhs = m_left->execute(env);
     object::Object rhs = m_right->execute(env);
     switch (m_mode) {
-        case assignment_mode::simple : { lhs.assign(rhs); }
-        case assignment_mode::add    : { lhs.operator_add_equal(rhs); }
-        case assignment_mode::sub    : { lhs.operator_sub_equal(rhs); }
-        case assignment_mode::mul    : { lhs.operator_mul_equal(rhs); }
-        case assignment_mode::div    : { lhs.operator_div_equal(rhs); }
-        default : { break; }
+        case assignment_mode::simple : { lhs.assign(rhs); break; }
+        case assignment_mode::add    : { lhs.operator_add_equal(rhs); break; }
+        case assignment_mode::sub    : { lhs.operator_sub_equal(rhs); break; }
+        case assignment_mode::mul    : { lhs.operator_mul_equal(rhs); break; }
+        case assignment_mode::div    : { lhs.operator_div_equal(rhs); break; }
+        default : { throw RuntimeError{"invalid assignment operator type"}; }
     }
-    throw RuntimeError{"invalid assignment operator type"};
+    return object::Object {};
 }
 
 void AssignmentNode::print () const {

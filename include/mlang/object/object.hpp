@@ -81,7 +81,7 @@ public:
 
     /* prefix ++ */
     Object& prefix_increment ();
-    
+
     /* prefix -- */
     Object& prefix_decrement ();
 
@@ -106,6 +106,12 @@ public:
 
     /* [] */
     Object& operator_subscript (const Object& param);
+
+    /* && */
+    Object operator_binary_and (const Object& rhs);
+
+    /* || */
+    Object operator_binary_or (const Object& rhs);
 };
 
 } /* namespace object */

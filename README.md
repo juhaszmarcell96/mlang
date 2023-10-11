@@ -161,14 +161,14 @@ comparison         -> term ( ( ">" | ">=" | "<" | "<=" ) term )*
 term               -> factor ( ( "-" | "+" ) factor )*
 factor             -> pre_op ( ( "/" | "*" ) pre_op )*
 pre_op             -> ( "-" | "!" | "++" | "--" )? post_op;
-post_op            -> postfix_increment | postfix_decrement | ( func_call | subscript | member_access | member_call )*
+post_op            -> postfix_increment | postfix_decrement | ( subscript | member_access | member_call )*
 postfix_increment  -> primary "++"
 postfix_decrement  -> primary "--"
-func_call          -> primary "(" arguments? ")"
 subscript          -> primary "[" logic_or "]"
 member_access      -> primary "." IDENTIFIER
 member_call        -> primary "." IDENTIFIER "(" arguments? ")"
-primary            -> NUMBER | STRING | "true" | "false" | "none" | "(" expression ")" | IDENTIFIER | ( "new" IDENTIFIER "(" arguments? ")" ) | ( "{" arguments "}" )
+primary            -> NUMBER | STRING | "true" | "false" | "none" | "(" expression ")" | func_call | IDENTIFIER | ( "new" IDENTIFIER "(" arguments? ")" ) | ( "{" arguments "}" )
+func_call          -> IDENTIFIER "(" arguments? ")"
 
 arguments          -> logic_or ( "," logic_or )* 
 block              -> "{" statement* "}"

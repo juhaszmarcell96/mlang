@@ -27,5 +27,45 @@ public:
     void print () const override;
 };
 
+class PostfixIncrementNode : public Node {
+private:
+    node_ptr m_exp;
+public:
+    PostfixIncrementNode(node_ptr exp);
+    ~PostfixIncrementNode () = default;
+    object::Object execute (EnvStack& env) const override;
+    void print () const override;
+};
+
+class PostfixDecrementNode : public Node {
+private:
+    node_ptr m_exp;
+public:
+    PostfixDecrementNode(node_ptr exp);
+    ~PostfixDecrementNode () = default;
+    object::Object execute (EnvStack& env) const override;
+    void print () const override;
+};
+
+class PrefixIncrementNode : public Node {
+private:
+    node_ptr m_exp;
+public:
+    PrefixIncrementNode(node_ptr exp);
+    ~PrefixIncrementNode () = default;
+    object::Object execute (EnvStack& env) const override;
+    void print () const override;
+};
+
+class PrefixDecrementNode : public Node {
+private:
+    node_ptr m_exp;
+public:
+    PrefixDecrementNode(node_ptr exp);
+    ~PrefixDecrementNode () = default;
+    object::Object execute (EnvStack& env) const override;
+    void print () const override;
+};
+
 } /* namespace ast */
 } /* namespace mlang */

@@ -32,5 +32,63 @@ void UnaryMinusOperationNode::print () const {
     m_right->print();
 }
 
+
+
+
+
+
+PostfixIncrementNode::PostfixIncrementNode(node_ptr exp) : Node(ast_node_types::postfix), m_exp(std::move(exp)) {}
+
+object::Object PostfixIncrementNode::execute (EnvStack& env) const {
+    return m_exp->execute(env).postfix_increment();
+}
+
+void PostfixIncrementNode::print () const {
+    m_exp->print();
+    std::cout << "++";
+}
+
+
+
+
+PostfixDecrementNode::PostfixDecrementNode(node_ptr exp) : Node(ast_node_types::postfix), m_exp(std::move(exp)) {}
+
+object::Object PostfixDecrementNode::execute (EnvStack& env) const {
+    return m_exp->execute(env).postfix_decrement();
+}
+
+void PostfixDecrementNode::print () const {
+    m_exp->print();
+    std::cout << "--";
+}
+
+
+
+
+PrefixIncrementNode::PrefixIncrementNode(node_ptr exp) : Node(ast_node_types::prefix), m_exp(std::move(exp)) {}
+
+object::Object PrefixIncrementNode::execute (EnvStack& env) const {
+    return m_exp->execute(env).prefix_increment();
+}
+
+void PrefixIncrementNode::print () const {
+    std::cout << "++";
+    m_exp->print();
+}
+
+
+
+
+PrefixDecrementNode::PrefixDecrementNode(node_ptr exp) : Node(ast_node_types::prefix), m_exp(std::move(exp)) {}
+
+object::Object PrefixDecrementNode::execute (EnvStack& env) const {
+    return m_exp->execute(env).prefix_decrement();
+}
+
+void PrefixDecrementNode::print () const {
+    std::cout << "--";
+    m_exp->print();
+}
+
 } /* namespace ast */
 } /* namespace mlang */
