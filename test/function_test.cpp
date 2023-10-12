@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "mlang/script.hpp"
+#include "mlang/script/script.hpp"
 
 TEST(FunctionTest, Test0) {
     std::string script_text;
@@ -11,8 +11,8 @@ TEST(FunctionTest, Test0) {
     script_text += "    return c; \n";
     script_text += "} \n";
     script_text += "var num = sum (5, 7); \n";
-    mlang::Script script { script_text };
-    mlang::EnvStack env {};
+    mlang::script::Script script { script_text };
+    mlang::script::EnvStack env {};
     script.execute(env);
 
     ASSERT_EQ(env.has_variable("num"), true);

@@ -12,7 +12,7 @@ public:
     BlockNode();
     ~BlockNode () = default;
     const std::vector<node_ptr>& get_nodes () const;
-    object::Object execute (EnvStack& env) const override;
+    object::Object execute (script::EnvStack& env) const override;
     void add_node (node_ptr node);
     void print () const override;
 };

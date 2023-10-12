@@ -21,7 +21,7 @@ private:
 public:
     IfStatementNode();
     ~IfStatementNode () = default;
-    object::Object execute (EnvStack& env) const override;
+    object::Object execute (script::EnvStack& env) const override;
     void set_if_condition (node_ptr condition);
     void add_block (node_ptr block);
     void add_elif_condition (node_ptr condition);

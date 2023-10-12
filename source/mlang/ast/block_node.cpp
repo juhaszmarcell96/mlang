@@ -7,7 +7,7 @@ BlockNode::BlockNode() : Node(ast_node_types::main) {}
 
 const std::vector<node_ptr>& BlockNode::get_nodes () const { return m_nodes; }
 
-object::Object BlockNode::execute (EnvStack& env) const {
+object::Object BlockNode::execute (script::EnvStack& env) const {
     for (const auto& node : m_nodes) {
         node->execute(env);
     }

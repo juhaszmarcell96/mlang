@@ -14,7 +14,7 @@ const Node* const AssignmentNode::get_right () const { return m_right.get(); }
 
 assignment_mode AssignmentNode::get_mode () const { return m_mode; }
 
-object::Object AssignmentNode::execute (EnvStack& env) const {
+object::Object AssignmentNode::execute (script::EnvStack& env) const {
     object::Object lhs = m_left->execute(env);
     object::Object rhs = m_right->execute(env);
     switch (m_mode) {

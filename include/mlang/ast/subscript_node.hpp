@@ -14,7 +14,7 @@ public:
     SubscriptNode(node_ptr lhs);
     ~SubscriptNode () = default;
     void set_index (node_ptr index);
-    object::Object execute (EnvStack& env) const override;
+    object::Object execute (script::EnvStack& env) const override;
     void print () const override;
 };
 

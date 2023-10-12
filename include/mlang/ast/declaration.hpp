@@ -14,7 +14,7 @@ public:
     DeclarationOperationNode(const std::string& var_name);
     ~DeclarationOperationNode () = default;
     const std::string& get_var_name () const;
-    object::Object execute (EnvStack& env) const override;
+    object::Object execute (script::EnvStack& env) const override;
     void print () const override;
 };
 
@@ -27,7 +27,7 @@ public:
     ~DeclAndInitOperationNode () = default;
     const std::string& get_var_name () const;
     const Node* const get_right () const;
-    object::Object execute (EnvStack& env) const override;
+    object::Object execute (script::EnvStack& env) const override;
     void print () const override;
 };
 

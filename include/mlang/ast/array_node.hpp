@@ -11,7 +11,7 @@ private:
 public:
     ArrayNode();
     ~ArrayNode () = default;
-    object::Object execute (EnvStack& env) const override;
+    object::Object execute (script::EnvStack& env) const override;
     void add_element (node_ptr elem);
     void print () const override;
 };

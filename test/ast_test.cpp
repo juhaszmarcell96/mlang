@@ -10,7 +10,7 @@
 #include "mlang/parser/ast.hpp"
 
 TEST(ASTTest, Test0) {
-    mlang::EnvStack env {};
+    mlang::script::EnvStack env {};
     std::shared_ptr<mlang::Object> ret_val;
     std::string var_name = "num";
 
@@ -32,7 +32,7 @@ TEST(ASTTest, Test0) {
     ASSERT_EQ(env.get_variable(var_name)->get_number(), 5);
 }
 TEST(ASTTest, Test1) {
-    mlang::EnvStack env {};
+    mlang::script::EnvStack env {};
 
     ASSERT_EQ(env.has_variable("a"), false);
     ASSERT_EQ(env.has_variable("b"), false);
@@ -66,7 +66,7 @@ TEST(ASTTest, Test1) {
 
 /*
 TEST(ASTTest, Test2) {
-    mlang::EnvStack env {};
+    mlang::script::EnvStack env {};
     mlang::Value ret_val {};
 
     ASSERT_EQ(env.has_variable("a"), false);
@@ -104,7 +104,7 @@ TEST(ASTTest, Test2) {
 }
 
 TEST(ASTTest, Test3) {
-    mlang::EnvStack env {};
+    mlang::script::EnvStack env {};
     mlang::Value ret_val {};
 
     ASSERT_EQ(env.has_variable("a"), false);
@@ -142,7 +142,7 @@ TEST(ASTTest, Test3) {
 }
 
 TEST(ASTTest, Test4) {
-    mlang::EnvStack env {};
+    mlang::script::EnvStack env {};
     mlang::Value ret_val {};
 
     ASSERT_EQ(env.has_variable("a"), false);
@@ -180,7 +180,7 @@ TEST(ASTTest, Test4) {
 }
 
 TEST(ASTTest, Test5) {
-    mlang::EnvStack env {};
+    mlang::script::EnvStack env {};
     mlang::Value ret_val {};
 
     ASSERT_EQ(env.has_variable("a"), false);
@@ -218,7 +218,7 @@ TEST(ASTTest, Test5) {
 }
 
 TEST(ASTTest, Test6) {
-    mlang::EnvStack env {};
+    mlang::script::EnvStack env {};
     mlang::Value ret_val {};
 
     ASSERT_EQ(env.has_variable("a"), false);

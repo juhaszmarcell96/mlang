@@ -6,7 +6,7 @@ namespace ast {
 
 WhileStatementNode::WhileStatementNode() : Node(ast_node_types::while_statement) {}
 
-object::Object WhileStatementNode::execute (EnvStack& env) const {
+object::Object WhileStatementNode::execute (script::EnvStack& env) const {
     env.enter_scope();
     while (true) {
         object::Object cond_val = m_condition->execute(env);

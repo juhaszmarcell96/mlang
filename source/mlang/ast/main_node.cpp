@@ -7,7 +7,7 @@ MainNode::MainNode() : Node(ast_node_types::main) {}
 
 const std::vector<node_ptr>& MainNode::get_nodes () const { return m_nodes; }
 
-object::Object MainNode::execute (EnvStack& env) const {
+object::Object MainNode::execute (script::EnvStack& env) const {
     for (auto& node : m_nodes) {
         node->execute(env);
     }

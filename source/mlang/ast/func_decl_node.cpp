@@ -10,7 +10,7 @@ void FunctionDeclNode::set_body (node_ptr body) { m_body = std::move(body); }
 
 void FunctionDeclNode::add_parameter (const std::string& param) { m_params.push_back(param); }
 
-object::Object FunctionDeclNode::execute (EnvStack& env) const {
+object::Object FunctionDeclNode::execute (script::EnvStack& env) const {
     env.declare_function(m_name, this);
     return object::Object{};
 }
@@ -22,7 +22,7 @@ object::Object FunctionDeclNode::call (std::vector<object::Object>& params) cons
     if (params.size() != m_params.size()) {
         throw RuntimeError{ "function " + m_name + " expects " + std::to_string(m_params.size()) + " parameters but got " + std::to_string(params.size()) };
     }
-    EnvStack env {};
+    script::EnvStack env {};
     for (std::size_t i = 0; i < params.size(); ++i) {
         env.declare_variable(m_params[i], params[i].get_typename());
         env.get_variable(m_params[i]).assign(params[i]);

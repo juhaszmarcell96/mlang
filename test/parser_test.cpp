@@ -4,10 +4,9 @@
 #include <vector>
 
 #include "mlang/tokenizer/tokenizer.hpp"
-#include "mlang/token.hpp"
+#include "mlang/script/token.hpp"
 #include "mlang/parser/parser.hpp"
-#include "mlang/value.hpp"
-#include "mlang/environment.hpp"
+#include "mlang/script/environment.hpp"
 
 TEST(ParserTest, Test0) {
     /* number num; */
@@ -35,7 +34,7 @@ TEST(ParserTest, Test0) {
     ASSERT_EQ(node_ptr->get_var_name(), "num");
 
     mlang::Value ret_val {};
-    mlang::EnvStack env {};
+    mlang::script::EnvStack env {};
 
     ASSERT_EQ(env.has_variable("num"), false);
 
@@ -49,7 +48,7 @@ TEST(ParserTest, Test0) {
 TEST(ParserTest, Test1) {
     /* num = 5; */
     mlang::Value ret_val {};
-    mlang::EnvStack env {};
+    mlang::script::EnvStack env {};
     env.declare_variable("num", mlang::value_types::number);
 
     mlang::Token t0 { mlang::token_types::identifier, "num", 0, 0 };

@@ -7,7 +7,7 @@ VariableNode::VariableNode(const std::string& var_name) : Node(ast_node_types::v
 
 const std::string& VariableNode::get_var_name () const { return m_var_name; }
 
-object::Object VariableNode::execute (EnvStack& env) const {
+object::Object VariableNode::execute (script::EnvStack& env) const {
     return env.get_variable(m_var_name);
 }
 

@@ -6,7 +6,7 @@ namespace ast {
 
 ArrayNode::ArrayNode() : Node(ast_node_types::array) {}
 
-object::Object ArrayNode::execute (EnvStack& env) const {
+object::Object ArrayNode::execute (script::EnvStack& env) const {
     std::vector<object::Object> array_elements;
     for (const auto& elem : m_elements) {
         array_elements.push_back(elem->execute(env));

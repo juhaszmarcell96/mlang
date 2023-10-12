@@ -7,7 +7,7 @@ UnaryNotOperationNode::UnaryNotOperationNode(node_ptr right) : Node(ast_node_typ
 
 const Node* const UnaryNotOperationNode::get_right () const { return m_right.get(); }
 
-object::Object UnaryNotOperationNode::execute (EnvStack& env) const {
+object::Object UnaryNotOperationNode::execute (script::EnvStack& env) const {
     return m_right->execute(env).unary_not();
 }
 
@@ -23,7 +23,7 @@ UnaryMinusOperationNode::UnaryMinusOperationNode(node_ptr right) : Node(ast_node
 
 const Node* const UnaryMinusOperationNode::get_right () const { return m_right.get(); }
 
-object::Object UnaryMinusOperationNode::execute (EnvStack& env) const {
+object::Object UnaryMinusOperationNode::execute (script::EnvStack& env) const {
     return m_right->execute(env).unary_minus();
 }
 
@@ -39,7 +39,7 @@ void UnaryMinusOperationNode::print () const {
 
 PostfixIncrementNode::PostfixIncrementNode(node_ptr exp) : Node(ast_node_types::postfix), m_exp(std::move(exp)) {}
 
-object::Object PostfixIncrementNode::execute (EnvStack& env) const {
+object::Object PostfixIncrementNode::execute (script::EnvStack& env) const {
     return m_exp->execute(env).postfix_increment();
 }
 
@@ -53,7 +53,7 @@ void PostfixIncrementNode::print () const {
 
 PostfixDecrementNode::PostfixDecrementNode(node_ptr exp) : Node(ast_node_types::postfix), m_exp(std::move(exp)) {}
 
-object::Object PostfixDecrementNode::execute (EnvStack& env) const {
+object::Object PostfixDecrementNode::execute (script::EnvStack& env) const {
     return m_exp->execute(env).postfix_decrement();
 }
 
@@ -67,7 +67,7 @@ void PostfixDecrementNode::print () const {
 
 PrefixIncrementNode::PrefixIncrementNode(node_ptr exp) : Node(ast_node_types::prefix), m_exp(std::move(exp)) {}
 
-object::Object PrefixIncrementNode::execute (EnvStack& env) const {
+object::Object PrefixIncrementNode::execute (script::EnvStack& env) const {
     return m_exp->execute(env).prefix_increment();
 }
 
@@ -81,7 +81,7 @@ void PrefixIncrementNode::print () const {
 
 PrefixDecrementNode::PrefixDecrementNode(node_ptr exp) : Node(ast_node_types::prefix), m_exp(std::move(exp)) {}
 
-object::Object PrefixDecrementNode::execute (EnvStack& env) const {
+object::Object PrefixDecrementNode::execute (script::EnvStack& env) const {
     return m_exp->execute(env).prefix_decrement();
 }
 

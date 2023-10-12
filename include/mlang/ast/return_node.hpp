@@ -12,7 +12,7 @@ private:
 public:
     ReturnNode(node_ptr value);
     ~ReturnNode () = default;
-    object::Object execute (EnvStack& env) const override;
+    object::Object execute (script::EnvStack& env) const override;
     void print () const override;
 };
 

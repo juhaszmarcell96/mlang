@@ -6,7 +6,7 @@ namespace ast {
 
 ForStatementNode::ForStatementNode() : Node(ast_node_types::for_statement) {}
 
-object::Object ForStatementNode::execute (EnvStack& env) const {
+object::Object ForStatementNode::execute (script::EnvStack& env) const {
     env.enter_scope();
     /* assignments */
     if (m_initialization) { m_initialization->execute(env); }

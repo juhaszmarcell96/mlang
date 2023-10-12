@@ -6,7 +6,7 @@ namespace ast {
 
 ExitNode::ExitNode(node_ptr value) : Node(ast_node_types::exit_node), m_value(std::move(value)) {}
 
-object::Object ExitNode::execute (EnvStack& env) const {
+object::Object ExitNode::execute (script::EnvStack& env) const {
     throw Exit { m_value->execute(env) };
 }
 

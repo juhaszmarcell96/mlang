@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "mlang/script.hpp"
+#include "mlang/script/script.hpp"
 
 TEST(WhileLoopTest, Test0) {
     std::string script_text;
@@ -12,8 +12,8 @@ TEST(WhileLoopTest, Test0) {
     script_text += "    b -= 1; \n";
     script_text += "    a += 1; \n";
     script_text += "} \n";
-    mlang::Script script { script_text };
-    mlang::EnvStack env {};
+    mlang::script::Script script { script_text };
+    mlang::script::EnvStack env {};
     script.execute(env);
 
     ASSERT_EQ(env.has_variable("a"), true);
@@ -33,8 +33,8 @@ TEST(WhileLoopTest, Test1) {
     script_text += "        break; \n";
     script_text += "    } \n";
     script_text += "} \n";
-    mlang::Script script { script_text };
-    mlang::EnvStack env {};
+    mlang::script::Script script { script_text };
+    mlang::script::EnvStack env {};
     script.execute(env);
 
     ASSERT_EQ(env.has_variable("a"), true);

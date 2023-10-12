@@ -14,7 +14,7 @@ const Node* const BinaryLogicNode::get_right () const { return m_right.get(); }
 
 logic_mode BinaryLogicNode::get_mode () const { return m_mode; }
 
-object::Object BinaryLogicNode::execute (EnvStack& env) const {
+object::Object BinaryLogicNode::execute (script::EnvStack& env) const {
     object::Object lhs = m_left->execute(env);
     object::Object rhs = m_right->execute(env);
     switch (m_mode) {

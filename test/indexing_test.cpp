@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "mlang/script.hpp"
+#include "mlang/script/script.hpp"
 
 TEST(IndexingTest, Test0) {
     std::string script_text;
@@ -12,8 +12,8 @@ TEST(IndexingTest, Test0) {
     script_text += "arr += 0; \n";
     script_text += "var a = arr[2]; \n";
     script_text += "var b = arr[1]; \n";
-    mlang::Script script { script_text };
-    mlang::EnvStack env {};
+    mlang::script::Script script { script_text };
+    mlang::script::EnvStack env {};
     script.execute(env);
 
     ASSERT_EQ(env.has_variable("arr"), true);

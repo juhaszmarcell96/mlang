@@ -4,7 +4,7 @@
 #include <iostream>
 
 #include "mlang/object/object.hpp"
-#include "mlang/environment.hpp"
+#include "mlang/script/environment.hpp"
 #include "mlang/exception.hpp"
 
 namespace mlang {
@@ -50,7 +50,7 @@ private:
 public:
     Node (ast_node_types type) : m_type(type) {}
     virtual ~Node () = default;
-    virtual object::Object execute (EnvStack& env) const = 0;
+    virtual object::Object execute (script::EnvStack& env) const = 0;
     virtual void print () const = 0;
 
     ast_node_types get_type () const { return m_type; }

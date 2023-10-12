@@ -12,7 +12,7 @@ public:
     UnaryNotOperationNode(node_ptr right);
     ~UnaryNotOperationNode () = default;
     const Node* const get_right () const;
-    object::Object execute (EnvStack& env) const override;
+    object::Object execute (script::EnvStack& env) const override;
     void print () const override;
 };
 
@@ -23,7 +23,7 @@ public:
     UnaryMinusOperationNode(node_ptr right);
     ~UnaryMinusOperationNode () = default;
     const Node* const get_right () const;
-    object::Object execute (EnvStack& env) const override;
+    object::Object execute (script::EnvStack& env) const override;
     void print () const override;
 };
 
@@ -33,7 +33,7 @@ private:
 public:
     PostfixIncrementNode(node_ptr exp);
     ~PostfixIncrementNode () = default;
-    object::Object execute (EnvStack& env) const override;
+    object::Object execute (script::EnvStack& env) const override;
     void print () const override;
 };
 
@@ -43,7 +43,7 @@ private:
 public:
     PostfixDecrementNode(node_ptr exp);
     ~PostfixDecrementNode () = default;
-    object::Object execute (EnvStack& env) const override;
+    object::Object execute (script::EnvStack& env) const override;
     void print () const override;
 };
 
@@ -53,7 +53,7 @@ private:
 public:
     PrefixIncrementNode(node_ptr exp);
     ~PrefixIncrementNode () = default;
-    object::Object execute (EnvStack& env) const override;
+    object::Object execute (script::EnvStack& env) const override;
     void print () const override;
 };
 
@@ -63,7 +63,7 @@ private:
 public:
     PrefixDecrementNode(node_ptr exp);
     ~PrefixDecrementNode () = default;
-    object::Object execute (EnvStack& env) const override;
+    object::Object execute (script::EnvStack& env) const override;
     void print () const override;
 };
 

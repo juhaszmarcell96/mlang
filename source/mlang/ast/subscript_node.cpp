@@ -8,7 +8,7 @@ SubscriptNode::SubscriptNode(node_ptr lhs) : Node(ast_node_types::subscript), m_
 
 void SubscriptNode::set_index (node_ptr index) { m_index = std::move(index); }
 
-object::Object SubscriptNode::execute (EnvStack& env) const {
+object::Object SubscriptNode::execute (script::EnvStack& env) const {
     object::Object lhs = m_lhs->execute(env);
     object::Object index = m_index->execute(env);
     return lhs.operator_subscript(index);

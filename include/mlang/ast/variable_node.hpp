@@ -12,7 +12,7 @@ public:
     VariableNode(const std::string& var_name);
     ~VariableNode () = default;
     const std::string& get_var_name () const;
-    object::Object execute (EnvStack& env) const override;
+    object::Object execute (script::EnvStack& env) const override;
     void print () const override;
 };
 

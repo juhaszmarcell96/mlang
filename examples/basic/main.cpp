@@ -4,8 +4,8 @@
 #include <sstream>
 #include <filesystem>
 
-#include "mlang/script.hpp"
-#include "mlang/environment.hpp"
+#include "mlang/script/script.hpp"
+#include "mlang/script/environment.hpp"
 
 int main(int argc, char* argv[]) {
     std::string executable_path { argv[0] };
@@ -18,8 +18,8 @@ int main(int argc, char* argv[]) {
     buffer << file.rdbuf();
     file.close();
 
-    mlang::Script script { buffer.str() };
-    mlang::EnvStack env {};
+    mlang::script::Script script { buffer.str() };
+    mlang::script::EnvStack env {};
     script.execute(env);
 
     return 0;

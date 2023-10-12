@@ -13,7 +13,7 @@ private:
 public:
     WhileStatementNode();
     ~WhileStatementNode () = default;
-    object::Object execute (EnvStack& env) const override;
+    object::Object execute (script::EnvStack& env) const override;
     void set_condition (node_ptr condition);
     void set_body (node_ptr body);
     void print () const override;

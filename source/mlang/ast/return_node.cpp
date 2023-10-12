@@ -6,7 +6,7 @@ namespace ast {
 
 ReturnNode::ReturnNode(node_ptr value) : Node(ast_node_types::return_node), m_value(std::move(value)) {}
 
-object::Object ReturnNode::execute (EnvStack& env) const {
+object::Object ReturnNode::execute (script::EnvStack& env) const {
     /* TODO : handle void returns (nullptr) */
     throw Return { m_value->execute(env) };
 }

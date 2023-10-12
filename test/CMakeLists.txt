@@ -17,4 +17,4 @@ add_executable (
     function_test.cpp
     indexing_test.cpp
 )
-target_link_libraries (tests ${GTEST_LIBRARIES} pthread parser_static tokenizer_static)
+target_link_libraries (tests ${GTEST_LIBRARIES} pthread script_static)

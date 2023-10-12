@@ -13,7 +13,7 @@ public:
     FunctionCallNode(const std::string& name);
     ~FunctionCallNode () = default;
     const std::vector<node_ptr>& get_params () const;
-    object::Object execute (EnvStack& env) const override;
+    object::Object execute (script::EnvStack& env) const override;
     void add_parameter (node_ptr param);
     void print () const override;
 };

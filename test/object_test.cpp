@@ -8,12 +8,12 @@
 #include "mlang/object/boolean.hpp"
 #include "mlang/object/array.hpp"
 #include "mlang/object/none.hpp"
-#include "mlang/environment.hpp"
+#include "mlang/script/environment.hpp"
 
 TEST(ObjectTest, Test0) {
     
     mlang::object::Object a {};
-    mlang::object::Object b { mlang::Environment::get_factory(mlang::object::Number::type_name) };
+    mlang::object::Object b { mlang::script::Environment::get_factory(mlang::object::Number::type_name) };
     mlang::object::Object c { std::make_shared<mlang::object::Number>(5) };
 
     ASSERT_EQ(a.get_typename(), mlang::object::None::type_name);
@@ -73,7 +73,7 @@ TEST(ObjectTest, Test1) {
 }
 
 TEST(ObjectTest, Test2) {
-    mlang::EnvStack env {};
+    mlang::script::EnvStack env {};
     env.declare_variable("a", mlang::object::None::type_name);
     mlang::object::Object b { std::make_shared<mlang::object::Number>(3) };
 

@@ -14,7 +14,7 @@ const Node* const BinaryArithmeticNode::get_right () const { return m_right.get(
 
 arithmetic_mode BinaryArithmeticNode::get_mode () const { return m_mode; }
 
-object::Object BinaryArithmeticNode::execute (EnvStack& env) const {
+object::Object BinaryArithmeticNode::execute (script::EnvStack& env) const {
     object::Object lhs = m_left->execute(env);
     object::Object rhs = m_right->execute(env);
     switch (m_mode) {

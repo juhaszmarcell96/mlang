@@ -9,7 +9,7 @@ DeclarationOperationNode::DeclarationOperationNode(const std::string& var_name) 
 
 const std::string& DeclarationOperationNode::get_var_name () const { return m_var_name; }
 
-object::Object DeclarationOperationNode::execute (EnvStack& env) const {
+object::Object DeclarationOperationNode::execute (script::EnvStack& env) const {
     env.declare_variable(m_var_name, object::None::type_name);
     return object::Object{};
 }
@@ -27,7 +27,7 @@ const std::string& DeclAndInitOperationNode::get_var_name () const { return m_va
 
 const Node* const DeclAndInitOperationNode::get_right () const { return m_right.get(); }
 
-object::Object DeclAndInitOperationNode::execute (EnvStack& env) const {
+object::Object DeclAndInitOperationNode::execute (script::EnvStack& env) const {
     object::Object rhs = m_right->execute(env);
     env.declare_variable(m_var_name, object::None::type_name);
     env.get_variable(m_var_name).assign(rhs);

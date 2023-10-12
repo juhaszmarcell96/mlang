@@ -8,7 +8,7 @@ IfStatementNode::IfStatementNode() : Node(ast_node_types::if_statement) {
     m_active_branch = &m_if_body;
 }
 
-object::Object IfStatementNode::execute (EnvStack& env) const {
+object::Object IfStatementNode::execute (script::EnvStack& env) const {
     env.enter_scope();
     try {
         /* if */

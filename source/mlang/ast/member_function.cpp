@@ -7,7 +7,7 @@ MemberFunctionNode::MemberFunctionNode(node_ptr lhs, const std::string& func_nam
 
 const std::vector<node_ptr>& MemberFunctionNode::get_params () const { return m_params; }
 
-object::Object MemberFunctionNode::execute (EnvStack& env) const {
+object::Object MemberFunctionNode::execute (script::EnvStack& env) const {
     std::vector<object::Object> params;
     for (const node_ptr& node : m_params) {
         params.push_back(node->execute(env));

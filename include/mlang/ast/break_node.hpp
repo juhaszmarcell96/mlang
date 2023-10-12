@@ -10,7 +10,7 @@ class BreakNode : public Node {
 public:
     BreakNode();
     ~BreakNode () = default;
-    object::Object execute (EnvStack& env) const override;
+    object::Object execute (script::EnvStack& env) const override;
     void print () const override;
 };
 

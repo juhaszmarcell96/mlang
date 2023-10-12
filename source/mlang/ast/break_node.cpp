@@ -6,7 +6,7 @@ namespace ast {
 
 BreakNode::BreakNode() : Node(ast_node_types::break_node) {}
 
-object::Object BreakNode::execute (EnvStack& env) const {
+object::Object BreakNode::execute (script::EnvStack& env) const {
     throw Break {};
 }
 

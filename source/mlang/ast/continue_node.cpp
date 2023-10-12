@@ -6,7 +6,7 @@ namespace ast {
 
 ContinueNode::ContinueNode() : Node(ast_node_types::continue_node) {}
 
-object::Object ContinueNode::execute (EnvStack& env) const {
+object::Object ContinueNode::execute (script::EnvStack& env) const {
     throw Continue {};
 }
 

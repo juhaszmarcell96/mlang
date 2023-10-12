@@ -15,7 +15,7 @@ private:
 public:
     ForStatementNode();
     ~ForStatementNode () = default;
-    object::Object execute (EnvStack& env) const override;
+    object::Object execute (script::EnvStack& env) const override;
     void set_initialization (node_ptr initialization);
     void set_test (node_ptr test);
     void set_update (node_ptr update);

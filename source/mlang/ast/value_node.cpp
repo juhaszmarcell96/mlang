@@ -7,7 +7,7 @@ ValueNode::ValueNode(object::Object value) : Node(ast_node_types::value), m_valu
 
 const object::Object& ValueNode::get_value () const { return m_value; }
 
-object::Object ValueNode::execute (EnvStack& env) const {
+object::Object ValueNode::execute (script::EnvStack& env) const {
     return m_value;
 }
 

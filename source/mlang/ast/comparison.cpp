@@ -14,7 +14,7 @@ const Node* const BinaryComparisonNode::get_right () const { return m_right.get(
 
 comparison_mode BinaryComparisonNode::get_mode () const { return m_mode; }
 
-object::Object BinaryComparisonNode::execute (EnvStack& env) const {
+object::Object BinaryComparisonNode::execute (script::EnvStack& env) const {
     object::Object lhs = m_left->execute(env);
     object::Object rhs = m_right->execute(env);
     switch (m_mode) {

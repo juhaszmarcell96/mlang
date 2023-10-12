@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "mlang/token.hpp"
+#include "mlang/script/token.hpp"
 #include "mlang/ast/node.hpp"
 
 #define TRACE_PARSER 0
@@ -16,21 +16,21 @@ namespace parser {
 
 class Parser {
 private:
-    std::vector<const Token*> m_tokens;
+    std::vector<const script::Token*> m_tokens;
 
     std::size_t m_index { 0 };
 
     void next(int num = 1);
     bool done() const;
-    const Token* peek (int num = 1) const;
+    const script::Token* peek (int num = 1) const;
     bool peekable (int num = 1);
-    const Token* curr() const;
-    const Token* prev() const;
+    const script::Token* curr() const;
+    const script::Token* prev() const;
 
     void trace (const std::string& str) const;
 
-    bool consume (token_types type);
-    void consume (token_types type, const std::string& err_msg);
+    bool consume (script::token_types type);
+    void consume (script::token_types type, const std::string& err_msg);
 
     // primary            -> NUMBER | STRING | "true" | "false" | "none" | "(" expression ")" | IDENTIFIER | ( "new" IDENTIFIER "(" arguments? ")" ) | ( "{" arguments "}" )
     ast::node_ptr primary ();
@@ -117,7 +117,7 @@ public:
     Parser () = default;
     ~Parser () = default;
 
-    ast::node_ptr parse (const std::vector<Token>& tokens);
+    ast::node_ptr parse (const std::vector<script::Token>& tokens);
 };
 
 } /* namespace parser */

@@ -21,7 +21,7 @@ public:
     const Node* const get_left () const;
     const Node* const get_right () const;
     logic_mode get_mode () const;
-    object::Object execute (EnvStack& env) const override;
+    object::Object execute (script::EnvStack& env) const override;
     void print () const override;
 };
 

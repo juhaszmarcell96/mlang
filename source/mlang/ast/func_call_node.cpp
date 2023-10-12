@@ -8,7 +8,7 @@ FunctionCallNode::FunctionCallNode(const std::string& name) : Node(ast_node_type
 
 const std::vector<node_ptr>& FunctionCallNode::get_params () const { return m_params; }
 
-object::Object FunctionCallNode::execute (EnvStack& env) const {
+object::Object FunctionCallNode::execute (script::EnvStack& env) const {
     std::vector<object::Object> params;
     for (const node_ptr& node : m_params) {
         params.push_back(node->execute(env));

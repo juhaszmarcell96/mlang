@@ -14,7 +14,7 @@ public:
     MemberFunctionNode(node_ptr lhs, const std::string& func_name);
     ~MemberFunctionNode () = default;
     const std::vector<node_ptr>& get_params () const;
-    object::Object execute (EnvStack& env) const override;
+    object::Object execute (script::EnvStack& env) const override;
     void add_parameter (node_ptr param);
     void print () const override;
 };
