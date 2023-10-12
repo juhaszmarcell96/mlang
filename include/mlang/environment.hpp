@@ -5,7 +5,7 @@
 #include "mlang/object/number.hpp"
 #include "mlang/object/string.hpp"
 #include "mlang/object/boolean.hpp"
-//#include "mlang/object/array.hpp"
+#include "mlang/object/array.hpp"
 //#include "mlang/function.hpp"
 #include "mlang/exception.hpp"
 #include "mlang/ast/function.hpp"

@@ -47,12 +47,10 @@ std::shared_ptr<InternalObject> Array::operator_binary_add (const std::shared_pt
     return std::make_shared<Array>(new_arr);
 }
 
+/* TODO append vs concatenate? */
 void Array::operator_add_equal (const std::shared_ptr<InternalObject> param) {
     assert_parameter(param, type_name, "+=");
-    const std::shared_ptr<Array> arr_ptr = assert_cast<Array>(param, type_name);
-    for (const auto elem : arr_ptr->m_arr) {
-        m_arr.push_back(elem);
-    }
+    m_arr.push_back(Object{param});
 }
 
 std::shared_ptr<InternalObject> Array::operator_comparison_equal (const std::shared_ptr<InternalObject> param) {
@@ -96,6 +94,15 @@ std::shared_ptr<InternalObject> Array::reverse () {
     std::reverse(reversed.begin(), reversed.end());
     return std::make_shared<Array>(reversed);
 }
+/*
+void concatenate (const std::shared_ptr<InternalObject> param) {
+    assert_parameter(param, type_name, "concatenate");
+    const std::shared_ptr<Array> arr_ptr = assert_cast<Array>(param, type_name);
+    for (const auto elem : arr_ptr->m_arr) {
+        m_arr.push_back(elem);
+    }
+}
+*/
 
 
 std::shared_ptr<InternalObject> Array::call (const std::string& func, const std::vector<std::shared_ptr<InternalObject>>& params) {

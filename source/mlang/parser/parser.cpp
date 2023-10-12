@@ -31,6 +31,7 @@
 #include "mlang/object/string.hpp"
 #include "mlang/object/number.hpp"
 #include "mlang/object/boolean.hpp"
+#include "mlang/object/array.hpp"
 
 namespace mlang {
 namespace parser {
@@ -61,7 +62,7 @@ void Parser::trace (const std::string& str) const {
 }
 
 bool Parser::consume (token_types type) {
-    if (done()) { throw syntax_error{ "statement terminated unexpectedly", prev()->line, prev()->pos}; }
+    if (done()) { return false; }
     if (curr()->type == type) {
         next();
         return true;
@@ -96,6 +97,7 @@ ast::node_ptr Parser::primary () {
             std::unique_ptr<ast::FunctionCallNode> func_call_ptr = std::make_unique<ast::FunctionCallNode>(identifier_str);
             while (!consume(token_types::round_bracket_close)) {
                 func_call_ptr->add_parameter(logic_or());
+                consume(token_types::comma);
             }
             return func_call_ptr;
         }
@@ -448,6 +450,7 @@ ast::node_ptr Parser::statement () {
     if (consume(token_types::kw_continue)) { return continue_statement(); }
     if (consume(token_types::kw_return)) { return return_statement(); }
     if (consume(token_types::kw_exit)) { return exit_statement(); }
+    if (consume(token_types::kw_var)) { return var_decl(); }
     return exp_statement();
 }
 
