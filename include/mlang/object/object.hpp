@@ -12,15 +12,19 @@
 namespace mlang {
 namespace object {
 
+struct WrapperObject {
+    internal_obj_ptr obj;
+};
+
 /* wrapper around the internal object */
 class Object {
 protected:
     bool m_lvalue { false };
-    std::shared_ptr<InternalObject> m_object;
+    std::shared_ptr<WrapperObject> m_object;
 public:
     Object ();
     Object (bool lvalue);
-    Object (std::shared_ptr<InternalObject> obj);
+    Object (internal_obj_ptr obj);
     Object (const ObjectFactory& factory);
     ~Object () = default;
 

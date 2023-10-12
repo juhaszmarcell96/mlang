@@ -12,6 +12,9 @@ namespace object {
 
 class ObjectFactory;
 class Object;
+class InternalObject;
+
+typedef std::shared_ptr<InternalObject> internal_obj_ptr;
 
 class InternalObject {
 public:

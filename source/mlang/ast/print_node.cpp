@@ -6,7 +6,6 @@ namespace ast {
 std::string PrintNode::get_integer (EnvStack& env) const {
     if (m_index >= m_args.size()) { throw syntax_error{"mismatch in print arguments"}; }
     object::Object res = m_args[m_index]->execute(env);
-    m_args[m_index]->print();
     ++m_index;
     return std::to_string(static_cast<int>(res.get_number()));
 }
