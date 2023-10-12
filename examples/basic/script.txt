@@ -42,3 +42,8 @@ var d = arr2[2];
 var e = arr2[1];
 print("%s", d);
 print("%s", e);
+
+while (true) {
+    var number = 5;
+    print("asd");
+}

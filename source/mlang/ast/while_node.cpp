@@ -7,8 +7,8 @@ namespace ast {
 WhileStatementNode::WhileStatementNode() : Node(ast_node_types::while_statement) {}
 
 object::Object WhileStatementNode::execute (script::EnvStack& env) const {
-    env.enter_scope();
     while (true) {
+        env.enter_scope();
         object::Object cond_val = m_condition->execute(env);
         if (!cond_val.is_true()) { break; }
         try {
@@ -17,10 +17,12 @@ object::Object WhileStatementNode::execute (script::EnvStack& env) const {
         }
         catch (const Break& e) {
             /* handle break */
+            env.exit_scope();
             break;
         }
         catch (const Continue& e) {
             /* handle continue */
+            env.exit_scope();
             continue;
         }
         catch (const Return& e) {
@@ -28,8 +30,8 @@ object::Object WhileStatementNode::execute (script::EnvStack& env) const {
             env.exit_scope();
             throw;
         }
+        env.exit_scope();
     }
-    env.exit_scope();
     return object::Object{};
 }
 
