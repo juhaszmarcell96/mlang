@@ -11,10 +11,12 @@ object::Object ForStatementNode::execute (script::EnvStack& env) const {
     /* assignments */
     if (m_initialization) { m_initialization->execute(env); }
     while (true) {
+        env.enter_scope();
         /* check tests */
         object::Object test_val = m_test->execute(env);
         if (!(test_val.is_true())) {
-            return object::Object{};
+            env.exit_scope();
+            break;
         }
         try {
             /* execute scope */
@@ -23,6 +25,7 @@ object::Object ForStatementNode::execute (script::EnvStack& env) const {
         catch (const Break& e) {
             /* handle break */
             /* break the loop */
+            env.exit_scope();
             break;
         }
         catch (const Continue& e) {
@@ -32,10 +35,12 @@ object::Object ForStatementNode::execute (script::EnvStack& env) const {
         catch (const Return& e) {
             /* handle return -> exit the scope and throw it further, it is not ours to handle */
             env.exit_scope();
+            env.exit_scope();
             throw;
         }
         /* do updates */
         if (m_update) { m_update->execute(env); }
+        env.exit_scope();
     }
     env.exit_scope();
     return object::Object{};
