@@ -1,6 +1,5 @@
 #include "mlang/ast/func_decl_node.hpp"
 #include "mlang/ast/exception.hpp"
-#include "mlang/function.hpp"
 
 namespace mlang {
 namespace ast {
