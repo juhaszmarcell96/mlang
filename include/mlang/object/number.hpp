@@ -21,11 +21,13 @@ public:
 
     const ObjectFactory& get_factory () const override;
 
+    double get () const;
+
     /*
-    void construct (const std::vector<std::shared_ptr<InternalObject>>& params) override;
     void assign (const std::vector<std::shared_ptr<InternalObject>>& params) override;
     void destruct () override;
     */
+    void construct (const std::vector<std::shared_ptr<InternalObject>>& params) override;
     void assign (const std::shared_ptr<InternalObject> param) override;
 
     bool is_true () const override;

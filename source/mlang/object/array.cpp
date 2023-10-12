@@ -16,12 +16,12 @@ const ObjectFactory& Array::get_factory () const {
 }
 
 /* construct */
-/*void construct (const std::vector<std::shared_ptr<InternalObject>>& params) override {
+void Array::construct (const std::vector<std::shared_ptr<InternalObject>>& params) {
     if (params.size() == 0) { m_arr.clear(); return; }
     for (const auto param : params) {
         m_arr.push_back(Object{param});
     }
-}*/
+}
 /* assign */
 /*void assign (const std::vector<std::shared_ptr<InternalObject>>& params) override {
     m_arr = params;

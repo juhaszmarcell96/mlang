@@ -14,12 +14,12 @@ const ObjectFactory& Boolean::get_factory () const {
 }
 
 /* construct */
-/*void construct (const std::vector<std::shared_ptr<InternalObject>>& params) {
+void Boolean::construct (const std::vector<std::shared_ptr<InternalObject>>& params) {
     if (params.size() == 0) { m_value = false; }
     assert_params(params, 1, type_name, "constructor");
     assert_parameter(params[0], type_name, "constructor");
     m_value = params[0]->is_true();
-}*/
+}
 /* assign */
 /*void assign (const std::vector<std::shared_ptr<InternalObject>>& params) {
     assert_params(params, 1, type_name, operators::assign);

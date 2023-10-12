@@ -13,6 +13,7 @@ namespace ast {
 enum class ast_node_types {
     none,
     main,
+    constructor,
     value,
     array,
     variable,

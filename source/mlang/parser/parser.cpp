@@ -26,6 +26,7 @@
 #include "mlang/ast/continue_node.hpp"
 #include "mlang/ast/return_node.hpp"
 #include "mlang/ast/exit_node.hpp"
+#include "mlang/ast/constructor_node.hpp"
 
 #include "mlang/object/object.hpp"
 #include "mlang/object/string.hpp"
@@ -103,7 +104,21 @@ ast::node_ptr Parser::primary () {
         }
         return std::make_unique<ast::VariableNode>(identifier_str);
     }
-    //if (consume(script::token_types::kw_new)) { return std::make_unique<VariableNode>(prev()->value_str); }
+    if (consume(script::token_types::kw_new)) {
+        consume(script::token_types::identifier, "missing identifier in 'new' expression");
+        std::string type_name = prev()->value_str;
+        consume(script::token_types::round_bracket_open, "missing identifier '(' in 'new' expression");
+        std::unique_ptr<ast::ConstructorNode> constructor_ptr = std::make_unique<ast::ConstructorNode>(type_name);
+        while (!consume(script::token_types::round_bracket_close)) {
+            constructor_ptr->add_argument(logic_or());
+            if (consume(script::token_types::comma)) {
+                if (consume(script::token_types::curly_bracket_close)) {
+                    throw syntax_error{ "',' is followed by '}', which is invalid", prev()->line, prev()->pos};
+                }
+            }
+        }
+        return constructor_ptr;
+    }
     if (consume(script::token_types::curly_bracket_open)) {
         std::unique_ptr<ast::ArrayNode> arr_ptr = std::make_unique<ast::ArrayNode>();
         while (!consume(script::token_types::curly_bracket_close)) {

@@ -37,7 +37,11 @@ Object Object::call (const std::string& func, const std::vector<Object>& params)
 }
 
 void Object::construct (const std::vector<Object>& params) {
-    /* TODO */
+    std::vector<std::shared_ptr<InternalObject>> internal_params;
+    for (const Object& o : params) {
+        internal_params.push_back(o.m_object->obj);
+    }
+    m_object->obj->construct(internal_params);
 }
 void Object::assign (const Object& param) {
     m_object->obj = param.get_factory().create();

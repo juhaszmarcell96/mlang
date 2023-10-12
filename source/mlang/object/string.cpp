@@ -15,13 +15,13 @@ const ObjectFactory& String::get_factory () const {
 }
 
 /* construct */
-/*void construct (const std::vector<std::shared_ptr<InternalObject>>& params) {
+void String::construct (const std::vector<std::shared_ptr<InternalObject>>& params) {
     if (params.size() == 0) { m_value = ""; }
-    assert_params(params, 1, type_name, operators::construct);
-    assert_parameter(params[0], type_name, operators::construct);
+    assert_params(params, 1, type_name, "constructor");
+    assert_parameter(params[0], type_name, "constructor");
     const std::shared_ptr<String> str_ptr = assert_cast<String>(params[0], type_name);
     m_value = str_ptr->get();
-}*/
+}
 /* assign */
 /*void assign (const std::vector<std::shared_ptr<InternalObject>>& params) {
     assert_params(params, 1, type_name, operators::construct);

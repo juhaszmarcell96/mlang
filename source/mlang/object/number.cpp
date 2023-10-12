@@ -14,14 +14,18 @@ const ObjectFactory& Number::get_factory () const {
     return factory;
 }
 
+double Number::get () const {
+    return m_value;
+}
+
 /* construct */
-/*void construct (const std::vector<std::shared_ptr<InternalObject>>& params) {
+void Number::construct (const std::vector<std::shared_ptr<InternalObject>>& params) {
     if (params.size() == 0) { m_value = 0.0; }
-    assert_params(params, 1, type_name, operators::construct);
-    assert_parameter(params[0], type_name, operators::construct);
+    assert_params(params, 1, type_name, "constructor");
+    assert_parameter(params[0], type_name, "constructor");
     const std::shared_ptr<Number> num_ptr = assert_cast<Number>(params[0], type_name);
-    m_value = num_ptr->get();
-}*/
+    m_value = num_ptr->m_value;
+}
 /* assign */
 /*void assign (const std::vector<std::shared_ptr<InternalObject>>& params) {
     assert_params(params, 1, type_name, operators::assign);

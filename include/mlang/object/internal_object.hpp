@@ -23,7 +23,7 @@ public:
 
     virtual std::shared_ptr<InternalObject> call (const std::string& func, const std::vector<std::shared_ptr<InternalObject>>& params) = 0;
 
-    //virtual void construct (const std::vector<std::shared_ptr<InternalObject>>& params) = 0;
+    virtual void construct (const std::vector<std::shared_ptr<InternalObject>>& params) = 0;
     //virtual void assign (const std::vector<std::shared_ptr<InternalObject>>& params) = 0;
     virtual void assign (const std::shared_ptr<InternalObject> param) = 0;
     //virtual void destruct () = 0;

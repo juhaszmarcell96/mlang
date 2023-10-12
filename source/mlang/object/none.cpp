@@ -7,7 +7,7 @@ namespace mlang {
 namespace object {
 
 /* construct */
-//void construct (const std::vector<std::shared_ptr<InternalObject>>& params) override { }
+void None::construct (const std::vector<std::shared_ptr<InternalObject>>& params) { }
 /* assign */
 //void assign (const std::vector<std::shared_ptr<InternalObject>>& params) override { }
 /* destruct */

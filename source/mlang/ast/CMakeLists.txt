@@ -28,6 +28,7 @@ add_library(
     value_node.cpp
     variable_node.cpp
     while_node.cpp
+    constructor_node.cpp
 )
 
 target_include_directories(
@@ -68,6 +69,7 @@ set(
     mlang/ast/value_node.hpp
     mlang/ast/variable_node.hpp
     mlang/ast/while_node.hpp
+    mlang/ast/constructor_node.hpp
 )
 
 set_target_properties(
