@@ -1,12 +1,12 @@
 #pragma once
 
 #include "mlang/ast/node.hpp"
-#include "mlang/ast/function.hpp"
+#include "mlang/func/function.hpp"
 
 namespace mlang {
 namespace ast {
 
-class FunctionDeclNode : public Node, public Function {
+class FunctionDeclNode : public Node, public func::Function {
 private:
     std::string m_name;
     node_ptr m_body;

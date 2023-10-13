@@ -61,14 +61,14 @@ bool Environment::has_function (const std::string& function_name) const {
     else { return false; }
 }
 
-void Environment::declare_function (const std::string& function_name, const ast::Function* function) {
+void Environment::declare_function (const std::string& function_name, const func::Function* function) {
     if (has_function(function_name)) {
         throw RuntimeError{"function " + function_name + " already exists"};
     }
     m_functions[function_name] = function;
 }
 
-const ast::Function* Environment::get_function (const std::string& function_name) {
+const func::Function* Environment::get_function (const std::string& function_name) {
     if (m_functions.count(function_name) != 0) {
         return m_functions[function_name];
     }
@@ -114,11 +114,11 @@ bool EnvStack::has_function (const std::string& function_name) const {
     return m_env_stack.top()->has_function(function_name);
 }
 
-void EnvStack::declare_function (const std::string& function_name, const ast::Function* function) {
+void EnvStack::declare_function (const std::string& function_name, const func::Function* function) {
     m_env_stack.top()->declare_function(function_name, function);
 }
 
-const ast::Function* EnvStack::get_function (const std::string& function_name) {
+const func::Function* EnvStack::get_function (const std::string& function_name) {
     return m_env_stack.top()->get_function(function_name);
 }
 

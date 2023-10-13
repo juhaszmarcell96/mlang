@@ -26,6 +26,7 @@ set(
     mlang/script/token.hpp
     mlang/script/environment.hpp
     mlang/script/script.hpp
+    mlang/func/function.hpp
 )
 
 set_target_properties(

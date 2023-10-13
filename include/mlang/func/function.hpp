@@ -5,12 +5,12 @@
 #include "mlang/object/object.hpp"
 
 namespace mlang {
-namespace ast {
+namespace func {
 
 class Function {
 public:
     virtual object::Object call (std::vector<object::Object>& params) const = 0;
 };
 
-} /* namespace ast */
+} /* namespace func */
 } /* namespace mlang */

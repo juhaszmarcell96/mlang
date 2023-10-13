@@ -7,7 +7,7 @@
 #include "mlang/object/boolean.hpp"
 #include "mlang/object/array.hpp"
 
-#include "mlang/ast/function.hpp"
+#include "mlang/func/function.hpp"
 
 #include <map>
 #include <stack>
@@ -28,7 +28,7 @@ private:
                                                                                           //{ object::Array::type_name, std::make_shared<object::ArrayFactory>() },
                                                                                           { object::String::type_name, std::make_shared<object::StringFactory>() }   };
     std::map<std::string, object::Object> m_variables;
-    std::map<std::string, const ast::Function*> m_functions;
+    std::map<std::string, const func::Function*> m_functions;
 
     Environment* m_parent { nullptr };
 public:
@@ -47,8 +47,8 @@ public:
     object::Object& get_variable (const std::string& variable_name);
 
     bool has_function (const std::string& function_name) const;
-    void declare_function (const std::string& function_name, const ast::Function* function);
-    const ast::Function* get_function (const std::string& function_name);
+    void declare_function (const std::string& function_name, const func::Function* function);
+    const func::Function* get_function (const std::string& function_name);
 };
 
 class EnvStack {
@@ -65,8 +65,8 @@ public:
     object::Object& get_variable (const std::string& variable_name);
 
     bool has_function (const std::string& function_name) const;
-    void declare_function (const std::string& function_name, const ast::Function* function);
-    const ast::Function* get_function (const std::string& function_name);
+    void declare_function (const std::string& function_name, const func::Function* function);
+    const func::Function* get_function (const std::string& function_name);
 };
 
 } /* namespace script */
