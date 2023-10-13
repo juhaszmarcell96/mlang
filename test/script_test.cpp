@@ -94,7 +94,8 @@ TEST(ScriptTest, Test5) {
     std::string script_text = "var num;";
     mlang::script::Script script { script_text };
     mlang::script::EnvStack env {};
-    script.execute(env);
+    int ret = script.execute(env);
+    ASSERT_EQ(ret, 0);
 
     ASSERT_EQ(env.has_variable("num"), true);
     ASSERT_EQ(env.get_variable("num").get_typename(), mlang::object::None::type_name);
@@ -104,7 +105,7 @@ TEST(ScriptTest, Test6) {
     std::string script_text = "var n; var s; var b; var a;";
     mlang::script::Script script { script_text };
     mlang::script::EnvStack env {};
-    script.execute(env);
+    int ret = script.execute(env);
 
     ASSERT_EQ(env.has_variable("n"), true);
     ASSERT_EQ(env.get_variable("n").get_typename(), mlang::object::None::type_name);
@@ -121,7 +122,8 @@ TEST(ScriptTest, Test7) {
     script_text += "n = 5;";
     mlang::script::Script script { script_text };
     mlang::script::EnvStack env {};
-    script.execute(env);
+    int ret = script.execute(env);
+    ASSERT_EQ(ret, 0);
 
     ASSERT_EQ(env.has_variable("n"), true);
     ASSERT_EQ(env.get_variable("n").get_typename(), mlang::object::Number::type_name);
@@ -138,7 +140,8 @@ TEST(ScriptTest, Test8) {
     script_text += "c = 3 * ( a + 2 ) - ( b - 2 );";
     mlang::script::Script script { script_text };
     mlang::script::EnvStack env {};
-    script.execute(env);
+    int ret = script.execute(env);
+    ASSERT_EQ(ret, 0);
 
     ASSERT_EQ(env.has_variable("a"), true);
     ASSERT_EQ(env.get_variable("a").get_typename(), mlang::object::Number::type_name);
@@ -155,7 +158,8 @@ TEST(ScriptTest, Test8) {
     script_text += "b *= a; \n";
     script_text += "c /= b * 2 - 10 * a;";
     mlang::script::Script script2 { script_text };
-    script2.execute(env);
+    ret = script2.execute(env);
+    ASSERT_EQ(ret, 0);
 
     ASSERT_EQ(env.has_variable("a"), true);
     ASSERT_EQ(env.get_variable("a").get_typename(), mlang::object::Number::type_name);
@@ -182,7 +186,8 @@ TEST(ScriptTest, Test9) {
     script_text += "}";
     mlang::script::Script script { script_text };
     mlang::script::EnvStack env {};
-    script.execute(env);
+    int ret = script.execute(env);
+    ASSERT_EQ(ret, 0);
 
     ASSERT_EQ(env.has_variable("a"), true);
     ASSERT_EQ(env.get_variable("a").get_typename(), mlang::object::Number::type_name);
@@ -219,7 +224,8 @@ TEST(ScriptTest, Test10) {
     script_text += "} \n";
     mlang::script::Script script { script_text };
     mlang::script::EnvStack env {};
-    script.execute(env);
+    int ret = script.execute(env);
+    ASSERT_EQ(ret, 0);
 
     ASSERT_EQ(env.has_variable("a"), true);
     ASSERT_EQ(env.get_variable("a").get_typename(), mlang::object::Number::type_name);
@@ -242,7 +248,8 @@ TEST(ScriptTest, Test11) {
     script_text += "var c = 3 * ( a + 2 ) - ( b - 2 );";
     mlang::script::Script script { script_text };
     mlang::script::EnvStack env {};
-    script.execute(env);
+    int ret = script.execute(env);
+    ASSERT_EQ(ret, 0);
 
     ASSERT_EQ(env.has_variable("a"), true);
     ASSERT_EQ(env.get_variable("a").get_typename(), mlang::object::Number::type_name);
@@ -264,7 +271,8 @@ TEST(ScriptTest, Test12) {
     script_text += "}";
     mlang::script::Script script { script_text };
     mlang::script::EnvStack env {};
-    script.execute(env);
+    int ret = script.execute(env);
+    ASSERT_EQ(ret, 0);
 
     ASSERT_EQ(env.has_variable("a"), true);
     ASSERT_EQ(env.get_variable("a").get_typename(), mlang::object::Number::type_name);
@@ -282,7 +290,8 @@ TEST(ScriptTest, Test13) {
     script_text += "}";
     mlang::script::Script script { script_text };
     mlang::script::EnvStack env {};
-    script.execute(env);
+    int ret = script.execute(env);
+    ASSERT_EQ(ret, 0);
 
     ASSERT_EQ(env.has_variable("a"), true);
     ASSERT_EQ(env.get_variable("a").get_typename(), mlang::object::Number::type_name);

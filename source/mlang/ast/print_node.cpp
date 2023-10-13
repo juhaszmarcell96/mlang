@@ -4,28 +4,28 @@ namespace mlang {
 namespace ast {
 
 std::string PrintNode::get_integer (script::EnvStack& env) const {
-    if (m_index >= m_args.size()) { throw syntax_error{"mismatch in print arguments"}; }
+    if (m_index >= m_args.size()) { throw SyntaxError{"mismatch in print arguments"}; }
     object::Object res = m_args[m_index]->execute(env);
     ++m_index;
     return std::to_string(static_cast<int>(res.get_number()));
 }
 
 std::string PrintNode::get_string (script::EnvStack& env) const {
-    if (m_index >= m_args.size()) { throw syntax_error{"mismatch in print arguments"}; }
+    if (m_index >= m_args.size()) { throw SyntaxError{"mismatch in print arguments"}; }
     object::Object res = m_args[m_index]->execute(env);
     ++m_index;
     return res.get_string();
 }
 
 std::string PrintNode::get_float (script::EnvStack& env) const {
-    if (m_index >= m_args.size()) { throw syntax_error{"mismatch in print arguments"}; }
+    if (m_index >= m_args.size()) { throw SyntaxError{"mismatch in print arguments"}; }
     object::Object res = m_args[m_index]->execute(env);
     ++m_index;
     return std::to_string(res.get_number());
 }
 
 std::string PrintNode::get_bool (script::EnvStack& env) const {
-    if (m_index >= m_args.size()) { throw syntax_error{"mismatch in print arguments"}; }
+    if (m_index >= m_args.size()) { throw SyntaxError{"mismatch in print arguments"}; }
     object::Object res = m_args[m_index]->execute(env);
     ++m_index;
     return (res.is_true() ? "true" : "false");

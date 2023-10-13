@@ -28,7 +28,7 @@ public:
     
     const std::vector<Token>& get_tokens () const;
 
-    void execute (EnvStack& env);
+    int execute (EnvStack& env);
 };
 
 } /* namespace script */

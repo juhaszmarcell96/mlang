@@ -29,7 +29,7 @@ Script::Script (const std::string& script) {
         const tokenizer::Token& token = tokens[index];
         switch (token.get_type()) {
             case tokenizer::token_types::none: {
-                throw semantics_error{"token cannot be of type none", token.get_line(), token.get_pos()};
+                throw SyntaxError{"token cannot be of type none", token.get_line(), token.get_pos()};
             }
             case tokenizer::token_types::identifier: {
                 if (token.get_value().compare("none") == 0) {
@@ -121,10 +121,10 @@ Script::Script (const std::string& script) {
                     m_tokens.push_back(Token{token_types::number, value, token.get_line(), token.get_pos()});
                 }
                 catch (const std::invalid_argument&) {
-                    throw semantics_error{"number token could not be converted, invalid format", token.get_line(), token.get_pos()};
+                    throw SyntaxError{"number token could not be converted, invalid format", token.get_line(), token.get_pos()};
                 }
                 catch (const std::out_of_range&) {
-                    throw semantics_error{"number token could not be converted, out of range", token.get_line(), token.get_pos()};
+                    throw SyntaxError{"number token could not be converted, out of range", token.get_line(), token.get_pos()};
                 }
                 break;
             }
@@ -429,7 +429,7 @@ Script::Script (const std::string& script) {
                 break;
             }
             default: {
-                throw semantics_error{"unknown token type", token.get_line(), token.get_pos()};
+                throw SyntaxError{"unknown token type", token.get_line(), token.get_pos()};
             }
         }
     }
@@ -438,13 +438,27 @@ Script::Script (const std::string& script) {
     
 const std::vector<Token>& Script::get_tokens () const { return m_tokens; }
 
-void Script::execute (script::EnvStack& env) {
+int Script::execute (script::EnvStack& env) {
     parser::Parser parser {};
-    ast::node_ptr root = parser.parse( m_tokens );
+    ast::node_ptr root {};
+    try {
+        root = parser.parse( m_tokens );
+    }
+    catch (const SyntaxError& e) {
+        std::cout << "ERROR : syntax error occurred" << std::endl;
+        std::cout << e.what() << std::endl;
+        return 1;
+    }
     //root->print();
-    root->execute(env);
-    //env.step();
-    //if (env.get_pc() >= lines.size()) break;
+    try {
+        root->execute(env);
+    }
+    catch (const RuntimeError& e) {
+        std::cout << "ERROR : runtime error occurred" << std::endl;
+        std::cout << e.what() << std::endl;
+        return 2;
+    }
+    return 0;
 }
 
 } /* namespace script */

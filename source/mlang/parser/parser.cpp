@@ -73,9 +73,9 @@ bool Parser::consume (script::token_types type) {
 }
 
 void Parser::consume (script::token_types type, const std::string& err_msg) {
-    if (done()) { throw syntax_error{ err_msg, prev()->line, prev()->pos}; }
+    if (done()) { throw SyntaxError{ err_msg, prev()->line, prev()->pos}; }
     if (curr()->type != type) {
-        throw syntax_error{ err_msg, curr()->line, curr()->pos};
+        throw SyntaxError{ err_msg, curr()->line, curr()->pos};
     }
     next();
 }
@@ -114,7 +114,7 @@ ast::node_ptr Parser::primary () {
             constructor_ptr->add_argument(logic_or());
             if (consume(script::token_types::comma)) {
                 if (consume(script::token_types::curly_bracket_close)) {
-                    throw syntax_error{ "',' is followed by '}', which is invalid", prev()->line, prev()->pos};
+                    throw SyntaxError{ "',' is followed by '}', which is invalid", prev()->line, prev()->pos};
                 }
             }
         }
@@ -126,13 +126,13 @@ ast::node_ptr Parser::primary () {
             arr_ptr->add_element(logic_or());
             if (consume(script::token_types::comma)) {
                 if (consume(script::token_types::curly_bracket_close)) {
-                    throw syntax_error{ "',' is followed by '}', which is invalid", prev()->line, prev()->pos};
+                    throw SyntaxError{ "',' is followed by '}', which is invalid", prev()->line, prev()->pos};
                 }
             }
         }
         return arr_ptr;
     }
-    throw syntax_error{ "unexpected primary token", curr()->line, curr()->pos};
+    throw SyntaxError{ "unexpected primary token", curr()->line, curr()->pos};
     return nullptr;
 }
 

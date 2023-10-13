@@ -109,11 +109,11 @@ void Tokenizer::process_whitespace () {
 void Tokenizer::process_backslash () {
     if (m_current_state == tokenizer_states::none) {
         /* backslash without a token? -> syntax error */
-        throw syntax_error{"character '\\' at invalid position", m_code.get_line_num(), m_code.get_column()};
+        throw SyntaxError{"character '\\' at invalid position", m_code.get_line_num(), m_code.get_column()};
     }
     else if (m_current_state == tokenizer_states::parsing_identifier) {
         /* backslash in identiefer? -> syntax error */
-        throw syntax_error{"character '\\' at invalid position", m_code.get_line_num(), m_code.get_column()};
+        throw SyntaxError{"character '\\' at invalid position", m_code.get_line_num(), m_code.get_column()};
     }
     else if (m_current_state == tokenizer_states::parsing_string) {
         /* parsing a string -> backslash in string can be tricky */
@@ -125,7 +125,7 @@ void Tokenizer::process_backslash () {
     }
     else if (m_current_state == tokenizer_states::parsing_number) {
         /* parsing a number -> no backslash in number -> syntax error */
-        throw syntax_error{"character '\\' at invalid position", m_code.get_line_num(), m_code.get_column()};
+        throw SyntaxError{"character '\\' at invalid position", m_code.get_line_num(), m_code.get_column()};
     }
 }
 
@@ -178,7 +178,7 @@ void Tokenizer::process_letter () {
             else if (m_current_char == 't') append_char('\t');
             else if (m_current_char == 'r') append_char('\r');
             /* TODO : rest of the escape sequences */
-            else throw syntax_error{"invalid escape sequence", m_code.get_line_num(), m_code.get_column()};
+            else throw SyntaxError{"invalid escape sequence", m_code.get_line_num(), m_code.get_column()};
             m_escape = false;
         }
         else {
@@ -196,22 +196,22 @@ void Tokenizer::process_letter () {
 
 void Tokenizer::process_apostrophe () {
     if (m_current_state == tokenizer_states::none) {
-        throw syntax_error{"unexpected apostrophe", m_code.get_line_num(), m_code.get_column()};
+        throw SyntaxError{"unexpected apostrophe", m_code.get_line_num(), m_code.get_column()};
     }
     else if (m_current_state == tokenizer_states::parsing_identifier) {
-        throw syntax_error{"unexpected apostrophe", m_code.get_line_num(), m_code.get_column()};
+        throw SyntaxError{"unexpected apostrophe", m_code.get_line_num(), m_code.get_column()};
     }
     else if (m_current_state == tokenizer_states::parsing_string) {
         /* parsing a string -> escape or not */
         if (m_escape) {
-            throw syntax_error{"invalid escape sequence", m_code.get_line_num(), m_code.get_column()};
+            throw SyntaxError{"invalid escape sequence", m_code.get_line_num(), m_code.get_column()};
         }
         else {
             append_curr();
         }
     }
     else if (m_current_state == tokenizer_states::parsing_number) {
-        throw syntax_error{"unexpected apostrophe", m_code.get_line_num(), m_code.get_column()};
+        throw SyntaxError{"unexpected apostrophe", m_code.get_line_num(), m_code.get_column()};
     }
 }
 
@@ -235,7 +235,7 @@ void Tokenizer::process_dot () {
     else if (m_current_state == tokenizer_states::parsing_string) {
         /* parsing a string -> escape or not */
         if (m_escape) {
-            throw syntax_error{"invalid escape sequence", m_code.get_line_num(), m_code.get_column()};
+            throw SyntaxError{"invalid escape sequence", m_code.get_line_num(), m_code.get_column()};
         }
         else {
             append_curr();
@@ -276,7 +276,7 @@ void Tokenizer::process_standalone_sign (token_types type) {
     else if (m_current_state == tokenizer_states::parsing_string) {
         /* parsing a string -> escape or not */
         if (m_escape) {
-            throw syntax_error{"invalid escape sequence", m_code.get_line_num(), m_code.get_column()};
+            throw SyntaxError{"invalid escape sequence", m_code.get_line_num(), m_code.get_column()};
         }
         else {
             append_curr();
@@ -500,7 +500,7 @@ void Tokenizer::tokenize() {
                 break;
             }
             default: {
-                throw syntax_error{"unknown character ", m_code.get_line_num(), m_code.get_column()};
+                throw SyntaxError{"unknown character ", m_code.get_line_num(), m_code.get_column()};
             }
         }
     }
@@ -514,7 +514,7 @@ void Tokenizer::tokenize() {
     }
     else if (m_current_state == tokenizer_states::parsing_string) {
         /* string can only end in " -> error */
-        throw syntax_error{"string not closed", m_code.get_line_num(), m_code.get_column()};
+        throw SyntaxError{"string not closed", m_code.get_line_num(), m_code.get_column()};
     }
     else if (m_current_state == tokenizer_states::parsing_number) {
         /* end number */

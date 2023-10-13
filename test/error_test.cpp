@@ -14,14 +14,8 @@ TEST(ErrorTest, Test0) {
     mlang::script::Script script { script_text };
     mlang::script::EnvStack env {};
 
-    try {
-        script.execute(env);
-        FAIL();
-    }
-    catch (const mlang::LangException& e) {
-        //std::cout << e.what() << std::endl;
-        SUCCEED();
-    }
+    int ret = script.execute(env);
+    ASSERT_EQ(ret, 1);
 }
 
 TEST(ErrorTest, Test2) {
@@ -32,12 +26,6 @@ TEST(ErrorTest, Test2) {
     mlang::script::Script script { script_text };
     mlang::script::EnvStack env {};
 
-    try {
-        script.execute(env);
-        FAIL();
-    }
-    catch (const mlang::LangException& e) {
-        //std::cout << e.what() << std::endl;
-        SUCCEED();
-    }
+    int ret = script.execute(env);
+    ASSERT_EQ(ret, 1);
 }
