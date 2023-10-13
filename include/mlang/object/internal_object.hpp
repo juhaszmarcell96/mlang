@@ -22,6 +22,7 @@ public:
     virtual ~InternalObject () = default;
 
     virtual std::shared_ptr<InternalObject> call (const std::string& func, const std::vector<std::shared_ptr<InternalObject>>& params) = 0;
+    virtual std::shared_ptr<InternalObject> access (const std::string& member) = 0;
 
     virtual void construct (const std::vector<std::shared_ptr<InternalObject>>& params) = 0;
     //virtual void assign (const std::vector<std::shared_ptr<InternalObject>>& params) = 0;

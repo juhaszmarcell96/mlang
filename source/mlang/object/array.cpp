@@ -110,8 +110,13 @@ std::shared_ptr<InternalObject> Array::call (const std::string& func, const std:
         return reverse();
     }
     else {
-        throw RuntimeError { "string object has no " + func + " member function" };
+        throw RuntimeError { "object of type '" + type_name + "' has no '" + func + "' member function" };
     }
+    return nullptr;
+}
+
+std::shared_ptr<InternalObject> Array::access (const std::string& member) {
+    throw RuntimeError { "object of type '" + type_name + "' has no '" + member + "' member" };
     return nullptr;
 }
 

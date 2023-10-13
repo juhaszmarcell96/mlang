@@ -28,6 +28,7 @@ public:
     std::shared_ptr<mlang::object::InternalObject> unary_minus () override;
 
     std::shared_ptr<mlang::object::InternalObject> call (const std::string& func, const std::vector<std::shared_ptr<InternalObject>>& params) override;
+    std::shared_ptr<mlang::object::InternalObject> access (const std::string& member) override;
 
     std::shared_ptr<mlang::object::InternalObject> abs () const;
 
@@ -84,6 +85,16 @@ std::shared_ptr<mlang::object::InternalObject> Complex::call (const std::string&
     throw mlang::RuntimeError { "object of type '" + type_name + "' has no '" + func + "' member function" };
 }
 
+std::shared_ptr<mlang::object::InternalObject> Complex::access (const std::string& member) {
+    if (member.compare("real") == 0) {
+        return std::make_shared<mlang::object::Number>(m_real);
+    }
+    else if (member.compare("imag") == 0) {
+        return std::make_shared<mlang::object::Number>(m_imag);
+    }
+    throw mlang::RuntimeError { "object of type '" + type_name + "' has no '" + member + "' member" };
+}
+
 std::shared_ptr<mlang::object::InternalObject> Complex::abs () const {
     return std::make_shared<mlang::object::Number>(std::sqrt(m_real * m_real + m_imag * m_imag));
 }
@@ -98,23 +109,12 @@ std::shared_ptr<mlang::object::InternalObject> ComplexFactory::create () const {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-TEST(ConstructorTest, Test1) {
+TEST(CustomClassTest, Test1) {
     std::string script_text;
     script_text += "var a = new Complex(1, 2); \n";
-    script_text += "var b = a.abs();";
+    script_text += "var b = a.abs();\n";
+    script_text += "var real = a.real;\n";
+    script_text += "var imag = a.imag;";
     mlang::script::Script script { script_text };
     mlang::script::EnvStack env {};
     mlang::script::Environment::define_type("Complex", std::make_shared<ComplexFactory>());
@@ -127,4 +127,10 @@ TEST(ConstructorTest, Test1) {
     ASSERT_EQ(env.get_variable("b").get_typename(), mlang::object::Number::type_name);
     ASSERT_GT(env.get_variable("b").get_number(), 2.236);
     ASSERT_LT(env.get_variable("b").get_number(), 2.237);
+    ASSERT_EQ(env.has_variable("real"), true);
+    ASSERT_EQ(env.get_variable("real").get_typename(), mlang::object::Number::type_name);
+    ASSERT_EQ(env.get_variable("real").get_number(), 1);
+    ASSERT_EQ(env.has_variable("imag"), true);
+    ASSERT_EQ(env.get_variable("imag").get_typename(), mlang::object::Number::type_name);
+    ASSERT_EQ(env.get_variable("imag").get_number(), 2);
 }

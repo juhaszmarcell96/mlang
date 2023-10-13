@@ -147,6 +147,10 @@ std::shared_ptr<InternalObject> Number::call (const std::string& func, const std
     throw RuntimeError { "object of type '" + type_name + "' has no '" + func + "' member function" };
 }
 
+std::shared_ptr<InternalObject> Number::access (const std::string& member) {
+    throw RuntimeError { "object of type '" + type_name + "' has no '" + member + "' member" };
+}
+
 std::string Number::get_string () const { return std::to_string(m_value); }
 std::string Number::get_typename () const { return type_name; }
 double Number::get_number () const { return m_value; }

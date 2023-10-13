@@ -36,6 +36,10 @@ Object Object::call (const std::string& func, const std::vector<Object>& params)
     return Object { m_object->obj->call(func, internal_params) };
 }
 
+Object Object::access (const std::string& member) {
+    return Object { m_object->obj->access(member) };
+}
+
 void Object::construct (const std::vector<Object>& params) {
     std::vector<std::shared_ptr<InternalObject>> internal_params;
     for (const Object& o : params) {

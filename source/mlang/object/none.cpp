@@ -25,6 +25,10 @@ std::shared_ptr<InternalObject> None::call (const std::string& func, const std::
     throw RuntimeError { "object of type '" + type_name + "' has no member functions" };
 }
 
+std::shared_ptr<InternalObject> None::access (const std::string& member) {
+    throw RuntimeError { "object of type '" + type_name + "' has no '" + member + "' member" };
+}
+
 std::string None::get_string () const { return type_name; }
 std::string None::get_typename () const { return type_name; }
 

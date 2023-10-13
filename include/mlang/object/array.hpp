@@ -44,6 +44,7 @@ public:
 
 
     std::shared_ptr<InternalObject> call (const std::string& func, const std::vector<std::shared_ptr<InternalObject>>& params) override;
+    std::shared_ptr<InternalObject> access (const std::string& member) override;
 
     std::string get_string () const override;
 };

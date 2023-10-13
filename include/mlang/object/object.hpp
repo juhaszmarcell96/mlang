@@ -29,6 +29,7 @@ public:
     ~Object () = default;
 
     Object call (const std::string& func, const std::vector<Object>& params);
+    Object access (const std::string& member);
 
     void construct (const std::vector<Object>& params);
     void assign (const Object& param);

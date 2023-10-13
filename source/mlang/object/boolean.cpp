@@ -57,6 +57,10 @@ std::shared_ptr<InternalObject> Boolean::unary_not () {
 
 std::shared_ptr<InternalObject> Boolean::call (const std::string& func, const std::vector<std::shared_ptr<InternalObject>>& params) {
     throw RuntimeError { "object of type '" + type_name + "' has no '" + func + "' member function" };
+}
+
+std::shared_ptr<InternalObject> Boolean::access (const std::string& member) {
+    throw RuntimeError { "object of type '" + type_name + "' has no '" + member + "' member" };
     return nullptr;
 }
 

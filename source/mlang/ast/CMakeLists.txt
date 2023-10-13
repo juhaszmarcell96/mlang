@@ -20,6 +20,7 @@ add_library(
     if_node.cpp
     logic_operations.cpp
     main_node.cpp
+    member_access.cpp
     member_function.cpp
     print_node.cpp
     return_node.cpp
@@ -60,6 +61,7 @@ set(
     mlang/ast/if_node.hpp
     mlang/ast/logic_operations.hpp
     mlang/ast/main_node.hpp
+    mlang/ast/member_access.hpp
     mlang/ast/member_function.hpp
     mlang/ast/node.hpp
     mlang/ast/print_node.hpp

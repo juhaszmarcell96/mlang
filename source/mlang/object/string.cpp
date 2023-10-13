@@ -87,6 +87,10 @@ std::shared_ptr<InternalObject> String::call (const std::string& func, const std
     return nullptr;
 }
 
+std::shared_ptr<InternalObject> String::access (const std::string& member) {
+    throw RuntimeError { "object of type '" + type_name + "' has no '" + member + "' member" };
+}
+
 std::string String::get_string () const { return m_value; }
 std::string String::get_typename () const { return type_name; }
 

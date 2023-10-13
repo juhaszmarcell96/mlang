@@ -16,6 +16,6 @@ add_executable (
     while_loop_test.cpp
     function_test.cpp
     indexing_test.cpp
-    constructor_test.cpp
+    custom_class_test.cpp
 )
 target_link_libraries (tests ${GTEST_LIBRARIES} pthread script_static)

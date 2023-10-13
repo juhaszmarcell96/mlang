@@ -17,6 +17,7 @@
 #include "mlang/ast/print_node.hpp"
 #include "mlang/ast/func_decl_node.hpp"
 #include "mlang/ast/func_call_node.hpp"
+#include "mlang/ast/member_access.hpp"
 #include "mlang/ast/member_function.hpp"
 #include "mlang/ast/if_node.hpp"
 #include "mlang/ast/logic_operations.hpp"
@@ -169,11 +170,10 @@ ast::node_ptr Parser::post_op () {
                 }
                 expr = std::move(member_func_ptr);
             }
-            // TODO 
-            //else {
-            //    std::unique_ptr<ast::MemberAccessNode> member_access_ptr = std::make_unique<ast::MemberAccessNode>(std::move(expr), member_name);
-            //    expr = std::move(member_access_ptr);
-            //}
+            else {
+                std::unique_ptr<ast::MemberAccessNode> member_access_ptr = std::make_unique<ast::MemberAccessNode>(std::move(expr), member_name);
+                expr = std::move(member_access_ptr);
+            }
         }
         else {
             break;

@@ -38,6 +38,7 @@ enum class ast_node_types {
     func_call,
     subscript,
     member_func,
+    member_access,
     block
 };
 
