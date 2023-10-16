@@ -78,7 +78,7 @@ object::Object PrintNode::execute (script::EnvStack& env) const {
             result.push_back(m_rule[i]);
         }
     }
-    std::cout << result << std::endl;
+    std::cout << result;
     return object::Object {};
 }
 

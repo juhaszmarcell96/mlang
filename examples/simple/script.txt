@@ -1,0 +1,19 @@
+function log (str) {
+    print ("%s - %s\n", get_time(), str);
+}
+
+log ("start");
+
+var i = 0;
+var e = 1;
+for (i = 0; i <= 10; ++i) {
+    if (i < 10) {
+        print ("2^%d  = %d\n", i, e);
+    }
+    else {
+        print ("2^%d = %d\n", i, e);
+    }
+    e *= 2;
+}
+
+log ("end");

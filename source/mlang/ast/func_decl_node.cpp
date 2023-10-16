@@ -15,14 +15,14 @@ object::Object FunctionDeclNode::execute (script::EnvStack& env) const {
     return object::Object{};
 }
 
-object::Object FunctionDeclNode::call (std::vector<object::Object>& params) const {
+object::Object FunctionDeclNode::call (script::EnvStack& env, std::vector<object::Object>& params) const {
     // function should be able to call other function and use global variables
     /* check if the parameters have the same length, none of them are nullptr and have the same type */
     /* same with the return value */
     if (params.size() != m_params.size()) {
         throw RuntimeError{ "function " + m_name + " expects " + std::to_string(m_params.size()) + " parameters but got " + std::to_string(params.size()) };
     }
-    script::EnvStack env {};
+    env.enter_scope();
     for (std::size_t i = 0; i < params.size(); ++i) {
         env.declare_variable(m_params[i], params[i].get_typename());
         env.get_variable(m_params[i]).assign(params[i]);
@@ -33,16 +33,20 @@ object::Object FunctionDeclNode::call (std::vector<object::Object>& params) cons
     catch (const Break& e) {
         /* handle break */
         /* should not have gotten a break exception */
+        env.exit_scope();
         throw RuntimeError{ "invalid 'break' in function " + m_name };
     }
     catch (const Continue& e) {
         /* should not have gotten a continue exception */
+        env.exit_scope();
         throw RuntimeError{ "invalid 'continue' in function " + m_name };
     }
     catch (const Return& e) {
         /* handle  return */
+        env.exit_scope();
         return e.get_value();
     }
+    env.exit_scope();
     return object::Object {};
 }
 

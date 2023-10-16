@@ -7,7 +7,7 @@
 #include "mlang/object/boolean.hpp"
 #include "mlang/object/array.hpp"
 
-#include "mlang/func/function.hpp"
+//#include "mlang/func/function.hpp"
 
 #include <map>
 #include <stack>
@@ -15,10 +15,12 @@
 #include <string>
 
 namespace mlang {
-namespace script {
 
-// forward declare function node
-class FunctionDeclNode;
+namespace func {
+    class Function;
+} /* namespace func */
+
+namespace script {
 
 class Environment {
 private:

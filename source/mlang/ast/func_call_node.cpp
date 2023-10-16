@@ -13,7 +13,7 @@ object::Object FunctionCallNode::execute (script::EnvStack& env) const {
     for (const node_ptr& node : m_params) {
         params.push_back(node->execute(env));
     }
-    return env.get_function(m_name)->call(params);
+    return env.get_function(m_name)->call(env, params);
 }
 
 void FunctionCallNode::add_parameter (node_ptr param) {

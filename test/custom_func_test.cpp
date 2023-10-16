@@ -10,7 +10,7 @@
 
 class MyFunc : public mlang::func::Function {
 public:
-    mlang::object::Object call (std::vector<mlang::object::Object>& params) const override {
+    mlang::object::Object call (mlang::script::EnvStack& env, std::vector<mlang::object::Object>& params) const override {
         if (params.size() != 2) { throw mlang::RuntimeError{ "MyFunc expects 2 parameters"}; }
         if (params[0].get_typename() != mlang::object::Number::type_name) {
             throw mlang::RuntimeError{ "MyFunc expects the 1st parameter to be of type " + mlang::object::Number::type_name};

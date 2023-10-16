@@ -17,7 +17,7 @@ public:
     void set_body (node_ptr body);
     void add_parameter (const std::string& param);
     object::Object execute (script::EnvStack& env) const override;
-    object::Object call (std::vector<object::Object>& params) const override;
+    object::Object call (script::EnvStack& env, std::vector<object::Object>& params) const override;
     void print () const override;
 };
 
