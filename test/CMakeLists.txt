@@ -17,5 +17,6 @@ add_executable (
     function_test.cpp
     indexing_test.cpp
     custom_class_test.cpp
+    custom_func_test.cpp
 )
 target_link_libraries (tests ${GTEST_LIBRARIES} pthread script_static)
