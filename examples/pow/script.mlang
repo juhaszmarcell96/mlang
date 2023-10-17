@@ -1,0 +1,17 @@
+function pow (a, b) {
+    if (b <= 0) {
+        return 0;
+    }
+    var result = a;
+    for (; b > 1; --b) {
+        result *= a;
+    }
+    return result;
+}
+
+var base = 2;
+var exponent = 10;
+
+var result = pow(base, exponent);
+
+print("the result of %d^%d is %d\n", base, exponent, result);

@@ -1,6 +1,28 @@
 # mlang
 
-  
+Embeddable interpreter for C++ projects. The library contains only the language core supporting the scripting language syntax with built-in basic data types (None, Boolean, String, Number, Array). Complex data types can be implemented on the C++ side of the project and instantiated and used in the script. Functions can be defined in both the script and the C++ side, allowing the user to hide proprietary implementations while still allowing for robust reconfiguration of the application without the need for a new build. Furthermore, the library does not provide support for IO operations and other complex algorithms that could issue concerns regarding security considerations. These functionalities can be implemented in the C++ host project allowing for compliance with internal cyber security policies. The library offers a flexible and robust extension to any C++ project that wants to offer a scripting interface but does not want to bind extensive scripting language interpreters such as Python or Lua. The language offers a familiar C-style syntax while supporting dynamic types.
+
+```
+function pow (a, b) {
+    if (b <= 0) {
+        return 0;
+    }
+    var result = a;
+    for (; b > 1; --b) {
+        result *= a;
+    }
+    return result;
+}
+
+var base = 2;
+var exponent = 10;
+
+var result = pow(base, exponent);
+
+print("the result or %d^%d is %d\n", base, exponent, result);
+```
+
+output : the result of 2^10 is 1024
 
 ## Grammar notation Code representation in the parser
 
@@ -15,33 +37,40 @@ Nonterminal   -> Call to that rule's function
 
 ## Operators
 
+The language supports the following built-in operators:
+
 ```
-=     -> assignment
-+=    -> add_equal
--=    -> sub_equal
-*=    -> mul_equal
-/=    -> div_equal
-+     -> binary_add
--     -> binary_sub
-*     -> binary_mul
-/     -> binary_div
-==    -> binary_equality
-!=    -> binary_inequality
->     -> comparison_greater
-<     -> comparison_less
->=    -> comparison_greater_equal
-<=    -> comparison_less_equal
-[]    -> arr_indexing
+new   -> construct
+=     -> assign
++=    -> operator_add_equal
+-=    -> operator_sub_equal
+*=    -> operator_mul_equal
+/=    -> operator_div_equal
++     -> operator_binary_add
+-     -> operator_binary_sub
+*     -> operator_binary_mul
+/     -> operator_binary_div
+==    -> operator_comparison_equal
+!=    -> operator_comparison_not_equal
+>     -> operator_greater
+<     -> operator_less
+>=    -> operator_greater_equal
+<=    -> operator_less_equal
+[]    -> operator_subscript
 !     -> unary_not
 -     -> unary_minus
-()    -> boolean_operator (is_true member function -> override)
+()    -> boolean_operator (is_true member function)
 ++x   -> prefix_increment
 x++   -> postfix_increment
 --x   -> prefix_decrement
 x--   -> postfix_decrement
+&&    -> operator_binary_and
+||    -> operator_binary_or
 ```
 
 ## Formal Grammar
+
+The formal grammar of the language, implemented by the parser, is the following:
 
 ```
 program            -> declaration* EOF

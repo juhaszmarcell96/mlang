@@ -254,7 +254,7 @@ Script::Script (const std::string& script) {
                         ++index;
                         break;
                     }
-                    if (tokens[index + 1].get_type() == tokenizer::token_types::plus) {
+                    if (tokens[index + 1].get_type() == tokenizer::token_types::dash) {
                         debug("token with type 'dash_dash'");
                         m_tokens.push_back(Token{token_types::dash_dash, token.get_line(), token.get_pos()});
                         ++index;
