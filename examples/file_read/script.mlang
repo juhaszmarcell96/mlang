@@ -1,0 +1,60 @@
+var file_text = read_file("./examples/file_read/wpa_supplicant.conf");
+
+var key_mgmt_str = file_text.regex_find("key_mgmt=(.*)", "$1");
+if (!key_mgmt_str.is_empty()) {
+    if (key_mgmt_str == "NONE") {
+        set_parameter("WLAN_STASecurityMode", 0, "EN_WLAN_STASecurityMode::EE_WLANOpen");
+    }
+    elif (key_mgmt_str == "WPA-PSK") {
+        set_parameter("WLAN_STASecurityMode", 0, "EN_WLAN_STASecurityMode::EE_WPA2_Personal");
+    }
+    elif (key_mgmt_str == "WPA-PSK SAE") {
+        set_parameter("WLAN_STASecurityMode", 0, "EN_WLAN_STASecurityMode::EE_WPA3_PersonalTransition");
+    }
+    elif (key_mgmt_str == "WPA-EAP") {
+        set_parameter("WLAN_STASecurityMode", 0, "EN_WLAN_STASecurityMode::EE_WPA2_Enterprise");
+    }
+    else {
+        print("ERROR : unknown key management policy '%s'\n", key_mgmt_str);
+    }
+}
+
+var eap_str = file_text.regex_find("eap=(.*)", "$1");
+if (!eap_str.is_empty()) {
+    if (eap_str == "PEAP") {
+        set_parameter("WLAN_STASecurityEAP", 0, "EN_WLANSecurityEAP::EE_EAP_PEAP");
+    }
+    elif (eap_str == "TLS") {
+        set_parameter("WLAN_STASecurityEAP", 0, "EN_WLANSecurityEAP::EE_EAP_TLS");
+    }
+    else {
+        print("ERROR : invalid security EAP '%s'\n", eap_str);
+    }
+}
+
+var password_str = file_text.regex_find("password=\"(.*)\"", "$1");
+if (!password_str.is_empty()) {
+    set_parameter("WLAN_STAPassword", 0, password_str);
+}
+
+var username_str = file_text.regex_find("identity=\"(.*)\"", "$1");
+if (!username_str.is_empty()) {
+    set_parameter("WLAN_STAUserName", 0, username_str);
+}
+
+var ssid_str = file_text.regex_find("ssid=\"(.*)\"", "$1");
+if (!ssid_str.is_empty()) {
+    set_parameter("WLAN_STAName", 0, ssid_str);
+}
+
+print("\n\n");
+
+var new_ssid_name = "my_ssid_name";
+var new_key_mgmt = "IEEE8021X";
+
+print("ssid will be changed from '%s' to '%s'\n", file_text.regex_find("ssid=\"(.*)\"", "$1"), new_ssid_name);
+print("key_mgmt will be changed from '%s' to '%s'\n\n", file_text.regex_find("key_mgmt=(.*)", "$1"), new_key_mgmt);
+
+var new_file_text = file_text.regex_replace("ssid=\".*\"", "ssid=\"" + new_ssid_name + "\"");
+new_file_text = new_file_text.regex_replace("key_mgmt=.*", "key_mgmt=" + new_key_mgmt);
+print("%s\n", new_file_text);

@@ -39,6 +39,7 @@ public:
 
     std::shared_ptr<InternalObject> reverse ();
     std::shared_ptr<InternalObject> length ();
+    std::shared_ptr<InternalObject> is_empty ();
     std::shared_ptr<InternalObject> contains (const std::vector<std::shared_ptr<InternalObject>>& params);
     std::shared_ptr<InternalObject> contains_regex (const std::vector<std::shared_ptr<InternalObject>>& params);
     std::shared_ptr<InternalObject> regex_replace (const std::vector<std::shared_ptr<InternalObject>>& params);

@@ -27,7 +27,7 @@ private:
     static inline std::map<std::string, std::shared_ptr<object::ObjectFactory>> m_types { { object::None::type_name, std::make_shared<object::NoneFactory>() },
                                                                                           { object::Number::type_name, std::make_shared<object::NumberFactory>() },
                                                                                           { object::Boolean::type_name, std::make_shared<object::BooleanFactory>() },
-                                                                                          //{ object::Array::type_name, std::make_shared<object::ArrayFactory>() },
+                                                                                          { object::Array::type_name, std::make_shared<object::ArrayFactory>() },
                                                                                           { object::String::type_name, std::make_shared<object::StringFactory>() }   };
     std::map<std::string, object::Object> m_variables;
     std::map<std::string, const func::Function*> m_functions;

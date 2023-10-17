@@ -75,6 +75,10 @@ std::shared_ptr<InternalObject> String::length () {
     return std::make_shared<Number>(m_value.length());
 }
 
+std::shared_ptr<InternalObject> String::is_empty () {
+    return std::make_shared<Boolean>(m_value.empty());
+}
+
 std::shared_ptr<InternalObject> String::contains (const std::vector<std::shared_ptr<InternalObject>>& params) {
     assert_params(params, 1, type_name, "contains");
     assert_parameter(params[0], type_name, "contains");
@@ -130,6 +134,9 @@ std::shared_ptr<InternalObject> String::call (const std::string& func, const std
     }
     else if (func.compare("length") == 0) {
         return length();
+    }
+    else if (func.compare("is_empty") == 0) {
+        return is_empty();
     }
     else if (func.compare("contains") == 0) {
         return contains(params);
