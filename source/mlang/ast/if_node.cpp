@@ -52,6 +52,7 @@ object::Object IfStatementNode::execute (script::EnvStack& env) const {
         env.exit_scope();
         throw;
     }
+    env.exit_scope();
     return object::Object {};
 }
 

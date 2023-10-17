@@ -167,6 +167,11 @@ ast::node_ptr Parser::post_op () {
                 std::unique_ptr<ast::MemberFunctionNode> member_func_ptr = std::make_unique<ast::MemberFunctionNode>(std::move(expr), member_name);
                 while (!consume(script::token_types::round_bracket_close)) {
                     member_func_ptr->add_parameter(logic_or());
+                    if (consume(script::token_types::comma)) {
+                        if (consume(script::token_types::curly_bracket_close)) {
+                            throw SyntaxError{ "',' is followed by '}', which is invalid", prev()->line, prev()->pos};
+                        }
+                    }
                 }
                 expr = std::move(member_func_ptr);
             }

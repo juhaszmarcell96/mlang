@@ -18,12 +18,12 @@ bool Environment::has_type (const std::string& type_name) {
 }
 
 void Environment::define_type (const std::string& type_name, std::shared_ptr<object::ObjectFactory> factory) {
-    if (has_type(type_name)) { throw RuntimeError{"type " + type_name + " already exists"}; }
+    if (has_type(type_name)) { throw RuntimeError{"type '" + type_name + "' already exists"}; }
     m_types[type_name] = factory;
 }
 
 const object::ObjectFactory& Environment::get_factory (const std::string& type) {
-    if (m_types.count(type) == 0) { throw RuntimeError{"type " + type + " is unknown"}; }
+    if (m_types.count(type) == 0) { throw RuntimeError{"type '" + type + "' is unknown"}; }
     return *(m_types[type]);
 }
 
@@ -35,10 +35,10 @@ bool Environment::has_variable (const std::string& variable_name) const {
 
 void Environment::declare_variable (const std::string& variable_name, const std::string& type) {
     if (m_types.count(type) == 0) {
-        throw RuntimeError{"type " + type + " is unknown"};
+        throw RuntimeError{"type '" + type + "' is unknown"};
     }
     if (has_variable(variable_name)) {
-        throw RuntimeError{"variable " + variable_name + " already exists"};
+        throw RuntimeError{"variable '" + variable_name + "' already exists"};
     }
     m_variables[variable_name] = object::Object{m_types[type]->create()};
 }
@@ -51,7 +51,7 @@ object::Object& Environment::get_variable (const std::string& variable_name) {
         return m_parent->get_variable(variable_name);
     }
     else {
-        throw RuntimeError{"variable " + variable_name + " does not exists"};
+        throw RuntimeError{"variable '" + variable_name + "' does not exists"};
     }
 }
 
@@ -63,7 +63,7 @@ bool Environment::has_function (const std::string& function_name) const {
 
 void Environment::declare_function (const std::string& function_name, const func::Function* function) {
     if (has_function(function_name)) {
-        throw RuntimeError{"function " + function_name + " already exists"};
+        throw RuntimeError{"function '" + function_name + "' already exists"};
     }
     m_functions[function_name] = function;
 }
@@ -76,7 +76,7 @@ const func::Function* Environment::get_function (const std::string& function_nam
         return m_parent->get_function(function_name);
     }
     else {
-        throw RuntimeError{"function " + function_name + " does not exists"};
+        throw RuntimeError{"function '" + function_name + "' does not exists"};
     }
 }
 

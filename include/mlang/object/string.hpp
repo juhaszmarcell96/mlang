@@ -39,6 +39,10 @@ public:
 
     std::shared_ptr<InternalObject> reverse ();
     std::shared_ptr<InternalObject> length ();
+    std::shared_ptr<InternalObject> contains (const std::vector<std::shared_ptr<InternalObject>>& params);
+    std::shared_ptr<InternalObject> contains_regex (const std::vector<std::shared_ptr<InternalObject>>& params);
+    std::shared_ptr<InternalObject> regex_replace (const std::vector<std::shared_ptr<InternalObject>>& params);
+    std::shared_ptr<InternalObject> regex_find (const std::vector<std::shared_ptr<InternalObject>>& params);
 
     std::shared_ptr<InternalObject> call (const std::string& func, const std::vector<std::shared_ptr<InternalObject>>& params) override;
     std::shared_ptr<InternalObject> access (const std::string& member) override;

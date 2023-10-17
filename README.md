@@ -1,42 +1,49 @@
 # mlang
 
+  
 
-Grammar notation          Code representation in the parser
-Terminal                  Code to match and consume a token
-Nonterminal               Call to that rule's function
-   |                      if or switch statement
- * or +                   while or for loop
-   ?                      if statement
+## Grammar notation Code representation in the parser
 
+```
+ Terminal     -> Code to match and consume a token
+Nonterminal   -> Call to that rule's function
+     |        -> if or switch statement
+   * or +     -> while or for loop
+     ?        -> if statement
+```
+  
 
+## Operators
 
-operators:
-    =    -> assignment
-    +=   -> add_equal
-    -=   -> sub_equal
-    *=   -> mul_equal
-    /=   -> div_equal
-    +    -> binary_add
-    -    -> binary_sub
-    *    -> binary_mul
-    /    -> binary_div
-    ==   -> binary_equality
-    !=   -> binary_inequality
-    >    -> comparison_greater
-    <    -> comparison_less
-    >=   -> comparison_greater_equal
-    <=   -> comparison_less_equal
-    []   -> arr_indexing
-    !    -> unary_not
-    -    -> unary_minus
-    ()   -> boolean_operator (is_true member function -> override)
-    
-    ++x  -> prefix_increment
-    x++  -> postfix_increment
-    --x  -> prefix_decrement
-    x--  -> postfix_decrement
+```
+=     -> assignment
++=    -> add_equal
+-=    -> sub_equal
+*=    -> mul_equal
+/=    -> div_equal
++     -> binary_add
+-     -> binary_sub
+*     -> binary_mul
+/     -> binary_div
+==    -> binary_equality
+!=    -> binary_inequality
+>     -> comparison_greater
+<     -> comparison_less
+>=    -> comparison_greater_equal
+<=    -> comparison_less_equal
+[]    -> arr_indexing
+!     -> unary_not
+-     -> unary_minus
+()    -> boolean_operator (is_true member function -> override)
+++x   -> prefix_increment
+x++   -> postfix_increment
+--x   -> prefix_decrement
+x--   -> postfix_decrement
+```
 
+## Formal Grammar
 
+```
 program            -> declaration* EOF
 
 declaration        -> func_decl | var_decl | statement
@@ -75,3 +82,4 @@ func_call          -> IDENTIFIER "(" arguments? ")"
 
 arguments          -> logic_or ( "," logic_or )* 
 block              -> "{" statement* "}"
+```
