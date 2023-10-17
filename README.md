@@ -23,16 +23,6 @@ print("the result or %d^%d is %d\n", base, exponent, result);
 ```
 
 output : the result of 2^10 is 1024
-
-## Grammar notation Code representation in the parser
-
-```
- Terminal     -> Code to match and consume a token
-Nonterminal   -> Call to that rule's function
-     |        -> if or switch statement
-   * or +     -> while or for loop
-     ?        -> if statement
-```
   
 
 ## Operators
@@ -111,4 +101,14 @@ func_call          -> IDENTIFIER "(" arguments? ")"
 
 arguments          -> logic_or ( "," logic_or )* 
 block              -> "{" statement* "}"
+```
+
+### Grammar notation Code representation in the parser
+
+```
+ Terminal     -> Code to match and consume a token
+Nonterminal   -> Call to that rule's function
+     |        -> if or switch statement
+   * or +     -> while or for loop
+     ?        -> if statement
 ```
