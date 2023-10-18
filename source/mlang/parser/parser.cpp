@@ -430,7 +430,7 @@ ast::node_ptr Parser::for_statement () {
     return for_node_ptr;
 }
 
-// if_statement     -> "if" "(" expression ")" block ( "elif" "(" expression ")" block )* ( "else" block )?
+// if_statement     -> "if" "(" expression ")" block ( "else if" "(" expression ")" block )* ( "else" block )?
 ast::node_ptr Parser::if_statement () {
     trace("if_statement");
     std::unique_ptr<ast::IfStatementNode> if_node_ptr = std::make_unique<ast::IfStatementNode>();
@@ -439,9 +439,9 @@ ast::node_ptr Parser::if_statement () {
     consume(script::token_types::round_bracket_close, "missing ')' after 'if' statement condition");
     if_node_ptr->add_block(block());
     while (consume(script::token_types::kw_elif)) {
-        consume(script::token_types::round_bracket_open, "missing '(' after 'elif'");
+        consume(script::token_types::round_bracket_open, "missing '(' after 'else if'");
         if_node_ptr->add_elif_condition(expression());
-        consume(script::token_types::round_bracket_close, "missing ')' after 'elif' statement condition");
+        consume(script::token_types::round_bracket_close, "missing ')' after 'else if' statement condition");
         if_node_ptr->add_block(block());
     }
     if (consume(script::token_types::kw_else)) {

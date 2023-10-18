@@ -48,11 +48,16 @@ Script::Script (const std::string& script) {
                     debug("token with type 'if'");
                     m_tokens.push_back(Token{token_types::kw_if, token.get_line(), token.get_pos()});
                 }
-                else if (token.get_value().compare("elif") == 0) {
-                    debug("token with type 'elif'");
-                    m_tokens.push_back(Token{token_types::kw_elif, token.get_line(), token.get_pos()});
-                }
                 else if (token.get_value().compare("else") == 0) {
+                    /* it could be a 'else', or it could be 'else if' */
+                    if ((index + 1) < tokens_size) {
+                        if (tokens[index + 1].get_value().compare("if") == 0) {
+                            debug("token with type 'else if'");
+                            m_tokens.push_back(Token{token_types::kw_elif, token.get_line(), token.get_pos()});
+                            ++index;
+                            break;
+                        }
+                    }
                     debug("token with type 'else'");
                     m_tokens.push_back(Token{token_types::kw_else, token.get_line(), token.get_pos()});
                 }

@@ -1,0 +1,7 @@
+register_observer("MyObserver", "MyNumber");
+register_observer("MyObserver", "MyString");
+
+while (true) {
+    wait_for_notification("MyObserver");
+    print("some parameter changed -> synchronizing\n");
+}

@@ -18,7 +18,7 @@ object::Object IfStatementNode::execute (script::EnvStack& env) const {
             env.exit_scope();
             return object::Object {};
         }
-        /* elif */
+        /* else if */
         for (std::size_t i = 0; i < m_elif_conditions.size(); ++i) {
             cond_val = m_elif_conditions[i]->execute(env);
             if (cond_val.is_true()) {
@@ -83,7 +83,7 @@ void IfStatementNode::print () const {
     m_if_body->print();
     /* elif */
     for (std::size_t i = 0; i < m_elif_conditions.size(); ++i) {
-        std::cout << "elif ( ";
+        std::cout << "else if ( ";
         m_elif_conditions[i]->print();
         std::cout << " )" << std::endl;
         m_elif_bodies[i]->print();

@@ -79,6 +79,7 @@ object::Object PrintNode::execute (script::EnvStack& env) const {
         }
     }
     std::cout << result;
+    std::cout << std::flush;
     return object::Object {};
 }
 

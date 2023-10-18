@@ -1,0 +1,6 @@
+while (true) {
+    sleep(5);
+    set_parameter("MyNumber");
+    sleep(5);
+    set_parameter("MyString");
+}

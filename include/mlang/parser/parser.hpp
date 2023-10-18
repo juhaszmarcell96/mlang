@@ -92,7 +92,7 @@ private:
     // for_statement    -> "for" "(" ( var_decl | exp_statement | ";" ) expression? ";" expression? ")" block
     ast::node_ptr for_statement ();
 
-    // if_statement     -> "if" "(" expression ")" block ( "elif" "(" expression ")" block )* ( "else" block )?
+    // if_statement     -> "if" "(" expression ")" block ( "else if" "(" expression ")" block )* ( "else" block )?
     ast::node_ptr if_statement ();
 
     // exp_statement    -> expression ";"

@@ -5,14 +5,28 @@ if (!key_mgmt_str.is_empty()) {
     if (key_mgmt_str == "NONE") {
         set_parameter("WLAN_STASecurityMode", 0, "EN_WLAN_STASecurityMode::EE_WLANOpen");
     }
-    elif (key_mgmt_str == "WPA-PSK") {
+    else if (key_mgmt_str == "WPA-PSK") {
         set_parameter("WLAN_STASecurityMode", 0, "EN_WLAN_STASecurityMode::EE_WPA2_Personal");
     }
-    elif (key_mgmt_str == "WPA-PSK SAE") {
+    else if (key_mgmt_str == "WPA-PSK SAE") {
         set_parameter("WLAN_STASecurityMode", 0, "EN_WLAN_STASecurityMode::EE_WPA3_PersonalTransition");
     }
-    elif (key_mgmt_str == "WPA-EAP") {
-        set_parameter("WLAN_STASecurityMode", 0, "EN_WLAN_STASecurityMode::EE_WPA2_Enterprise");
+    else if (key_mgmt_str == "WPA-EAP") {
+        var proto_str = file_text.regex_find("proto=(.*)", "$1");
+        if (proto_str.is_empty()) {
+            set_parameter("WLAN_STASecurityMode", 0, "EN_WLAN_STASecurityMode::EE_WPA2_Enterprise");
+        }
+        else {
+            if ((proto_str == "WPA RSN") || (proto_str == "RSN")) {
+                set_parameter("WLAN_STASecurityMode", 0, "EN_WLAN_STASecurityMode::EE_WPA2_Enterprise");
+            }
+            else if ((proto_str == "OWE") || (proto_str == "SAE" || proto_str == "DPP")) {
+                set_parameter("WLAN_STASecurityMode", 0, "EN_WLAN_STASecurityMode::EE_WPA3_Enterprise");
+            }
+            else {
+                print("ERROR : invalid protocol '%s' for key management policy '%s'\n", proto_str, key_mgmt_str);
+            }
+        }
     }
     else {
         print("ERROR : unknown key management policy '%s'\n", key_mgmt_str);
@@ -24,7 +38,7 @@ if (!eap_str.is_empty()) {
     if (eap_str == "PEAP") {
         set_parameter("WLAN_STASecurityEAP", 0, "EN_WLANSecurityEAP::EE_EAP_PEAP");
     }
-    elif (eap_str == "TLS") {
+    else if (eap_str == "TLS") {
         set_parameter("WLAN_STASecurityEAP", 0, "EN_WLANSecurityEAP::EE_EAP_TLS");
     }
     else {

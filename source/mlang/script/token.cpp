@@ -60,7 +60,6 @@ std::size_t Token::get_length () const {
         case token_types::kw_true : { return 4; }
         case token_types::kw_false : { return 5; }
         case token_types::kw_if : { return 2; }
-        case token_types::kw_elif : { return 4; }
         case token_types::kw_else : { return 4; }
         case token_types::kw_for : { return 3; }
         case token_types::kw_while : { return 5; }
@@ -136,7 +135,6 @@ std::string Token::get_for_print() const {
         case token_types::kw_true : { return "true"; }
         case token_types::kw_false : { return "false"; }
         case token_types::kw_if : { return "if"; }
-        case token_types::kw_elif : { return "elif"; }
         case token_types::kw_else : { return "else"; }
         case token_types::kw_for : { return "for"; }
         case token_types::kw_while : { return "while"; }

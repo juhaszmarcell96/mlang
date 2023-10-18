@@ -211,13 +211,13 @@ TEST(ScriptTest, Test10) {
     script_text += "\n";
     script_text += "if (a > 5) { \n";
     script_text += "    c = 3; \n";
-    script_text += "} elif (a == 5) { \n";
+    script_text += "} else if (a == 5) { \n";
     script_text += "    c = 4; \n";
     script_text += "} \n";
     script_text += "\n";
     script_text += "if (a > 5) { \n";
     script_text += "    d = 100; \n";
-    script_text += "} elif (a < 5) { \n";
+    script_text += "} else if (a < 5) { \n";
     script_text += "    d = 101; \n";
     script_text += "} else { \n";
     script_text += "    d = 102; \n";

@@ -63,7 +63,7 @@ enum class token_types {
     kw_true,               /* true */
     kw_false,              /* false */
     kw_if,                 /* if */
-    kw_elif,               /* elif */
+    kw_elif,               /* else if */
     kw_else,               /* else */
     kw_while,              /* while */
     kw_for,                /* for */

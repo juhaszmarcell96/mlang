@@ -71,7 +71,7 @@ var_decl           -> "var" IDENTIFIER ( "=" expression )? ";"
 
 statement          -> exp_statement | if_statement | for_statement | while_statement | print_statement | control
 exp_statement      -> expression ";"
-if_statement       -> "if" "(" expression ")" block ( "elif" "(" expression ")" block )* ( "else" block )?
+if_statement       -> "if" "(" expression ")" block ( "else if" "(" expression ")" block )* ( "else" block )?
 for_statement      -> "for" "(" ( var_decl | exp_statement | ";" ) expression? ";" expression? ")" block
 while_statement    -> "while" "(" expression ")" block
 print_statement    -> "print" "(" STRING ( "," expression )* ")" ";"
@@ -112,3 +112,18 @@ Nonterminal   -> Call to that rule's function
    * or +     -> while or for loop
      ?        -> if statement
 ```
+
+## TODO
+
+- namespace
+- class
+- switch-case
+- typename (returns string containing the type name of the expression passed as argument)
+- clarify function scopes (which variables, functions and types can they access)
+- string : add functions like substring, ltrim, rtrim, cut, split, ...
+- array : add some algorithms, like ordering, search, splitting, ...
+- void return
+- exit -> must get a Number
+- return value of the whole script must be a Number -> 0 = success
+- later : optimization step between parsing and executing (reduce performance cost of scripts executed periodically)
+- logger -> to a configurable stream rather than to stdout
