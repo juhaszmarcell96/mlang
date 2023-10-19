@@ -168,8 +168,8 @@ ast::node_ptr Parser::post_op () {
                 while (!consume(script::token_types::round_bracket_close)) {
                     member_func_ptr->add_parameter(logic_or());
                     if (consume(script::token_types::comma)) {
-                        if (consume(script::token_types::curly_bracket_close)) {
-                            throw SyntaxError{ "',' is followed by '}', which is invalid", prev()->line, prev()->pos};
+                        if (consume(script::token_types::round_bracket_close)) {
+                            throw SyntaxError{ "',' is followed by ')', which is invalid", prev()->line, prev()->pos};
                         }
                     }
                 }
@@ -518,6 +518,10 @@ ast::node_ptr Parser::func_decl () {
 // declaration      -> func_decl | var_decl | statement
 ast::node_ptr Parser::declaration () {
     trace("declaration");
+    /* comment must be the first one checked so that the others can be checked when the comment is ignored */
+    if (consume(script::token_types::comment_start)) {
+        while (!consume(script::token_types::comment_end)) { next(); }
+    }
     if (consume(script::token_types::kw_function)) {
         return func_decl();
     }

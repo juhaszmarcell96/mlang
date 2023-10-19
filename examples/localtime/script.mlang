@@ -1,0 +1,48 @@
+/* reading localtime.tz file */
+var file_text = read_file("./examples/localtime/localtime.tz");
+
+/* delimiter in the file is 4 spaces */
+var delimiter = "    ";
+
+if (file_text.contains("Rule    CustomTZRule")) {
+    var summer_time_line = file_text.get_line(1, "\n");
+    var winter_time_line = file_text.get_line(2, "\n");
+
+    var bst_month = summer_time_line.get_line(5, delimiter);
+    var bst_day_occurrence = summer_time_line.get_line(6, delimiter);
+    var bst_time = summer_time_line.get_line(7, delimiter);
+
+    if (bst_month == "Jan") { set_parameter("PARAM_bst_month", 0, "EN_Months::EE_Jan"); }
+    else if (bst_month == "Feb") { set_parameter("PARAM_bst_month", 0, "EN_Months::EE_Feb"); }
+    else if (bst_month == "Mar") { set_parameter("PARAM_bst_month", 0, "EN_Months::EE_Mar"); }
+    else if (bst_month == "Apr") { set_parameter("PARAM_bst_month", 0, "EN_Months::EE_Apr"); }
+    else if (bst_month == "May") { set_parameter("PARAM_bst_month", 0, "EN_Months::EE_May"); }
+    else if (bst_month == "Jun") { set_parameter("PARAM_bst_month", 0, "EN_Months::EE_Jun"); }
+    else if (bst_month == "Jul") { set_parameter("PARAM_bst_month", 0, "EN_Months::EE_Jul"); }
+    else if (bst_month == "Aug") { set_parameter("PARAM_bst_month", 0, "EN_Months::EE_Aug"); }
+    else if (bst_month == "Sep") { set_parameter("PARAM_bst_month", 0, "EN_Months::EE_Sep"); }
+    else if (bst_month == "Oct") { set_parameter("PARAM_bst_month", 0, "EN_Months::EE_Oct"); }
+    else if (bst_month == "Nov") { set_parameter("PARAM_bst_month", 0, "EN_Months::EE_Nov"); }
+    else { set_parameter("PARAM_bst_month", 0, "EN_Months::EE_Dec"); }
+
+    if (bst_day_occurrence.contains(">=1")) { set_parameter("PARAM_bst_occurrence", 0, "EN_Occurrences::EE_First"); }
+    else if (bst_day_occurrence.contains(">=8")) { set_parameter("PARAM_bst_occurrence", 0, "EN_Occurrences::EE_Second"); }
+    else if (bst_day_occurrence.contains(">=15")) { set_parameter("PARAM_bst_occurrence", 0, "EN_Occurrences::EE_Third"); }
+    else if (bst_day_occurrence.contains(">=23")) { set_parameter("PARAM_bst_occurrence", 0, "EN_Occurrences::EE_Fourth"); }
+    else if (bst_day_occurrence.contains("last")) { set_parameter("PARAM_bst_occurrence", 0, "EN_Occurrences::EE_Last"); }
+    else if (bst_day_occurrence.contains("first")) { set_parameter("PARAM_bst_occurrence", 0, "EN_Occurrences::EE_First"); }
+
+    if (bst_day_occurrence.contains("Mon")) { set_parameter("PARAM_bst_day", 0, "EN_Days::EE_Mon"); }
+    else if (bst_day_occurrence.contains("Tue")) { set_parameter("PARAM_bst_day", 0, "EN_Days::EE_Tue"); }
+    else if (bst_day_occurrence.contains("Wed")) { set_parameter("PARAM_bst_day", 0, "EN_Days::EE_Wed"); }
+    else if (bst_day_occurrence.contains("Thu")) { set_parameter("PARAM_bst_day", 0, "EN_Days::EE_Thu"); }
+    else if (bst_day_occurrence.contains("Fri")) { set_parameter("PARAM_bst_day", 0, "EN_Days::EE_Fri"); }
+    else if (bst_day_occurrence.contains("Sat")) { set_parameter("PARAM_bst_day", 0, "EN_Days::EE_Sat"); }
+    else { set_parameter("PARAM_bst_day", 0, "EN_Days::EE_Sun"); }
+
+    var bst_hours = bst_time.regex_find("(.*):(.*)", "$1").to_int();
+    var bst_minutes = bst_time.regex_find("(.*):(.*)", "$2").to_int();
+
+    bst_time = bst_hours * 3600 + bst_minutes * 60;
+    set_parameter("PARAM_bst_time", 0, bst_time.to_string());
+}

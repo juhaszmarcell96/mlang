@@ -132,7 +132,7 @@ TEST(TokenizerTest, Test4) {
 }
 
 TEST(TokenizerTest, Test5) {
-    std::string script = ".15f - asd % \t ; $";
+    std::string script = "0.15f - asd % \t ; $";
     mlang::tokenizer::Tokenizer tokenizer { script };
     tokenizer.tokenize();
     auto tokens = tokenizer.get_tokens();

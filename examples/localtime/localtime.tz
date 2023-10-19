@@ -1,0 +1,6 @@
+# Rule  NAME     FROM     TO    TYPE  IN     ON       AT     SAVE   LETTER/S
+Rule    CustomTZRule    min    max    -    Mar    lastSun    2:00    1:00    D
+Rule    CustomTZRule    min    max    -    Oct    lastSun    3:00    0:00    S
+
+# Zone    NAME            GMTOFF  RULES   FORMAT  [UNTIL]
+Zone    localtime    0:00    CustomTZRule    %s

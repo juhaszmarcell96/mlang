@@ -218,11 +218,9 @@ void Tokenizer::process_apostrophe () {
 void Tokenizer::process_dot () {
     if (m_current_state == tokenizer_states::none) {
         /* start a number with 0.xxx */
-        set_state(tokenizer_states::parsing_number);
-        start_new_token(token_types::number);
-        append_char('0');
+        start_new_token(token_types::dot);
         append_curr();
-        m_has_dot = true;
+        finalize_token(token_types::dot);
     }
     else if (m_current_state == tokenizer_states::parsing_identifier) {
         /* end identifier and start a new one -> . -> end and clear */

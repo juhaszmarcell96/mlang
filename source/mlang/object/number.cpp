@@ -1,6 +1,7 @@
 #include <string>
 
 #include "mlang/object/number.hpp"
+#include "mlang/object/string.hpp"
 #include "mlang/object/assert.hpp"
 
 namespace mlang {
@@ -143,8 +144,18 @@ void Number::increment () { ++m_value; }
 
 void Number::decrement () { --m_value; }
 
+std::shared_ptr<InternalObject> Number::to_string () {
+    return std::make_shared<String>(std::to_string(m_value));
+}
+
 std::shared_ptr<InternalObject> Number::call (const std::string& func, const std::vector<std::shared_ptr<InternalObject>>& params) {
-    throw RuntimeError { "object of type '" + type_name + "' has no '" + func + "' member function" };
+    if (func.compare("to_string") == 0) {
+        return to_string();
+    }
+    else {
+        throw RuntimeError { "object of type '" + type_name + "' has no '" + func + "' member function" };
+    }
+    return nullptr;
 }
 
 std::shared_ptr<InternalObject> Number::access (const std::string& member) {

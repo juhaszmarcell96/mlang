@@ -43,6 +43,8 @@ enum class token_types {
     plus_equal,            /* += */
     dash_equal,            /* -= */
     asterisk_equal,        /* *= */
+    comment_start,         /* / * */
+    comment_end,           /* * / */
     slash_equal,           /* /= */
     percent_equal,         /* %= */
     double_less_than,      /* << */

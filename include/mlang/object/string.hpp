@@ -44,6 +44,9 @@ public:
     std::shared_ptr<InternalObject> contains_regex (const std::vector<std::shared_ptr<InternalObject>>& params);
     std::shared_ptr<InternalObject> regex_replace (const std::vector<std::shared_ptr<InternalObject>>& params);
     std::shared_ptr<InternalObject> regex_find (const std::vector<std::shared_ptr<InternalObject>>& params);
+    std::shared_ptr<InternalObject> get_line (const std::vector<std::shared_ptr<InternalObject>>& params);
+    std::shared_ptr<InternalObject> to_int ();
+    std::shared_ptr<InternalObject> substring (const std::vector<std::shared_ptr<InternalObject>>& params);
 
     std::shared_ptr<InternalObject> call (const std::string& func, const std::vector<std::shared_ptr<InternalObject>>& params) override;
     std::shared_ptr<InternalObject> access (const std::string& member) override;

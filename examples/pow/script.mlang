@@ -8,9 +8,10 @@ function pow (a, b) {
     }
     return result;
 }
-
-var base = 2;
+/* this is a comment */
+var base = 2; /* this works as well */
 var exponent = 10;
+/* comment can be put in between statements, but cannot be embedded */
 
 var result = pow(base, exponent);
 

@@ -65,9 +65,10 @@ The formal grammar of the language, implemented by the parser, is the following:
 ```
 program            -> declaration* EOF
 
-declaration        -> func_decl | var_decl | statement
+declaration        -> func_decl | var_decl | statement | comment
 func_decl          -> "function" IDENTIFIER "(" ( IDENTIFIER ("," IDENTIFIER)* )? ")" block
 var_decl           -> "var" IDENTIFIER ( "=" expression )? ";"
+comment            -> "/*" .* "*/"
 
 statement          -> exp_statement | if_statement | for_statement | while_statement | print_statement | control
 exp_statement      -> expression ";"
@@ -127,3 +128,6 @@ Nonterminal   -> Call to that rule's function
 - return value of the whole script must be a Number -> 0 = success
 - later : optimization step between parsing and executing (reduce performance cost of scripts executed periodically)
 - logger -> to a configurable stream rather than to stdout
+- exception -> try, catch, throw
+- comment -> /* ... */
+- differentiate between int and float types?

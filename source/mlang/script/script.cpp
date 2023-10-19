@@ -4,12 +4,6 @@
 #include "mlang/object/object.hpp"
 #include "mlang/parser/parser.hpp"
 
-#define DEBUG_SCRIPT 0
-
-#if DEBUG_SCRIPT == 1
-#include <iostream>
-#endif
-
 namespace mlang {
 namespace script {
 
@@ -189,11 +183,17 @@ Script::Script (const std::string& script) {
                 break;
             }
             case tokenizer::token_types::asterisk: {
-                /* it could be a signle asterisk, or it could be '*=' */
+                /* it could be a signle asterisk, or it could be '*=' or comment end */
                 if ((index + 1) < tokens_size) {
                     if (tokens[index + 1].get_type() == tokenizer::token_types::equal_sign) {
                         debug("token with type 'asterisk_equal'");
                         m_tokens.push_back(Token{token_types::asterisk_equal, token.get_line(), token.get_pos()});
+                        ++index;
+                        break;
+                    }
+                    else if (tokens[index + 1].get_type() == tokenizer::token_types::slash) {
+                        debug("token with type 'comment_end'");
+                        m_tokens.push_back(Token{token_types::comment_end, token.get_line(), token.get_pos()});
                         ++index;
                         break;
                     }
@@ -203,11 +203,17 @@ Script::Script (const std::string& script) {
                 break;
             }
             case tokenizer::token_types::slash: {
-                /* it could be a signle slash, or it could be slash_equal */
+                /* it could be a signle slash, or it could be slash_equal or comment_start */
                 if ((index + 1) < tokens_size) {
                     if (tokens[index + 1].get_type() == tokenizer::token_types::equal_sign) {
                         debug("token with type 'slash_equal'");
                         m_tokens.push_back(Token{token_types::slash_equal, token.get_line(), token.get_pos()});
+                        ++index;
+                        break;
+                    }
+                    else if (tokens[index + 1].get_type() == tokenizer::token_types::asterisk) {
+                        debug("token with type 'comment_start'");
+                        m_tokens.push_back(Token{token_types::comment_start, token.get_line(), token.get_pos()});
                         ++index;
                         break;
                     }

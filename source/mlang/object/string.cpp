@@ -127,6 +127,64 @@ std::shared_ptr<InternalObject> String::regex_find (const std::vector<std::share
     return std::make_shared<String>("");
 }
 
+std::shared_ptr<InternalObject> String::get_line (const std::vector<std::shared_ptr<InternalObject>>& params) {
+    assert_params(params, 2, type_name, "get_line");
+    assert_parameter(params[0], type_name, "get_line");
+    assert_parameter(params[1], type_name, "get_line");
+    int line_index = (int)assert_cast<Number>(params[0], type_name)->get_number();
+    std::string delimiter = assert_cast<String>(params[1], type_name)->get_string();
+    if (line_index < 0) {
+        throw RuntimeError { "line index cannot be negative in function 'get_line'" };
+    }
+    std::size_t m_line_index = 0;
+    std::size_t m_start_pos = 0;
+    while (true) {
+        std::size_t found = m_value.find(delimiter, m_start_pos);
+        if (found == std::string::npos) {
+            if (m_line_index != line_index) { return std::make_shared<String>(""); }
+            return std::make_shared<String>(m_value.substr(m_start_pos, m_value.length() - m_start_pos));
+        }
+        if (m_line_index == line_index) {
+            return std::make_shared<String>(m_value.substr(m_start_pos, found - m_start_pos));
+        }
+        ++m_line_index;
+        m_start_pos = found + delimiter.length();
+    }
+    return std::make_shared<String>("");
+}
+
+std::shared_ptr<InternalObject> String::to_int () {
+    int num;
+    try {
+        num = std::stoi(m_value);
+    }
+    catch (...) {
+        throw RuntimeError { "error while converting '" + m_value + "' to integer" };
+    }
+    return std::make_shared<Number>(num);
+}
+
+std::shared_ptr<InternalObject> String::substring (const std::vector<std::shared_ptr<InternalObject>>& params) {
+    assert_params(params, 2, type_name, "substring");
+    assert_parameter(params[0], type_name, "substring");
+    assert_parameter(params[1], type_name, "substring");
+    int start_index = (int)assert_cast<Number>(params[0], type_name)->get_number();
+    int length = (int)assert_cast<Number>(params[1], type_name)->get_number();
+    if (start_index < 0) {
+        throw RuntimeError { "start index cannot be negative in function 'substring'" };
+    }
+    if (start_index >= m_value.length()) {
+        throw RuntimeError { "start index is out of range in function 'substring'" };
+    }
+    if (length <= 0) {
+        throw RuntimeError { "length must be positive in function 'substring'" };
+    }
+    if (start_index + length >= m_value.length()) {
+        throw RuntimeError { "end of substring is out of range in function 'substring'" };
+    }
+    return std::make_shared<String>(m_value.substr(start_index, length));
+}
+
 
 std::shared_ptr<InternalObject> String::call (const std::string& func, const std::vector<std::shared_ptr<InternalObject>>& params) {
     if (func.compare("reverse") == 0) {
@@ -150,8 +208,17 @@ std::shared_ptr<InternalObject> String::call (const std::string& func, const std
     else if (func.compare("regex_find") == 0) {
         return regex_find(params);
     }
+    else if (func.compare("get_line") == 0) {
+        return get_line(params);
+    }
+    else if (func.compare("to_int") == 0) {
+        return to_int();
+    }
+    else if (func.compare("substring") == 0) {
+        return substring(params);
+    }
     else {
-        throw RuntimeError { "string object has no " + func + " member function" };
+        throw RuntimeError { "object of type '" + type_name + "' has no '" + func + "' member function" };
     }
     return nullptr;
 }

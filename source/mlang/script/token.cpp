@@ -41,6 +41,8 @@ std::size_t Token::get_length () const {
         case token_types::plus_equal : { return 2; }
         case token_types::dash_equal : { return 2; }
         case token_types::asterisk_equal : { return 2; }
+        case token_types::comment_start : { return 2; }
+        case token_types::comment_end : { return 2; }
         case token_types::slash_equal : { return 2; }
         case token_types::percent_equal : { return 2; }
         case token_types::double_less_than : { return 2; }
@@ -116,6 +118,8 @@ std::string Token::get_for_print() const {
         case token_types::plus_equal : { return "+="; }
         case token_types::dash_equal : { return "-="; }
         case token_types::asterisk_equal : { return "*="; }
+        case token_types::comment_start : { return "/*"; }
+        case token_types::comment_end : { return "*/"; }
         case token_types::slash_equal : { return "/="; }
         case token_types::percent_equal : { return "%="; }
         case token_types::double_less_than : { return "<<"; }
