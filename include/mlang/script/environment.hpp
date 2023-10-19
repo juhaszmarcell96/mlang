@@ -2,7 +2,8 @@
 
 #include "mlang/object/object.hpp"
 #include "mlang/object/none.hpp"
-#include "mlang/object/number.hpp"
+#include "mlang/object/int.hpp"
+#include "mlang/object/float.hpp"
 #include "mlang/object/string.hpp"
 #include "mlang/object/boolean.hpp"
 #include "mlang/object/array.hpp"
@@ -25,7 +26,8 @@ namespace script {
 class Environment {
 private:
     static inline std::map<std::string, std::shared_ptr<object::ObjectFactory>> m_types { { object::None::type_name, std::make_shared<object::NoneFactory>() },
-                                                                                          { object::Number::type_name, std::make_shared<object::NumberFactory>() },
+                                                                                          { object::Int::type_name, std::make_shared<object::IntFactory>() },
+                                                                                          { object::Float::type_name, std::make_shared<object::FloatFactory>() },
                                                                                           { object::Boolean::type_name, std::make_shared<object::BooleanFactory>() },
                                                                                           { object::Array::type_name, std::make_shared<object::ArrayFactory>() },
                                                                                           { object::String::type_name, std::make_shared<object::StringFactory>() }   };

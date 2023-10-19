@@ -20,17 +20,8 @@ void Boolean::construct (const std::vector<std::shared_ptr<InternalObject>>& par
     assert_parameter(params[0], type_name, "constructor");
     m_value = params[0]->is_true();
 }
+
 /* assign */
-/*void assign (const std::vector<std::shared_ptr<InternalObject>>& params) {
-    assert_params(params, 1, type_name, operators::assign);
-    assert_parameter(params[0], type_name, operators::assign);
-    const std::shared_ptr<Boolean> bool_ptr = assert_cast<Boolean>(params[0], type_name);
-    m_value = bool_ptr->get();
-}*/
-/* destruct */
-/*void destruct () {
-    m_value = false;
-}*/
 void Boolean::assign (const std::shared_ptr<InternalObject> param) {
     const std::shared_ptr<Boolean> bool_ptr = assert_cast<Boolean>(param, type_name);
     m_value = bool_ptr->m_value;
@@ -66,7 +57,8 @@ std::shared_ptr<InternalObject> Boolean::access (const std::string& member) {
 
 std::string Boolean::get_string () const { return (m_value ? "true" : "false"); }
 std::string Boolean::get_typename () const { return type_name; }
-double Boolean::get_number () const { return (m_value ? 1 : 0); }
+int Boolean::get_int () const { return (m_value ? 1 : 0); }
+double Boolean::get_float () const { return (m_value ? 1.0 : 0.0); }
 
 
 std::shared_ptr<InternalObject> BooleanFactory::create () const {

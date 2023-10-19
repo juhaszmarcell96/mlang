@@ -5,7 +5,8 @@
 #include <filesystem>
 #include <chrono>
 
-#include "mlang/object/number.hpp"
+#include "mlang/object/int.hpp"
+#include "mlang/object/float.hpp"
 #include "mlang/script/script.hpp"
 #include "mlang/func/function.hpp"
 #include "mlang/script/environment.hpp"
@@ -37,7 +38,7 @@ public:
 /**
  *  parameters:
  *     - id (String)
- *     - instance (Number (integer))
+ *     - instance (Int)
  *     - value (String)
  **/
 class FuncSetParameter : public mlang::func::Function {
@@ -47,14 +48,14 @@ public:
         if (params[0].get_typename() != mlang::object::String::type_name) {
             throw mlang::RuntimeError{ "FuncSetParameter expects the 1st parameter to be of type " + mlang::object::String::type_name};
         }
-        if (params[1].get_typename() != mlang::object::Number::type_name) {
-            throw mlang::RuntimeError{ "FuncSetParameter expects the 2nd parameter to be of type " + mlang::object::Number::type_name};
+        if (params[1].get_typename() != mlang::object::Int::type_name) {
+            throw mlang::RuntimeError{ "FuncSetParameter expects the 2nd parameter to be of type " + mlang::object::Int::type_name};
         }
         if (params[2].get_typename() != mlang::object::String::type_name) {
             throw mlang::RuntimeError{ "FuncSetParameter expects the 3rd parameter to be of type " + mlang::object::String::type_name};
         }
 
-        std::cout << "Setting parameter '" << params[0].get_string() << "' instance " << (int)params[1].get_number() << " to '" << params[2].get_string() << "'" << std::endl;
+        std::cout << "Setting parameter '" << params[0].get_string() << "' instance " << params[1].get_int() << " to '" << params[2].get_string() << "'" << std::endl;
 
         return mlang::object::Object {};
     }

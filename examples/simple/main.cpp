@@ -5,7 +5,6 @@
 #include <filesystem>
 #include <chrono>
 
-#include "mlang/object/number.hpp"
 #include "mlang/script/script.hpp"
 #include "mlang/func/function.hpp"
 #include "mlang/script/environment.hpp"

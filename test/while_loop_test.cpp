@@ -17,11 +17,11 @@ TEST(WhileLoopTest, Test0) {
     script.execute(env);
 
     ASSERT_EQ(env.has_variable("a"), true);
-    ASSERT_EQ(env.get_variable("a").get_typename(), mlang::object::Number::type_name);
-    ASSERT_EQ(env.get_variable("a").get_number(), 5);
+    ASSERT_EQ(env.get_variable("a").get_typename(), mlang::object::Int::type_name);
+    ASSERT_EQ(env.get_variable("a").get_int(), 5);
     ASSERT_EQ(env.has_variable("b"), true);
-    ASSERT_EQ(env.get_variable("b").get_typename(), mlang::object::Number::type_name);
-    ASSERT_EQ(env.get_variable("b").get_number(), 0);
+    ASSERT_EQ(env.get_variable("b").get_typename(), mlang::object::Int::type_name);
+    ASSERT_EQ(env.get_variable("b").get_int(), 0);
 }
 
 TEST(WhileLoopTest, Test1) {
@@ -38,6 +38,6 @@ TEST(WhileLoopTest, Test1) {
     script.execute(env);
 
     ASSERT_EQ(env.has_variable("a"), true);
-    ASSERT_EQ(env.get_variable("a").get_typename(), mlang::object::Number::type_name);
-    ASSERT_EQ(env.get_variable("a").get_number(), 100);
+    ASSERT_EQ(env.get_variable("a").get_typename(), mlang::object::Int::type_name);
+    ASSERT_EQ(env.get_variable("a").get_int(), 100);
 }

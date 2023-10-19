@@ -39,7 +39,8 @@ public:
 
     std::string get_string () const override;
     std::string get_typename () const override;
-    double get_number () const override;
+    int get_int () const override;
+    double get_float () const override;
 };
 
 class BooleanFactory : public ObjectFactory {

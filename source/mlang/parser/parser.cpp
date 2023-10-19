@@ -31,7 +31,8 @@
 
 #include "mlang/object/object.hpp"
 #include "mlang/object/string.hpp"
-#include "mlang/object/number.hpp"
+#include "mlang/object/int.hpp"
+#include "mlang/object/float.hpp"
 #include "mlang/object/boolean.hpp"
 #include "mlang/object/array.hpp"
 
@@ -80,11 +81,12 @@ void Parser::consume (script::token_types type, const std::string& err_msg) {
     next();
 }
 
-// primary            -> NUMBER | STRING | "true" | "false" | "none" | "(" expression ")" | func_call | IDENTIFIER | ( "new" IDENTIFIER "(" arguments? ")" ) | ( "{" arguments "}" )
+// primary            -> INT | FLOAT | STRING | "true" | "false" | "none" | "(" expression ")" | func_call | IDENTIFIER | ( "new" IDENTIFIER "(" arguments? ")" ) | ( "{" arguments "}" )
 // func_call          -> IDENTIFIER "(" arguments? ")"
 ast::node_ptr Parser::primary () {
     trace("primary");
-    if (consume(script::token_types::number)) { return std::make_unique<ast::ValueNode>(object::Object{std::make_shared<object::Number>(prev()->value_num)}); }
+    if (consume(script::token_types::integer)) { return std::make_unique<ast::ValueNode>(object::Object{std::make_shared<object::Int>(prev()->value_int)}); }
+    if (consume(script::token_types::floating)) { return std::make_unique<ast::ValueNode>(object::Object{std::make_shared<object::Float>(prev()->value_float)}); }
     if (consume(script::token_types::string)) { return std::make_unique<ast::ValueNode>(object::Object{std::make_shared<object::String>(prev()->value_str)}); }
     if (consume(script::token_types::kw_true)) { return std::make_unique<ast::ValueNode>(object::Object{std::make_shared<object::Boolean>(true)}); }
     if (consume(script::token_types::kw_false)) { return std::make_unique<ast::ValueNode>(object::Object{std::make_shared<object::Boolean>(false)}); }

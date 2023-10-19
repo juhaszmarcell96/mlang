@@ -32,7 +32,7 @@ private:
     bool consume (script::token_types type);
     void consume (script::token_types type, const std::string& err_msg);
 
-    // primary            -> NUMBER | STRING | "true" | "false" | "none" | "(" expression ")" | IDENTIFIER | ( "new" IDENTIFIER "(" arguments? ")" ) | ( "{" arguments "}" )
+    // primary            -> INT | FLOAT | STRING | "true" | "false" | "none" | "(" expression ")" | IDENTIFIER | ( "new" IDENTIFIER "(" arguments? ")" ) | ( "{" arguments "}" )
     ast::node_ptr primary ();
 
     // post_op            -> postfix_increment | postfix_decrement | ( func_call | subscript | member_access | member_call )*

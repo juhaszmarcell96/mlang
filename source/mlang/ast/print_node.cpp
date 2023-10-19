@@ -7,7 +7,7 @@ std::string PrintNode::get_integer (script::EnvStack& env) const {
     if (m_index >= m_args.size()) { throw SyntaxError{"mismatch in print arguments"}; }
     object::Object res = m_args[m_index]->execute(env);
     ++m_index;
-    return std::to_string(static_cast<int>(res.get_number()));
+    return std::to_string(res.get_int());
 }
 
 std::string PrintNode::get_string (script::EnvStack& env) const {
@@ -21,7 +21,7 @@ std::string PrintNode::get_float (script::EnvStack& env) const {
     if (m_index >= m_args.size()) { throw SyntaxError{"mismatch in print arguments"}; }
     object::Object res = m_args[m_index]->execute(env);
     ++m_index;
-    return std::to_string(res.get_number());
+    return std::to_string(res.get_float());
 }
 
 std::string PrintNode::get_bool (script::EnvStack& env) const {

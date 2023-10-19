@@ -4,7 +4,8 @@
 #include <cmath>
 
 #include "mlang/object/assert.hpp"
-#include "mlang/object/number.hpp"
+#include "mlang/object/int.hpp"
+#include "mlang/object/float.hpp"
 #include "mlang/script/script.hpp"
 #include "mlang/func/function.hpp"
 
@@ -12,14 +13,14 @@ class MyFunc : public mlang::func::Function {
 public:
     mlang::object::Object call (mlang::script::EnvStack& env, std::vector<mlang::object::Object>& params) const override {
         if (params.size() != 2) { throw mlang::RuntimeError{ "MyFunc expects 2 parameters"}; }
-        if (params[0].get_typename() != mlang::object::Number::type_name) {
-            throw mlang::RuntimeError{ "MyFunc expects the 1st parameter to be of type " + mlang::object::Number::type_name};
+        if (params[0].get_typename() != mlang::object::Int::type_name) {
+            throw mlang::RuntimeError{ "MyFunc expects the 1st parameter to be of type " + mlang::object::Int::type_name};
         }
         if (params[1].get_typename() != mlang::object::String::type_name) {
             throw mlang::RuntimeError{ "MyFunc expects the 2nd parameter to be of type " + mlang::object::String::type_name};
         }
         std::string result;
-        for (int i = 0; i < params[0].get_number(); ++i) {
+        for (int i = 0; i < params[0].get_int(); ++i) {
             result += params[1].get_string();
         }
         return mlang::object::Object {std::make_shared<mlang::object::String>(result)};
@@ -39,8 +40,8 @@ TEST(CustomFuncTest, Test1) {
     script.execute(env);
 
     ASSERT_EQ(env.has_variable("a"), true);
-    ASSERT_EQ(env.get_variable("a").get_typename(), mlang::object::Number::type_name);
-    ASSERT_EQ(env.get_variable("a").get_number(), 3);
+    ASSERT_EQ(env.get_variable("a").get_typename(), mlang::object::Int::type_name);
+    ASSERT_EQ(env.get_variable("a").get_int(), 3);
     ASSERT_EQ(env.has_variable("b"), true);
     ASSERT_EQ(env.get_variable("b").get_typename(), mlang::object::String::type_name);
     ASSERT_EQ(env.get_variable("b").get_string(), "asd");

@@ -113,17 +113,31 @@ Script::Script (const std::string& script) {
                 }
                 break;
             }
-            case tokenizer::token_types::number: {
+            case tokenizer::token_types::integer: {
                 try {
-                    double value = std::stod(token.get_value());
-                    debug("token with type 'number' and value " + std::to_string(value));
-                    m_tokens.push_back(Token{token_types::number, value, token.get_line(), token.get_pos()});
+                    int value = std::stoi(token.get_value());
+                    debug("token with type 'integer' and value " + std::to_string(value));
+                    m_tokens.push_back(Token{token_types::integer, value, token.get_line(), token.get_pos()});
                 }
                 catch (const std::invalid_argument&) {
-                    throw SyntaxError{"number token could not be converted, invalid format", token.get_line(), token.get_pos()};
+                    throw SyntaxError{"integer token could not be converted, invalid format", token.get_line(), token.get_pos()};
                 }
                 catch (const std::out_of_range&) {
-                    throw SyntaxError{"number token could not be converted, out of range", token.get_line(), token.get_pos()};
+                    throw SyntaxError{"integer token could not be converted, out of range", token.get_line(), token.get_pos()};
+                }
+                break;
+            }
+            case tokenizer::token_types::floating: {
+                try {
+                    double value = std::stod(token.get_value());
+                    debug("token with type 'floating' and value " + std::to_string(value));
+                    m_tokens.push_back(Token{token_types::floating, value, token.get_line(), token.get_pos()});
+                }
+                catch (const std::invalid_argument&) {
+                    throw SyntaxError{"float token could not be converted, invalid format", token.get_line(), token.get_pos()};
+                }
+                catch (const std::out_of_range&) {
+                    throw SyntaxError{"float token could not be converted, out of range", token.get_line(), token.get_pos()};
                 }
                 break;
             }

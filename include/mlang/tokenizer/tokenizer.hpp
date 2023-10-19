@@ -11,7 +11,8 @@ namespace tokenizer {
 enum class token_types {
     none,
     identifier,            /* variable names, etc */
-    number,                /* number */
+    integer,               /* int */
+    floating,              /* float */
     string,                /* string literal */
     comma,                 /* , */
     question_mark,         /* ? */
@@ -80,12 +81,13 @@ private:
     char m_current_char { 0 };
     Token m_current_token {};
     bool m_escape { false };
-    bool m_has_dot { false }; /* indicates whether a number already has a dot */
+    bool m_has_dot { false }; /* indicates whether a number already has a dot -> float */
 
     void start_new_token ();
     void start_new_token (token_types type);
     void finalize_token ();
     void finalize_token (token_types type);
+    void set_token_type (token_types type);
     void append_curr ();
     void append_char (char c);
     void set_state (tokenizer_states state);

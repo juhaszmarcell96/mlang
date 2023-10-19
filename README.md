@@ -1,6 +1,6 @@
 # mlang
 
-Embeddable interpreter for C++ projects. The library contains only the language core supporting the scripting language syntax with built-in basic data types (None, Boolean, String, Number, Array). Complex data types can be implemented on the C++ side of the project and instantiated and used in the script. Functions can be defined in both the script and the C++ side, allowing the user to hide proprietary implementations while still allowing for robust reconfiguration of the application without the need for a new build. Furthermore, the library does not provide support for IO operations and other complex algorithms that could issue concerns regarding security considerations. These functionalities can be implemented in the C++ host project allowing for compliance with internal cyber security policies. The library offers a flexible and robust extension to any C++ project that wants to offer a scripting interface but does not want to bind extensive scripting language interpreters such as Python or Lua. The language offers a familiar C-style syntax while supporting dynamic types.
+Embeddable interpreter for C++ projects. The library contains only the language core supporting the scripting language syntax with built-in basic data types (None, Boolean, String, Int, Float, Array). Complex data types can be implemented on the C++ side of the project and instantiated and used in the script. Functions can be defined in both the script and the C++ side, allowing the user to hide proprietary implementations while still allowing for robust reconfiguration of the application without the need for a new build. Furthermore, the library does not provide support for IO operations and other complex algorithms that could issue concerns regarding security considerations. These functionalities can be implemented in the C++ host project allowing for compliance with internal cyber security policies. The library offers a flexible and robust extension to any C++ project that wants to offer a scripting interface but does not want to bind extensive scripting language interpreters such as Python or Lua. The language offers a familiar C-style syntax while supporting dynamic types.
 
 ```
 function pow (a, b) {
@@ -97,7 +97,7 @@ postfix_decrement  -> primary "--"
 subscript          -> primary "[" logic_or "]"
 member_access      -> primary "." IDENTIFIER
 member_call        -> primary "." IDENTIFIER "(" arguments? ")"
-primary            -> NUMBER | STRING | "true" | "false" | "none" | "(" expression ")" | func_call | IDENTIFIER | ( "new" IDENTIFIER "(" arguments? ")" ) | ( "{" arguments "}" )
+primary            -> INT | FLOAT | STRING | "true" | "false" | "none" | "(" expression ")" | func_call | IDENTIFIER | ( "new" IDENTIFIER "(" arguments? ")" ) | ( "{" arguments "}" )
 func_call          -> IDENTIFIER "(" arguments? ")"
 
 arguments          -> logic_or ( "," logic_or )* 
@@ -124,8 +124,8 @@ Nonterminal   -> Call to that rule's function
 - string : add functions like substring, ltrim, rtrim, cut, split, ...
 - array : add some algorithms, like ordering, search, splitting, ...
 - void return
-- exit -> must get a Number
-- return value of the whole script must be a Number -> 0 = success
+- exit -> must get an integer
+- return value of the whole script must be an integer -> 0 = success
 - later : optimization step between parsing and executing (reduce performance cost of scripts executed periodically)
 - logger -> to a configurable stream rather than to stdout
 - exception -> try, catch, throw

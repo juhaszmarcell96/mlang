@@ -8,16 +8,15 @@
 namespace mlang {
 namespace object {
 
-class Number : public InternalObject {
+class Float : public InternalObject {
 private:
     double m_value { 0.0 };
 public:
-    Number () = default;
-    Number (const double value);
-    //Number (const int value);
-    ~Number () = default;
+    Float () = default;
+    Float (const double value);
+    ~Float () = default;
     
-    const static inline std::string type_name { "Number" };
+    const static inline std::string type_name { "Float" };
 
     const ObjectFactory& get_factory () const override;
 
@@ -56,16 +55,19 @@ public:
     virtual void decrement () override;
     
     std::shared_ptr<InternalObject> to_string ();
+    std::shared_ptr<InternalObject> to_float ();
+    std::shared_ptr<InternalObject> to_int ();
 
     std::shared_ptr<InternalObject> call (const std::string& func, const std::vector<std::shared_ptr<InternalObject>>& params) override;
     std::shared_ptr<InternalObject> access (const std::string& member) override;
 
     std::string get_string () const override;
     std::string get_typename () const override;
-    double get_number () const override;
+    int get_int () const override;
+    double get_float () const override;
 };
 
-class NumberFactory : public ObjectFactory {
+class FloatFactory : public ObjectFactory {
 public:
     std::shared_ptr<InternalObject> create () const override;
 };

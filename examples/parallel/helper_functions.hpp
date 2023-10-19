@@ -7,23 +7,23 @@
 #include <map>
 #include <mutex>
 
-#include "mlang/object/number.hpp"
+#include "mlang/object/int.hpp"
 #include "mlang/script/script.hpp"
 #include "mlang/func/function.hpp"
 #include "mlang/script/environment.hpp"
 
 /**
  *  parameters:
- *     - seconds (Number)
+ *     - seconds (Int)
  **/
 class FuncSleep : public mlang::func::Function {
 public:
     mlang::object::Object call (mlang::script::EnvStack& env, std::vector<mlang::object::Object>& params) const override {
         if (params.size() != 1) { throw mlang::RuntimeError{ "FuncSleep expects 1 parameters"}; }
-        if (params[0].get_typename() != mlang::object::Number::type_name) {
-            throw mlang::RuntimeError{ "FuncSleep expects the 1st parameter to be of type " + mlang::object::Number::type_name};
+        if (params[0].get_typename() != mlang::object::Int::type_name) {
+            throw mlang::RuntimeError{ "FuncSleep expects the 1st parameter to be of type " + mlang::object::Int::type_name};
         }
-        std::this_thread::sleep_for (std::chrono::seconds((int)params[0].get_number()));
+        std::this_thread::sleep_for (std::chrono::seconds(params[0].get_int()));
         return mlang::object::Object {};
     }
 };

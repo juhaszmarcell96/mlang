@@ -29,8 +29,6 @@ std::size_t Token::get_pos () const  { return m_pos; }
 
 
 
-
-
 void Tokenizer::start_new_token () {
     m_current_token.clear();
     m_current_token.set_line(m_code.get_line_num());
@@ -57,6 +55,11 @@ void Tokenizer::finalize_token (token_types type) {
     m_current_token.clear();
 }
 
+void Tokenizer::set_token_type (token_types type) {
+    //std::cout << "finalizing token " << m_current_token.get_value() << " position " << m_current_token.get_line() << ":" << m_current_token.get_pos() << std::endl;
+    m_current_token.set_type(type);
+}
+
 void Tokenizer::append_curr () {
     m_current_token.append(m_current_char);
 }
@@ -72,7 +75,7 @@ void Tokenizer::set_state (tokenizer_states state) {
 void Tokenizer::process_digit () {
     if (m_current_state == tokenizer_states::none) {
         /* no tokens were in progress -> start a new one -> number */
-        start_new_token(token_types::number);
+        start_new_token(token_types::integer);
         append_curr();
         set_state(tokenizer_states::parsing_number);
     }
@@ -100,7 +103,7 @@ void Tokenizer::process_whitespace () {
     }
     else if (m_current_state == tokenizer_states::parsing_number) {
         /* parsing a number -> finalize this token */
-        finalize_token(token_types::number);
+        finalize_token();
         m_has_dot = false;
         set_state(tokenizer_states::none);
     }
@@ -154,7 +157,7 @@ void Tokenizer::process_double_quotes () {
     }
     else if (m_current_state == tokenizer_states::parsing_number) {
         /* end the number, start a string */
-        finalize_token(token_types::number);
+        finalize_token();
         set_state(tokenizer_states::parsing_string);
         start_new_token(token_types::string);
     }
@@ -187,7 +190,7 @@ void Tokenizer::process_letter () {
     }
     else if (m_current_state == tokenizer_states::parsing_number) {
         /* end the number, start an identifier */
-        finalize_token(token_types::number);
+        finalize_token();
         set_state(tokenizer_states::parsing_identifier);
         start_new_token(token_types::identifier);
         append_curr();
@@ -217,10 +220,9 @@ void Tokenizer::process_apostrophe () {
 
 void Tokenizer::process_dot () {
     if (m_current_state == tokenizer_states::none) {
-        /* start a number with 0.xxx */
         start_new_token(token_types::dot);
         append_curr();
-        finalize_token(token_types::dot);
+        finalize_token();
     }
     else if (m_current_state == tokenizer_states::parsing_identifier) {
         /* end identifier and start a new one -> . -> end and clear */
@@ -228,7 +230,7 @@ void Tokenizer::process_dot () {
         set_state(tokenizer_states::none);
         start_new_token(token_types::dot);
         append_curr();
-        finalize_token(token_types::dot);
+        finalize_token();
     }
     else if (m_current_state == tokenizer_states::parsing_string) {
         /* parsing a string -> escape or not */
@@ -243,16 +245,17 @@ void Tokenizer::process_dot () {
         /* append to number -> float */
         if (!m_has_dot) {
             m_has_dot = true;
+            set_token_type(token_types::floating);
             append_curr();
         }
         else {
-            /* start a number with 0.xxx */
-            finalize_token(token_types::number);
-            set_state(tokenizer_states::parsing_number);
-            start_new_token(token_types::number);
-            append_char('0');
+            /* it is a dot token */
+            finalize_token(token_types::floating);
+            m_has_dot = false;
+            set_state(tokenizer_states::none);
+            start_new_token(token_types::dot);
             append_curr();
-            m_has_dot = true;
+            finalize_token();
         }
     }
 }
@@ -282,7 +285,7 @@ void Tokenizer::process_standalone_sign (token_types type) {
     }
     else if (m_current_state == tokenizer_states::parsing_number) {
         /* end number and start a new one -> end and clear */
-        finalize_token(token_types::number);
+        finalize_token();
         start_new_token(type);
         append_curr();
         finalize_token();
@@ -506,9 +509,7 @@ void Tokenizer::tokenize() {
     if (m_current_state == tokenizer_states::none) { /* nothing to do */ }
     else if (m_current_state == tokenizer_states::parsing_identifier) {
         /* end identifier */
-        m_current_token.set_type(token_types::identifier);
-        m_tokens.push_back(m_current_token);
-        m_current_token.clear();
+        finalize_token(token_types::identifier);
     }
     else if (m_current_state == tokenizer_states::parsing_string) {
         /* string can only end in " -> error */
@@ -516,10 +517,8 @@ void Tokenizer::tokenize() {
     }
     else if (m_current_state == tokenizer_states::parsing_number) {
         /* end number */
-        m_current_token.set_type(token_types::number);
+        finalize_token();
         m_has_dot = false;
-        m_tokens.push_back(m_current_token);
-        m_current_token.clear();
     }
 
     /* clear the code string, we don't need it anymore */

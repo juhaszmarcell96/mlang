@@ -4,7 +4,8 @@
 #include <cmath>
 
 #include "mlang/object/assert.hpp"
-#include "mlang/object/number.hpp"
+#include "mlang/object/int.hpp"
+#include "mlang/object/float.hpp"
 #include "mlang/script/script.hpp"
 
 class Complex : public mlang::object::InternalObject {
@@ -58,10 +59,8 @@ void Complex::construct (const std::vector<std::shared_ptr<mlang::object::Intern
     mlang::object::assert_params(params, 2, type_name, "constructor");
     mlang::object::assert_parameter(params[0], type_name, "constructor");
     mlang::object::assert_parameter(params[1], type_name, "constructor");
-    const std::shared_ptr<mlang::object::Number> real_ptr = mlang::object::assert_cast<mlang::object::Number>(params[0], type_name);
-    const std::shared_ptr<mlang::object::Number> imag_ptr = mlang::object::assert_cast<mlang::object::Number>(params[1], type_name);
-    m_real = real_ptr->get();
-    m_imag = imag_ptr->get();
+    m_real = params[0]->get_float();
+    m_imag = params[1]->get_float();
 }
 
 void Complex::assign (const std::shared_ptr<mlang::object::InternalObject> param) {
@@ -87,16 +86,16 @@ std::shared_ptr<mlang::object::InternalObject> Complex::call (const std::string&
 
 std::shared_ptr<mlang::object::InternalObject> Complex::access (const std::string& member) {
     if (member.compare("real") == 0) {
-        return std::make_shared<mlang::object::Number>(m_real);
+        return std::make_shared<mlang::object::Float>(m_real);
     }
     else if (member.compare("imag") == 0) {
-        return std::make_shared<mlang::object::Number>(m_imag);
+        return std::make_shared<mlang::object::Float>(m_imag);
     }
     throw mlang::RuntimeError { "object of type '" + type_name + "' has no '" + member + "' member" };
 }
 
 std::shared_ptr<mlang::object::InternalObject> Complex::abs () const {
-    return std::make_shared<mlang::object::Number>(std::sqrt(m_real * m_real + m_imag * m_imag));
+    return std::make_shared<mlang::object::Float>(std::sqrt(m_real * m_real + m_imag * m_imag));
 }
 
 std::string Complex::get_string () const { return "(" + std::to_string(m_real) + "+" + std::to_string(m_imag) + "j)"; }
@@ -124,13 +123,15 @@ TEST(CustomClassTest, Test1) {
     ASSERT_EQ(env.get_variable("a").get_typename(), Complex::type_name);
     ASSERT_EQ(env.get_variable("a").get_string(), "(1.000000+2.000000j)");
     ASSERT_EQ(env.has_variable("b"), true);
-    ASSERT_EQ(env.get_variable("b").get_typename(), mlang::object::Number::type_name);
-    ASSERT_GT(env.get_variable("b").get_number(), 2.236);
-    ASSERT_LT(env.get_variable("b").get_number(), 2.237);
+    ASSERT_EQ(env.get_variable("b").get_typename(), mlang::object::Float::type_name);
+    ASSERT_GT(env.get_variable("b").get_float(), 2.236);
+    ASSERT_LT(env.get_variable("b").get_float(), 2.237);
     ASSERT_EQ(env.has_variable("real"), true);
-    ASSERT_EQ(env.get_variable("real").get_typename(), mlang::object::Number::type_name);
-    ASSERT_EQ(env.get_variable("real").get_number(), 1);
+    ASSERT_EQ(env.get_variable("real").get_typename(), mlang::object::Float::type_name);
+    ASSERT_EQ(env.get_variable("real").get_float(), 1);
+    ASSERT_EQ(env.get_variable("real").get_int(), 1);
     ASSERT_EQ(env.has_variable("imag"), true);
-    ASSERT_EQ(env.get_variable("imag").get_typename(), mlang::object::Number::type_name);
-    ASSERT_EQ(env.get_variable("imag").get_number(), 2);
+    ASSERT_EQ(env.get_variable("imag").get_typename(), mlang::object::Float::type_name);
+    ASSERT_EQ(env.get_variable("imag").get_float(), 2);
+    ASSERT_EQ(env.get_variable("imag").get_int(), 2);
 }

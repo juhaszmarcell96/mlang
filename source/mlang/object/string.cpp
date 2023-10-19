@@ -1,5 +1,6 @@
 #include "mlang/object/string.hpp"
-#include "mlang/object/number.hpp"
+#include "mlang/object/int.hpp"
+#include "mlang/object/float.hpp"
 #include "mlang/object/assert.hpp"
 
 #include <regex>
@@ -24,18 +25,8 @@ void String::construct (const std::vector<std::shared_ptr<InternalObject>>& para
     const std::shared_ptr<String> str_ptr = assert_cast<String>(params[0], type_name);
     m_value = str_ptr->get();
 }
+
 /* assign */
-/*void assign (const std::vector<std::shared_ptr<InternalObject>>& params) {
-    assert_params(params, 1, type_name, operators::construct);
-    assert_parameter(params[0], type_name, operators::construct);
-    const std::shared_ptr<String> str_ptr = assert_cast<String>(params[0], type_name);
-    m_value = str_ptr->get();
-}*/
-/**/
-/* destruct */
-/*void destruct () {
-    m_value = "";
-}*/
 void String::assign (const std::shared_ptr<InternalObject> param) {
     const std::shared_ptr<String> str_ptr = assert_cast<String>(param, type_name);
     m_value = str_ptr->get();
@@ -72,7 +63,7 @@ std::shared_ptr<InternalObject> String::reverse () {
 }
 
 std::shared_ptr<InternalObject> String::length () {
-    return std::make_shared<Number>(m_value.length());
+    return std::make_shared<Int>(m_value.length());
 }
 
 std::shared_ptr<InternalObject> String::is_empty () {
@@ -131,7 +122,7 @@ std::shared_ptr<InternalObject> String::get_line (const std::vector<std::shared_
     assert_params(params, 2, type_name, "get_line");
     assert_parameter(params[0], type_name, "get_line");
     assert_parameter(params[1], type_name, "get_line");
-    int line_index = (int)assert_cast<Number>(params[0], type_name)->get_number();
+    int line_index = params[0]->get_int();
     std::string delimiter = assert_cast<String>(params[1], type_name)->get_string();
     if (line_index < 0) {
         throw RuntimeError { "line index cannot be negative in function 'get_line'" };
@@ -161,15 +152,15 @@ std::shared_ptr<InternalObject> String::to_int () {
     catch (...) {
         throw RuntimeError { "error while converting '" + m_value + "' to integer" };
     }
-    return std::make_shared<Number>(num);
+    return std::make_shared<Int>(num);
 }
 
 std::shared_ptr<InternalObject> String::substring (const std::vector<std::shared_ptr<InternalObject>>& params) {
     assert_params(params, 2, type_name, "substring");
     assert_parameter(params[0], type_name, "substring");
     assert_parameter(params[1], type_name, "substring");
-    int start_index = (int)assert_cast<Number>(params[0], type_name)->get_number();
-    int length = (int)assert_cast<Number>(params[1], type_name)->get_number();
+    int start_index = params[0]->get_int();
+    int length = params[1]->get_int();
     if (start_index < 0) {
         throw RuntimeError { "start index cannot be negative in function 'substring'" };
     }

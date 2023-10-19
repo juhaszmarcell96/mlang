@@ -7,7 +7,8 @@ std::size_t Token::get_length () const {
     switch (type) {
         case token_types::none : { return 0; }
         case token_types::identifier : { return value_str.length(); }
-        case token_types::number : { return std::to_string(value_num).length(); }
+        case token_types::integer : { return std::to_string(value_int).length(); }
+        case token_types::floating : { return std::to_string(value_float).length(); }
         case token_types::string : { return value_str.length(); }
         case token_types::comma : { return 1; }
         case token_types::question_mark : { return 1; }
@@ -84,7 +85,8 @@ std::string Token::get_for_print() const {
     switch (type) {
         case token_types::none : { return "none"; }
         case token_types::identifier : { return "identifier:" + value_str; }
-        case token_types::number : { return "number:" + std::to_string(value_num); }
+        case token_types::integer : { return "int:" + std::to_string(value_int); }
+        case token_types::floating : { return "float:" + std::to_string(value_float); }
         case token_types::string : { return "string:" + value_str; }
         case token_types::comma : { return ","; }
         case token_types::question_mark : { return "?"; }

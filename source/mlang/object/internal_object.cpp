@@ -7,8 +7,11 @@ namespace object {
 bool InternalObject::is_true () const {
     throw RuntimeError { "object of type '" + get_typename() + "' cannot be evaluated as boolean" };
 }
-double InternalObject::get_number () const {
-    throw RuntimeError { "object of type '" + get_typename() + "' cannot be interpreted as number" };
+int InternalObject::get_int () const {
+    throw RuntimeError { "object of type '" + get_typename() + "' cannot be interpreted as integer" };
+}
+double InternalObject::get_float () const {
+    throw RuntimeError { "object of type '" + get_typename() + "' cannot be interpreted as float" };
 }
 std::string InternalObject::get_string () const {
     throw RuntimeError { "object of type '" + get_typename() + "' cannot be interpreted as string" };

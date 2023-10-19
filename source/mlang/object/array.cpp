@@ -85,7 +85,7 @@ std::shared_ptr<InternalObject> Array::operator_comparison_not_equal (const std:
 
 Object& Array::operator_subscript (const std::shared_ptr<InternalObject> param) {
     assert_parameter(param, type_name, "[]");
-    std::size_t index = static_cast<std::size_t>(param->get_number());
+    std::size_t index = static_cast<std::size_t>(param->get_int());
     return m_arr[index];
 }
 

@@ -31,7 +31,8 @@ public:
     virtual std::string get_typename () const = 0;
 
     virtual bool is_true () const;
-    virtual double get_number () const;
+    virtual double get_float () const;
+    virtual int get_int () const;
     virtual std::string get_string () const;
 
     virtual const ObjectFactory& get_factory () const = 0;

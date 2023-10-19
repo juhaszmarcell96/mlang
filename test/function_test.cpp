@@ -16,8 +16,8 @@ TEST(FunctionTest, Test0) {
     script.execute(env);
 
     ASSERT_EQ(env.has_variable("num"), true);
-    ASSERT_EQ(env.get_variable("num").get_typename(), mlang::object::Number::type_name);
-    ASSERT_EQ(env.get_variable("num").get_number(), 12);
+    ASSERT_EQ(env.get_variable("num").get_typename(), mlang::object::Int::type_name);
+    ASSERT_EQ(env.get_variable("num").get_int(), 12);
     ASSERT_EQ(env.has_variable("a"), false);
     ASSERT_EQ(env.has_variable("b"), false);
     ASSERT_EQ(env.has_variable("c"), false);

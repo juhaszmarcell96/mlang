@@ -41,7 +41,8 @@ public:
     void set_lvalue (bool lvalue);
 
     bool is_true () const;
-    double get_number () const;
+    int get_int () const;
+    double get_float () const;
     std::string get_string () const;
 
     /* += */

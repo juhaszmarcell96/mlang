@@ -20,8 +20,8 @@ TEST(ErrorTest, Test0) {
 
 TEST(ErrorTest, Test2) {
     std::string script_text;
-    script_text += "number a = 5 \n"; // missing ';'
-    script_text += "string b; \n";
+    script_text += "var a = 5 \n"; // missing ';'
+    script_text += "var b; \n";
     script_text += "b = \"hmm\";";
     mlang::script::Script script { script_text };
     mlang::script::EnvStack env {};

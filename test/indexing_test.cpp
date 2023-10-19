@@ -19,8 +19,8 @@ TEST(IndexingTest, Test0) {
     ASSERT_EQ(env.has_variable("arr"), true);
     ASSERT_EQ(env.get_variable("arr").get_typename(), mlang::object::Array::type_name);
     ASSERT_EQ(env.has_variable("a"), true);
-    ASSERT_EQ(env.get_variable("a").get_typename(), mlang::object::Number::type_name);
-    ASSERT_EQ(env.get_variable("a").get_number(), 1000);
+    ASSERT_EQ(env.get_variable("a").get_typename(), mlang::object::Int::type_name);
+    ASSERT_EQ(env.get_variable("a").get_int(), 1000);
     ASSERT_EQ(env.has_variable("b"), true);
     ASSERT_EQ(env.get_variable("b").get_typename(), mlang::object::String::type_name);
     ASSERT_EQ(env.get_variable("b").get_string(), "asd");

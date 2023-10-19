@@ -58,7 +58,8 @@ bool Object::is_lvalue () const { return m_lvalue; }
 void Object::set_lvalue (bool lvalue) { m_lvalue = lvalue; }
 
 bool Object::is_true () const { return m_object->obj->is_true(); }
-double Object::get_number () const { return m_object->obj->get_number(); }
+int Object::get_int () const { return m_object->obj->get_int(); }
+double Object::get_float () const { return m_object->obj->get_float(); }
 std::string Object::get_string () const { return m_object->obj->get_string(); }
 
 /* += */

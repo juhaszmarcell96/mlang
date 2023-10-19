@@ -17,40 +17,40 @@ TEST(TokenizerTest, Test0) {
     ASSERT_EQ(tokens[1].get_value(), "a");
     ASSERT_EQ(tokens[2].get_type(), mlang::tokenizer::token_types::equal_sign);
     ASSERT_EQ(tokens[2].get_value(), "=");
-    ASSERT_EQ(tokens[3].get_type(), mlang::tokenizer::token_types::number);
+    ASSERT_EQ(tokens[3].get_type(), mlang::tokenizer::token_types::integer);
     ASSERT_EQ(tokens[3].get_value(), "5");
     ASSERT_EQ(tokens[4].get_type(), mlang::tokenizer::token_types::semicolon);
     ASSERT_EQ(tokens[4].get_value(), ";");
 }
 
 TEST(TokenizerTest, Test1) {
-    std::string script = "1 + (2 - 3 ) * 15 / 3";
+    std::string script = "1 + (2.0 - 3 ) * 15.1 / 3";
     mlang::tokenizer::Tokenizer tokenizer { script };
     tokenizer.tokenize();
     auto tokens = tokenizer.get_tokens();
 
     ASSERT_EQ(tokens.size(), 11);
-    ASSERT_EQ(tokens[0].get_type(), mlang::tokenizer::token_types::number);
+    ASSERT_EQ(tokens[0].get_type(), mlang::tokenizer::token_types::integer);
     ASSERT_EQ(tokens[0].get_value(), "1");
     ASSERT_EQ(tokens[1].get_type(), mlang::tokenizer::token_types::plus);
     ASSERT_EQ(tokens[1].get_value(), "+");
     ASSERT_EQ(tokens[2].get_type(), mlang::tokenizer::token_types::round_bracket_open);
     ASSERT_EQ(tokens[2].get_value(), "(");
-    ASSERT_EQ(tokens[3].get_type(), mlang::tokenizer::token_types::number);
-    ASSERT_EQ(tokens[3].get_value(), "2");
+    ASSERT_EQ(tokens[3].get_type(), mlang::tokenizer::token_types::floating);
+    ASSERT_EQ(tokens[3].get_value(), "2.0");
     ASSERT_EQ(tokens[4].get_type(), mlang::tokenizer::token_types::dash);
     ASSERT_EQ(tokens[4].get_value(), "-");
-    ASSERT_EQ(tokens[5].get_type(), mlang::tokenizer::token_types::number);
+    ASSERT_EQ(tokens[5].get_type(), mlang::tokenizer::token_types::integer);
     ASSERT_EQ(tokens[5].get_value(), "3");
     ASSERT_EQ(tokens[6].get_type(), mlang::tokenizer::token_types::round_bracket_close);
     ASSERT_EQ(tokens[6].get_value(), ")");
     ASSERT_EQ(tokens[7].get_type(), mlang::tokenizer::token_types::asterisk);
     ASSERT_EQ(tokens[7].get_value(), "*");
-    ASSERT_EQ(tokens[8].get_type(), mlang::tokenizer::token_types::number);
-    ASSERT_EQ(tokens[8].get_value(), "15");
+    ASSERT_EQ(tokens[8].get_type(), mlang::tokenizer::token_types::floating);
+    ASSERT_EQ(tokens[8].get_value(), "15.1");
     ASSERT_EQ(tokens[9].get_type(), mlang::tokenizer::token_types::slash);
     ASSERT_EQ(tokens[9].get_value(), "/");
-    ASSERT_EQ(tokens[10].get_type(), mlang::tokenizer::token_types::number);
+    ASSERT_EQ(tokens[10].get_type(), mlang::tokenizer::token_types::integer);
     ASSERT_EQ(tokens[10].get_value(), "3");
 }
 
@@ -110,7 +110,7 @@ TEST(TokenizerTest, Test3) {
     ASSERT_EQ(tokens[6].get_value(), "<");
     ASSERT_EQ(tokens[7].get_type(), mlang::tokenizer::token_types::string);
     ASSERT_EQ(tokens[7].get_value(), " 12.4 - o ");
-    ASSERT_EQ(tokens[8].get_type(), mlang::tokenizer::token_types::number);
+    ASSERT_EQ(tokens[8].get_type(), mlang::tokenizer::token_types::floating);
     ASSERT_EQ(tokens[8].get_value(), "2.75");
     ASSERT_EQ(tokens[9].get_type(), mlang::tokenizer::token_types::question_mark);
     ASSERT_EQ(tokens[9].get_value(), "?");
@@ -124,11 +124,13 @@ TEST(TokenizerTest, Test4) {
     tokenizer.tokenize();
     auto tokens = tokenizer.get_tokens();
 
-    ASSERT_EQ(tokens.size(), 2);
-    ASSERT_EQ(tokens[0].get_type(), mlang::tokenizer::token_types::number);
+    ASSERT_EQ(tokens.size(), 3);
+    ASSERT_EQ(tokens[0].get_type(), mlang::tokenizer::token_types::floating);
     ASSERT_EQ(tokens[0].get_value(), "13.65");
-    ASSERT_EQ(tokens[1].get_type(), mlang::tokenizer::token_types::number);
-    ASSERT_EQ(tokens[1].get_value(), "0.3");
+    ASSERT_EQ(tokens[1].get_type(), mlang::tokenizer::token_types::dot);
+    ASSERT_EQ(tokens[1].get_value(), ".");
+    ASSERT_EQ(tokens[2].get_type(), mlang::tokenizer::token_types::integer);
+    ASSERT_EQ(tokens[2].get_value(), "3");
 }
 
 TEST(TokenizerTest, Test5) {
@@ -138,7 +140,7 @@ TEST(TokenizerTest, Test5) {
     auto tokens = tokenizer.get_tokens();
 
     ASSERT_EQ(tokens.size(), 7);
-    ASSERT_EQ(tokens[0].get_type(), mlang::tokenizer::token_types::number);
+    ASSERT_EQ(tokens[0].get_type(), mlang::tokenizer::token_types::floating);
     ASSERT_EQ(tokens[0].get_value(), "0.15");
     ASSERT_EQ(tokens[1].get_type(), mlang::tokenizer::token_types::identifier);
     ASSERT_EQ(tokens[1].get_value(), "f");

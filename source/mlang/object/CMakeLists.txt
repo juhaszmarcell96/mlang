@@ -9,7 +9,8 @@ add_library(
     object.cpp
     none.cpp
     boolean.cpp
-    number.cpp
+    int.cpp
+    float.cpp
     string.cpp
     array.cpp
 )
@@ -31,7 +32,8 @@ set(
     mlang/object/object.hpp
     mlang/object/none.hpp
     mlang/object/boolean.hpp
-    mlang/object/number.hpp
+    mlang/object/int.hpp
+    mlang/object/float.hpp
     mlang/object/string.hpp
     mlang/object/array.hpp
     mlang/object/assert.hpp

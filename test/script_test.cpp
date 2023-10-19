@@ -5,18 +5,25 @@
 #include "mlang/script/script.hpp"
 
 TEST(ScriptTest, Test0) {
-    std::string script_text = "var a = 5;";
+    std::string script_text = "var a = 5; var b = 5.1;";
     mlang::script::Script script { script_text };
     auto tokens = script.get_tokens();
 
-    ASSERT_EQ(tokens.size(), 5);
+    ASSERT_EQ(tokens.size(), 10);
     ASSERT_EQ(tokens[0].type, mlang::script::token_types::kw_var);
     ASSERT_EQ(tokens[1].type, mlang::script::token_types::identifier);
     ASSERT_EQ(tokens[1].value_str, "a");
     ASSERT_EQ(tokens[2].type, mlang::script::token_types::equal_sign);
-    ASSERT_EQ(tokens[3].type, mlang::script::token_types::number);
-    ASSERT_EQ(tokens[3].value_num, 5);
+    ASSERT_EQ(tokens[3].type, mlang::script::token_types::integer);
+    ASSERT_EQ(tokens[3].value_int, 5);
     ASSERT_EQ(tokens[4].type, mlang::script::token_types::semicolon);
+    ASSERT_EQ(tokens[5].type, mlang::script::token_types::kw_var);
+    ASSERT_EQ(tokens[6].type, mlang::script::token_types::identifier);
+    ASSERT_EQ(tokens[6].value_str, "b");
+    ASSERT_EQ(tokens[7].type, mlang::script::token_types::equal_sign);
+    ASSERT_EQ(tokens[8].type, mlang::script::token_types::floating);
+    ASSERT_EQ(tokens[8].value_float, 5.1);
+    ASSERT_EQ(tokens[9].type, mlang::script::token_types::semicolon);
 }
 
 TEST(ScriptTest, Test1) {
@@ -126,8 +133,8 @@ TEST(ScriptTest, Test7) {
     ASSERT_EQ(ret, 0);
 
     ASSERT_EQ(env.has_variable("n"), true);
-    ASSERT_EQ(env.get_variable("n").get_typename(), mlang::object::Number::type_name);
-    ASSERT_EQ(env.get_variable("n").get_number(), 5);
+    ASSERT_EQ(env.get_variable("n").get_typename(), mlang::object::Int::type_name);
+    ASSERT_EQ(env.get_variable("n").get_int(), 5);
 }
 
 TEST(ScriptTest, Test8) {
@@ -144,14 +151,14 @@ TEST(ScriptTest, Test8) {
     ASSERT_EQ(ret, 0);
 
     ASSERT_EQ(env.has_variable("a"), true);
-    ASSERT_EQ(env.get_variable("a").get_typename(), mlang::object::Number::type_name);
-    ASSERT_EQ(env.get_variable("a").get_number(), 5);
+    ASSERT_EQ(env.get_variable("a").get_typename(), mlang::object::Int::type_name);
+    ASSERT_EQ(env.get_variable("a").get_int(), 5);
     ASSERT_EQ(env.has_variable("b"), true);
-    ASSERT_EQ(env.get_variable("b").get_typename(), mlang::object::Number::type_name);
-    ASSERT_EQ(env.get_variable("b").get_number(), 7);
+    ASSERT_EQ(env.get_variable("b").get_typename(), mlang::object::Int::type_name);
+    ASSERT_EQ(env.get_variable("b").get_int(), 7);
     ASSERT_EQ(env.has_variable("c"), true);
-    ASSERT_EQ(env.get_variable("c").get_typename(), mlang::object::Number::type_name);
-    ASSERT_EQ(env.get_variable("c").get_number(), 16);
+    ASSERT_EQ(env.get_variable("c").get_typename(), mlang::object::Int::type_name);
+    ASSERT_EQ(env.get_variable("c").get_int(), 16);
 
     script_text.clear();
     script_text += "a -= 3; \n";
@@ -162,14 +169,14 @@ TEST(ScriptTest, Test8) {
     ASSERT_EQ(ret, 0);
 
     ASSERT_EQ(env.has_variable("a"), true);
-    ASSERT_EQ(env.get_variable("a").get_typename(), mlang::object::Number::type_name);
-    ASSERT_EQ(env.get_variable("a").get_number(), 2);
+    ASSERT_EQ(env.get_variable("a").get_typename(), mlang::object::Int::type_name);
+    ASSERT_EQ(env.get_variable("a").get_int(), 2);
     ASSERT_EQ(env.has_variable("b"), true);
-    ASSERT_EQ(env.get_variable("b").get_typename(), mlang::object::Number::type_name);
-    ASSERT_EQ(env.get_variable("b").get_number(), 14);
+    ASSERT_EQ(env.get_variable("b").get_typename(), mlang::object::Int::type_name);
+    ASSERT_EQ(env.get_variable("b").get_int(), 14);
     ASSERT_EQ(env.has_variable("c"), true);
-    ASSERT_EQ(env.get_variable("c").get_typename(), mlang::object::Number::type_name);
-    ASSERT_EQ(env.get_variable("c").get_number(), 2);
+    ASSERT_EQ(env.get_variable("c").get_typename(), mlang::object::Int::type_name);
+    ASSERT_EQ(env.get_variable("c").get_int(), 2);
 }
 
 TEST(ScriptTest, Test9) {
@@ -190,11 +197,11 @@ TEST(ScriptTest, Test9) {
     ASSERT_EQ(ret, 0);
 
     ASSERT_EQ(env.has_variable("a"), true);
-    ASSERT_EQ(env.get_variable("a").get_typename(), mlang::object::Number::type_name);
-    ASSERT_EQ(env.get_variable("a").get_number(), 5);
+    ASSERT_EQ(env.get_variable("a").get_typename(), mlang::object::Int::type_name);
+    ASSERT_EQ(env.get_variable("a").get_int(), 5);
     ASSERT_EQ(env.has_variable("b"), true);
-    ASSERT_EQ(env.get_variable("b").get_typename(), mlang::object::Number::type_name);
-    ASSERT_EQ(env.get_variable("b").get_number(), 10);
+    ASSERT_EQ(env.get_variable("b").get_typename(), mlang::object::Int::type_name);
+    ASSERT_EQ(env.get_variable("b").get_int(), 10);
     ASSERT_EQ(env.has_variable("c"), true);
     ASSERT_EQ(env.get_variable("c").get_typename(), mlang::object::None::type_name);
 }
@@ -228,17 +235,17 @@ TEST(ScriptTest, Test10) {
     ASSERT_EQ(ret, 0);
 
     ASSERT_EQ(env.has_variable("a"), true);
-    ASSERT_EQ(env.get_variable("a").get_typename(), mlang::object::Number::type_name);
-    ASSERT_EQ(env.get_variable("a").get_number(), 5);
+    ASSERT_EQ(env.get_variable("a").get_typename(), mlang::object::Int::type_name);
+    ASSERT_EQ(env.get_variable("a").get_int(), 5);
     ASSERT_EQ(env.has_variable("b"), true);
-    ASSERT_EQ(env.get_variable("b").get_typename(), mlang::object::Number::type_name);
-    ASSERT_EQ(env.get_variable("b").get_number(), 10);
+    ASSERT_EQ(env.get_variable("b").get_typename(), mlang::object::Int::type_name);
+    ASSERT_EQ(env.get_variable("b").get_int(), 10);
     ASSERT_EQ(env.has_variable("c"), true);
-    ASSERT_EQ(env.get_variable("c").get_typename(), mlang::object::Number::type_name);
-    ASSERT_EQ(env.get_variable("c").get_number(), 4);
+    ASSERT_EQ(env.get_variable("c").get_typename(), mlang::object::Int::type_name);
+    ASSERT_EQ(env.get_variable("c").get_int(), 4);
     ASSERT_EQ(env.has_variable("d"), true);
-    ASSERT_EQ(env.get_variable("d").get_typename(), mlang::object::Number::type_name);
-    ASSERT_EQ(env.get_variable("d").get_number(), 102);
+    ASSERT_EQ(env.get_variable("d").get_typename(), mlang::object::Int::type_name);
+    ASSERT_EQ(env.get_variable("d").get_int(), 102);
 }
 
 TEST(ScriptTest, Test11) {
@@ -252,14 +259,14 @@ TEST(ScriptTest, Test11) {
     ASSERT_EQ(ret, 0);
 
     ASSERT_EQ(env.has_variable("a"), true);
-    ASSERT_EQ(env.get_variable("a").get_typename(), mlang::object::Number::type_name);
-    ASSERT_EQ(env.get_variable("a").get_number(), 5);
+    ASSERT_EQ(env.get_variable("a").get_typename(), mlang::object::Int::type_name);
+    ASSERT_EQ(env.get_variable("a").get_int(), 5);
     ASSERT_EQ(env.has_variable("b"), true);
-    ASSERT_EQ(env.get_variable("b").get_typename(), mlang::object::Number::type_name);
-    ASSERT_EQ(env.get_variable("b").get_number(), 7);
+    ASSERT_EQ(env.get_variable("b").get_typename(), mlang::object::Int::type_name);
+    ASSERT_EQ(env.get_variable("b").get_int(), 7);
     ASSERT_EQ(env.has_variable("c"), true);
-    ASSERT_EQ(env.get_variable("c").get_typename(), mlang::object::Number::type_name);
-    ASSERT_EQ(env.get_variable("c").get_number(), 16);
+    ASSERT_EQ(env.get_variable("c").get_typename(), mlang::object::Int::type_name);
+    ASSERT_EQ(env.get_variable("c").get_int(), 16);
 }
 
 TEST(ScriptTest, Test12) {
@@ -275,11 +282,11 @@ TEST(ScriptTest, Test12) {
     ASSERT_EQ(ret, 0);
 
     ASSERT_EQ(env.has_variable("a"), true);
-    ASSERT_EQ(env.get_variable("a").get_typename(), mlang::object::Number::type_name);
-    ASSERT_EQ(env.get_variable("a").get_number(), 25);
+    ASSERT_EQ(env.get_variable("a").get_typename(), mlang::object::Int::type_name);
+    ASSERT_EQ(env.get_variable("a").get_int(), 25);
     ASSERT_EQ(env.has_variable("i"), true);
-    ASSERT_EQ(env.get_variable("i").get_typename(), mlang::object::Number::type_name);
-    ASSERT_EQ(env.get_variable("i").get_number(), 10);
+    ASSERT_EQ(env.get_variable("i").get_typename(), mlang::object::Int::type_name);
+    ASSERT_EQ(env.get_variable("i").get_int(), 10);
 }
 
 TEST(ScriptTest, Test13) {
@@ -294,7 +301,7 @@ TEST(ScriptTest, Test13) {
     ASSERT_EQ(ret, 0);
 
     ASSERT_EQ(env.has_variable("a"), true);
-    ASSERT_EQ(env.get_variable("a").get_typename(), mlang::object::Number::type_name);
-    ASSERT_EQ(env.get_variable("a").get_number(), 5);
+    ASSERT_EQ(env.get_variable("a").get_typename(), mlang::object::Int::type_name);
+    ASSERT_EQ(env.get_variable("a").get_int(), 5);
     ASSERT_EQ(env.has_variable("b"), false);
 }
