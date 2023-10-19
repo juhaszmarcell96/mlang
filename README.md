@@ -129,5 +129,5 @@ Nonterminal   -> Call to that rule's function
 - later : optimization step between parsing and executing (reduce performance cost of scripts executed periodically)
 - logger -> to a configurable stream rather than to stdout
 - exception -> try, catch, throw
-- comment -> /* ... */
-- differentiate between int and float types?
+- comment -> /* ... */ -> DONE -> TODO : add ignoring comments to the step after the initial tokenizer and not into the parsing stage
+- differentiate between int and float types -> DONE -> TODO : testing
