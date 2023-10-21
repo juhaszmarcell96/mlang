@@ -1,0 +1,236 @@
+#include <stdexcept>
+#include <bitset>
+#include <iostream>
+#include <string>
+#include <array>
+#include <cstdint>
+#include <cctype>
+#include <cstring>
+
+// 40? -> seems large enough
+template<std::size_t N>
+class BigInt {
+private:
+    std::array<std::uint8_t, N> m_value = { 0 };
+    bool m_negative { false };
+public:
+    BigInt () = default;
+    BigInt (int num) {
+        if (num < 0) {
+            m_negative = true;
+            num *= -1;
+        }
+        std::size_t place = 0;
+        while (num > 0) {
+            m_value[place] = num % 10;
+            ++place;
+            num /= 10;
+        }
+    }
+    BigInt (int64_t num) {
+        if (num < 0) {
+            m_negative = true;
+            num *= -1;
+        }
+        std::size_t place = 0;
+        while (num > 0) {
+            m_value[place] = num % 10;
+            ++place;
+            num /= 10;
+        }
+    }
+    BigInt (const std::string& num) {
+        if (num[0] == '-') {
+            if (num.length() - 1 > N) { /* TODO : exception */ }
+            m_negative = true;
+            for (std::size_t i = 1; i < num.length(); ++i) {
+                if (!std::isdigit(static_cast<unsigned char>(num[i]))) { /* TODO : exception */ }
+                std::size_t place = num.length() - 1 - i;
+                m_value[place] = num[i] - '0';
+            }
+        }
+        else {
+            if (num.length() > N) { /* TODO : exception */ }
+            for (std::size_t i = 0; i < num.length(); ++i) {
+                if (!std::isdigit(static_cast<unsigned char>(num[i]))) { /* TODO : exception */ }
+                std::size_t place = num.length() - 1 - i;
+                m_value[place] = num[i] - '0';
+            }
+        }
+    }
+    ~BigInt () = default;
+
+    /* ####################### */
+    /*       comparison        */
+    /* ####################### */
+
+    bool operator<(const BigInt& rhs) const {
+        if (m_negative && !rhs.m_negative) {
+            return true;
+        }
+        if (!m_negative && rhs.m_negative) {
+            return false;
+        }
+        std::size_t i = N - 1;
+        while (m_value[i] == rhs.m_value[i]) {
+            --i;
+            if (i == 0) { break; }
+        }
+        return m_value[i] < rhs.m_value[i];
+    }
+    bool operator>(const BigInt& rhs) const {
+        if (m_negative && !rhs.m_negative) {
+            return false;
+        }
+        if (!m_negative && rhs.m_negative) {
+            return true;
+        }
+        std::size_t i = N - 1;
+        while (m_value[i] == rhs.m_value[i]) {
+            --i;
+            if (i == 0) { break; }
+        }
+        return m_value[i] > rhs.m_value[i];
+    }
+    bool operator<=(const BigInt& rhs) const {
+        if (m_negative && !rhs.m_negative) {
+            return true;
+        }
+        if (!m_negative && rhs.m_negative) {
+            return false;
+        }
+        std::size_t i = N - 1;
+        while (m_value[i] == rhs.m_value[i]) {
+            --i;
+            if (i == 0) { break; }
+        }
+        return m_value[i] <= rhs.m_value[i];
+    }
+    bool operator>=(const BigInt& rhs) const {
+        if (m_negative && !rhs.m_negative) {
+            return false;
+        }
+        if (!m_negative && rhs.m_negative) {
+            return true;
+        }
+        std::size_t i = N - 1;
+        while (m_value[i] == rhs.m_value[i]) {
+            --i;
+            if (i == 0) { break; }
+        }
+        return m_value[i] >= rhs.m_value[i];
+    }
+    bool operator==(const BigInt& rhs) const {
+        if (m_negative != rhs.m_negative) {
+            return false;
+        }
+        for (std::size_t i = 0; i < N; ++i) {
+            if (m_value[i] != rhs.m_value[i]) { return false; }
+        }
+        return true;
+    }
+    bool operator!=(const BigInt& rhs) const {
+        if (m_negative != rhs.m_negative) {
+            return true;
+        }
+        for (std::size_t i = 0; i < N; ++i) {
+            if (m_value[i] != rhs.m_value[i]) { return true; }
+        }
+        return false;
+    }
+
+    /* ####################### */
+    /*    binary arithmetic    */
+    /* ####################### */
+
+    BigInt operator+(const BigInt& rhs) const {
+        BigInt result;
+        if ((m_negative && rhs.m_negative) || (!m_negative && !rhs.m_negative)) {
+            int carry = 0;
+            for (std::size_t i = 0; i < N; ++i) {
+                std::uint8_t digit = m_value[i] + rhs.m_value[i] + carry;
+                carry = digit / 10;
+                digit %= 10;
+                result.m_value[i] = digit;
+            }
+            if (m_negative && rhs.m_negative) {
+                result.m_negative = true;
+            }
+        }
+        else if (m_negative) {
+            return rhs - this->abs();
+        }
+        else {
+            return *this - rhs.abs();
+        }
+        return result;
+    }
+
+    BigInt operator-(const BigInt& rhs) const {
+        BigInt result;
+        if ((m_negative && rhs.m_negative) || (!m_negative && !rhs.m_negative)) {
+            int carry = 0;
+            for (std::size_t i = 0; i < N; ++i) {
+                std::uint8_t digit = m_value[i] + rhs.m_value[i] + carry;
+                carry = digit / 10;
+                digit %= 10;
+                result.m_value[i] = digit;
+            }
+        }
+        else if (m_negative) {
+            return rhs - this->abs();
+        }
+        else {
+            return *this - rhs.abs();
+        }
+        return result;
+    }
+
+    /* ####################### */
+    /*          unary          */
+    /* ####################### */
+
+    BigInt abs() const {
+        BigInt temp;
+        temp.m_value = m_value;
+        return temp;
+    }
+
+    BigInt operator+() const {
+        return *this;
+    }
+    BigInt operator-() const {
+        BigInt temp;
+        temp.m_value = m_value;
+        temp.m_negative = !m_negative;
+        return temp;
+    }
+
+    friend std::ostream& operator<<(std::ostream& os, const BigInt& num) {
+        if (num.m_negative) {
+            os << '-';
+        }
+        std::size_t i = N - 1;
+        while ((num.m_value[i] == 0) && (i > 0)) { --i; }
+        while (i > 0) {
+            os << std::to_string(num.m_value[i]);
+            --i;
+        }
+        os << std::to_string(num.m_value[0]);
+        return os;
+    }
+};
+
+int main( ) {
+    BigInt<40> a { 123 };
+    BigInt<40> b { 98 };
+    std::cout << -a << std::endl;
+    std::cout << a + b << std::endl;
+    std::cout << a - b << std::endl;
+    std::cout << a << " > "  << b << " is " << (a >  b ? "true" : "false") << std::endl;
+    std::cout << a << " < "  << b << " is " << (a <  b ? "true" : "false") << std::endl;
+    std::cout << a << " >= " << b << " is " << (a >= b ? "true" : "false") << std::endl;
+    std::cout << a << " <= " << b << " is " << (a <= b ? "true" : "false") << std::endl;
+    std::cout << a << " == " << b << " is " << (a == b ? "true" : "false") << std::endl;
+    std::cout << a << " != " << b << " is " << (a != b ? "true" : "false") << std::endl;
+}
